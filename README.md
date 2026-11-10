@@ -1,10 +1,12 @@
 # Complaint Lifecycle Engine
-**Enterprise AI-Powered Complaint Management, SLA Orchestration & Event Sourcing Platform**  
-*Built for the Associate AI Forward Deployed Engineer (FDE) Role*
+
+**Enterprise AI-Driven Complaint Intelligence, SLA Orchestration & Event Sourcing Platform**  
+*Engineered for the Associate AI Forward Deployed Engineer (FDE) Technical Evaluation*
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon%20Cloud-336791.svg)](https://neon.tech/)
+[![SQLite](https://img.shields.io/badge/SQLite-Local%20Fallback-003B57.svg)](https://sqlite.org/)
 [![Tests](https://img.shields.io/badge/Tests-9%2F9%20Passed-brightgreen.svg)](#test-results)
 [![Live API](https://img.shields.io/badge/Live%20API-7%2F7%20Passed-brightgreen.svg)](#live-api-verification-output)
 [![Reproducibility](https://img.shields.io/badge/Reproducibility-Bit--Level%20Verified-success.svg)](#reproducibility-verification)
@@ -14,44 +16,118 @@
 
 ## Executive Summary
 
-The **Complaint Lifecycle Engine** is an industrial-grade end-to-end platform that automates:
-- Customer complaint **classification & AI triage** (Amazon Bedrock Claude 3 Haiku)
-- **Priority determination** via deterministic rule engine (Safety -> CRITICAL, >£250 -> Approver threshold)
-- **SLA clock orchestration** with pause/resume/breach detection
-- **Ownership routing** to specialist teams (Safety-Response, Billing, Technical, General)
-- **Resolution settlement** with £250 Approver authorization rule
-- **CSAT & NPS feedback tracking**
-- **Immutable event sourcing** — every state transition is permanently logged
-- **Bit-level deterministic reproducibility** with SHA-256 verification (seed `20261022`)
+The **Complaint Lifecycle Engine** is an industrial-grade platform designed to demonstrate the end-to-end responsibilities of an **AI Forward Deployed Engineer (FDE)**: bridging enterprise operational workflows, deterministic business rules, and LLM reasoning.
 
-**Tech Stack:** FastAPI · Amazon Bedrock Claude 3 Haiku · PostgreSQL (Neon Cloud) · SQLite · Python 3.11
+The system ingests multi-channel customer grievances, executes automated NLP classification via **Amazon Bedrock (Claude 3 Haiku)**, enforces hard governance rules (safety escalation, Approver financial thresholds, dynamic SLA timers), maintains an **immutable event-sourced audit ledger**, and exposes an **Executive Control Plane UI** for real-time operations.
+
+```
++-----------------------------------------------------------------------------------------+
+|                                    PLATFORM AT A GLANCE                                 |
++-----------------------------------------------------------------------------------------+
+| Target Scale       | 5,000 Customers · 8,000 Orders · 2,000 Complaints · 6,000 Messages |
+| ID Formatting      | Zero-Padded Sequential: CMP-2026-000001, CUS-000001, ORD-2026-000001|
+| Persistence        | Dual-Engine: Neon Cloud PostgreSQL + Embedded SQLite Fallback      |
+| AI Stack           | Amazon Bedrock (Claude 3 Haiku) + Semantic Rule Fallback (Zero AWS)|
+| Governance         | 7-Layer Integrity Validation + 6 Isolated Ground-Truth Anomalies   |
+| Reproducibility    | 100% Bit-Level Deterministic Verification (Seed 20261022)          |
+| Web Cockpit        | Single-Page Responsive Control Plane UI (White Background Theme)   |
++-----------------------------------------------------------------------------------------+
+```
+
+---
+
+## Key Architectural Highlights
+
+### 1. Hybrid Intelligence: LLM Reasoning with Deterministic Guardrails
+Unlike naive AI prototypes that let language models make unconstrained business decisions, this engine enforces a **strict two-tier decision hierarchy**:
+- **Probabilistic Tier (Claude 3 Haiku):** Extracts grievance taxonomy (`CAT-01` through `CAT-10`), assesses customer sentiment polarity, synthesizes agent briefing notes, and formulates resolution advice.
+- **Deterministic Tier (Rule Engine):** Hard-coded governance rules enforce regulatory boundaries. Product safety triggers (`is_safety_issue=True`) or fraud force priority to **CRITICAL** (1-hour SLA) regardless of sentiment. Refund concessions exceeding **£250.00** strictly mandate sign-off by a formal **Approver** role.
+
+### 2. Event Sourcing & Regulatory Auditability
+Every state machine transition, ownership reassignment, SLA pause, resolution settlement, and CSAT survey is recorded in the `complaint_events` table as an immutable domain event (`EVT-000001` format). State is never silently updated; a complete, tamper-proof chronological history is available via `/complaints/{id}/events`.
+
+### 3. Bit-Level Deterministic Reproducibility
+Running data generation across identical or separate environments with seed `20261022` yields exact row counts and bit-level identical SHA-256 composite hashes across all 13 database tables. Table hashes are continuously checked via `python src/run.py --reproducibility-check`.
+
+### 4. Zero Target Leakage in ML Observability
+The platform deliberately seeds **6 mandatory negative and edge scenarios** (missing foreign keys, chronological inversions, frozen SLA clocks, unlinked repeat grievances, safety queue misrouting, premature surveys). To prevent target leakage in future model training, ground-truth defect labels (`issue_type`, `anomaly_category`, `rule_violated`) are strictly isolated in `output/ground_truth/` and stripped from feature export files (`output/csv/` and `output/json/`).
+
+### 5. Resilient Dual-Engine Persistence
+The platform seamlessly auto-detects its environment:
+- **Cloud Mode:** High-performance connection pooling against **PostgreSQL on Neon Cloud** over TLS.
+- **Local Mode:** Self-contained, zero-dependency embedded **SQLite** storage (`output/complaints.db`).
+- **Offline AI Fallback:** If AWS credentials are not configured, a rule-based semantic inference engine activates instantly with zero timeouts or process blocking.
 
 ---
 
 ## System Architecture
 
 ```
-+-----------------------------------------------------------------+
-|                    Multi-Channel Ingestion                      |
-|         Email  ·  Web Portal  ·  Mobile App  ·  Phone/CRM       |
-+--------------------------------┬--------------------------------+
-                                 |
-+--------------------------------v--------------------------------+
-|                FastAPI REST API Gateway (/docs)                 |
-|                           src/api.py                            |
-+--------┬───────────────────────┬──────────────────────┬---------+
-         |                       |                      |
-+--------v-----+        +--------v-------+     +--------v--------+
-|  AI Engine   |        |  Rule Engine   |     |  Event Sourcing |
-|  Bedrock     |        |  Priority/SLA  |     |  complaint_     |
-|  Claude 3    |        |  Routing       |     |  events table   |
-+--------┬-----+        +--------┬-------+     +--------┬--------+
-         |                       |                      |
-+--------v-----------------------v----------------------v---------+
-|          Dual-Engine Persistence Layer  (src/db.py)             |
-|    PostgreSQL on Neon Cloud    ·    SQLite (Local Fallback)     |
-+-----------------------------------------------------------------+
+                                  MULTI-CHANNEL INGESTION
+               [ Email ]      [ Web Portal ]      [ Mobile App ]      [ Phone / CRM ]
+                   |                 |                   |                   |
+                   +-----------------+---------+---------+-------------------+
+                                               |
+                                               v
+                          FASTAPI APPLICATION GATEWAY  (src/api.py)
+                          - Swagger / OpenAPI:  http://127.0.0.1:8000/docs
+                          - Health Probe:       http://127.0.0.1:8000/health
+                          - Control Plane UI:   http://127.0.0.1:8000/dashboard
+                                               |
+                   +---------------------------+---------------------------+
+                   |                           |                           |
+                   v                           v                           v
+          [ AI INTELLIGENCE ]         [ GOVERNANCE ENGINE ]      [ EVENT SOURCING ]
+            Amazon Bedrock              Deterministic Rules         complaint_events
+            Claude 3 Haiku              - Safety: CRITICAL          Immutable Ledger
+            - Category NLP              - >£250: Approver Gate      Full State Audit
+            - Sentiment Polarity        - Dynamic SLA Clocks        Actor Traceability
+            - Case Summarization        - Team / Agent Routing
+                   |                           |                           |
+                   +---------------------------+---------------------------+
+                                               |
+                                               v
+                             DUAL-ENGINE PERSISTENCE (src/db.py)
+                             - Production: PostgreSQL on Neon Cloud
+                             - Local Mode: Embedded SQLite Engine
 ```
+
+---
+
+## 10-Step Rubric Compliance Matrix
+
+This implementation addresses every specification requirement outlined in the technical problem statement:
+
+| Step | Requirement | Technical Implementation | Status |
+|:---:|---|---|:---:|
+| **1** | Formal Data Dictionary for all 11+ entities, cardinality, nullability, enums & actors | Published at [`docs/data_dictionary.md`](docs/data_dictionary.md) covering full schema, types, constraints, and actor personas | COMPLETED |
+| **2** | Hierarchical table creation order: parent master data first, followed by dependent transactions | Implemented in [`src/generator.py`](src/generator.py): `customers` and `products` generated first, then `orders`, `complaints`, `assignments`, `sla_clocks`, `messages`, `resolutions`, and `surveys` | COMPLETED |
+| **3** | Strictly sequential, zero-padded deterministic IDs across all entities | Standardized in [`src/generator.py`](src/generator.py) & [`src/db.py`](src/db.py): `CUS-000001`, `ORD-2026-000001`, `CMP-2026-000001`, `ASN-000001`, `SLA-000001`, `MSG-000001`, `RES-000001`, `SRV-000001`, `EVT-000001` | COMPLETED |
+| **4** | Generate baseline volume: 5,000 customers, 8,000 orders, 2,000 complaints, 6,000 messages (seed `20261022`) | Seeded into Neon Cloud PostgreSQL via `python src/run.py --scale 1.0 --clean`. Validated in `output/manifest.json` | COMPLETED |
+| **5** | Deliberately inject 6 labeled edge cases covering critical boundary conditions | Seeded into sequential tickets `CMP-2026-000001` to `CMP-2026-000006` in [`src/generator.py`](src/generator.py) | COMPLETED |
+| **6** | Calculate derived values (order exposure, SLA hours, deadline timestamps, breach flags) from source data | Calculated via deterministic helper functions in [`src/generator.py`](src/generator.py) | COMPLETED |
+| **7** | Standalone `ground_truth.csv` and `ground_truth.json` with zero target leakage | Isolated in [`src/ground_truth.py`](src/ground_truth.py) and [`src/exporter.py`](src/exporter.py); feature CSVs strip all defect label columns | COMPLETED |
+| **8** | 7-layer validation engine: PKs, FKs, enum ranges, chronological sanity, arithmetic reconciliation, lifecycle states | Validated via [`src/validator.py`](src/validator.py): reports 0 genuine data defects and verifies all 6 expected injected edge cases | COMPLETED |
+| **9** | Multi-format export: CSV, JSON, SQL DDL & Seed scripts, manifest, validation summary | Exported to `output/csv/`, `output/json/`, `output/sql/schema.sql`, `output/sql/seed.sql`, and `output/manifest.json` | COMPLETED |
+| **10** | Deterministic reproducibility check: 2x generation with seed `20261022` produces matching checksums | Verified via `python src/run.py --reproducibility-check`: 100% composite SHA-256 bit-level match across all 13 tables | COMPLETED |
+
+---
+
+## 6 Injected Negative Test Cases & Anomaly Specification
+
+All 6 mandatory negative scenarios are seeded into deterministic sequential tickets (`CMP-2026-000001` through `CMP-2026-000006`) and completely isolated in `output/ground_truth/` to prevent label leakage:
+
+| Complaint ID | Defect Category | Anomaly Type | Rule Violated | Technical Description |
+|:---:|:---:|:---:|:---:|---|
+| `CMP-2026-000001` | Referential Integrity | `missing_customer` | `FK_CUSTOMER_MISSING` | Complaint record submitted with an empty customer reference string |
+| `CMP-2026-000002` | Chronological Inversion | `resolution_before_complaint` | `DATE_RESOLUTION_BEFORE_COMPLAINT` | Resolution timestamp (`resolved_at`) occurs chronologically before ticket creation (`created_at`) |
+| `CMP-2026-000003` | SLA State Machine | `sla_pause_no_resume` | `DATE_SLA_PAUSE_NO_RESUME` | SLA clock was paused (`paused_at`) but never resumed, freezing elapsed time indefinitely |
+| `CMP-2026-000004` | Duplicate Detection | `repeat_not_linked` | `REPEAT_ISSUE_NOT_LINKED` | Repeat complaint (`recurrence_count=3`) submitted without linking the parent complaint reference |
+| `CMP-2026-000005` | Priority Rule Engine | `safety_low_priority` | `PRIORITY_SAFETY_ANOMALY` | Critical fire/burn hazard erroneously routed to the general low-priority queue |
+| `CMP-2026-000006` | Lifecycle State Flow | `survey_before_closure` | `DATE_SURVEY_BEFORE_CLOSURE` | Post-resolution CSAT survey recorded prior to formal complaint resolution |
+
+> [!IMPORTANT]
+> **Zero Label Leakage Confirmed:** The production feature table `output/csv/complaints.csv` does not contain `issue_type`, `anomaly_category`, `description`, `entity_affected`, or `rule_violated` columns.
 
 ---
 
@@ -59,122 +135,85 @@ The **Complaint Lifecycle Engine** is an industrial-grade end-to-end platform th
 
 ```
 complaint-lifecycle-engine/
-│
-├── src/                          # Backend Python services
-│   ├── __init__.py
-│   ├── api.py                    # FastAPI REST API (all endpoints)
-│   ├── db.py                     # Dual-engine persistence (PostgreSQL + SQLite)
-│   ├── ai_engine.py              # Amazon Bedrock Claude 3 Haiku + fallback
-│   ├── generator.py              # Deterministic synthetic data generator
-│   ├── validator.py              # 7-layer validation engine
-│   ├── exporter.py               # CSV / JSON / SQL exporter
-│   ├── ground_truth.py           # Ground-truth anomaly label isolation
-│   ├── schema.py                 # Reference data, enums, priority rules
-│   └── run.py                    # Master orchestrator CLI
-│
+├── docs/
+│   ├── data_dictionary.md        # Comprehensive 11-entity schema, types, constraints, enums
+│   ├── architecture.md           # System design, workflow diagrams, state machine blueprints
+│   └── screenshots/              # Terminal verification logs for auditability
 ├── frontend/
-│   ├── index.html                # Executive Control Plane UI (responsive)
-│   └── README.md
-│
+│   ├── index.html                # Executive Control Plane UI (responsive, white theme)
+│   └── README.md                 # UI architecture documentation
+├── src/
+│   ├── __init__.py
+│   ├── schema.py                 # Reference master data, taxonomy categories, priority rules
+│   ├── generator.py              # Deterministic synthetic data generator (Scale 1.0 & parameterized)
+│   ├── validator.py              # 7-layer validation engine & anomaly detection
+│   ├── exporter.py               # Multi-format exporter: CSV, JSON, SQL DDL & Seed
+│   ├── ground_truth.py           # Ground truth anomaly label isolation
+│   ├── db.py                     # Dual-engine persistence layer (PostgreSQL / Neon + SQLite)
+│   ├── ai_engine.py              # Amazon Bedrock Claude engine + semantic fallback
+│   ├── api.py                    # Production FastAPI REST service covering all actor workflows
+│   └── run.py                    # Master orchestrator CLI (generate, validate, export, verify)
 ├── tests/
 │   ├── __init__.py
-│   ├── test_system.py            # Automated pytest suite (9 tests)
-│   └── verify_live_api.py        # Live end-to-end API verification (7 tests)
-│
-├── docs/
-│   ├── data_dictionary.md        # 11-entity schema with types, constraints, enums
-│   ├── architecture.md           # System design & state machine diagrams
-│   └── screenshots/              # Output execution logs for audit verification
-│
+│   ├── test_system.py            # Automated pytest suite (9 unit & integration tests)
+│   └── verify_live_api.py        # End-to-end live API verification against Neon Cloud DB
 ├── output/
-│   ├── csv/                      # CSV exports (12 entities)
-│   ├── json/                     # JSON exports (12 entities)
-│   ├── sql/                      # schema.sql + seed.sql
-│   ├── ground_truth/
-│   │   ├── ground_truth.json     # 6 labelled edge cases (zero feature leakage)
-│   │   └── ground_truth.csv
-│   ├── manifest.json             # Row counts & file paths
-│   ├── reproducibility_report.json  # SHA-256 bit-level match proof
-│   ├── validation_summary.json   # 0 genuine defects + 6 expected anomalies
-│   └── complaints.db             # Local SQLite (pre-seeded baseline)
-│
+│   ├── csv/                      # Clean CSV exports for all 12 entities (zero leakage)
+│   ├── json/                     # Clean JSON exports for all 12 entities
+│   ├── sql/                      # schema.sql and seed.sql exports
+│   ├── ground_truth/             # ground_truth.csv and ground_truth.json
+│   ├── manifest.json             # Table manifest with row counts and file paths
+│   ├── reproducibility_report.json # Bit-level composite SHA-256 proof
+│   ├── validation_summary.json   # 7-layer validation audit report
+│   └── complaints.db             # Local SQLite database pre-seeded with baseline scale
 ├── .env.example                  # Environment configuration template
-├── .gitignore
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-├── package.json                  # npm scripts: build, test, start
-└── README.md
+├── Dockerfile                    # Containerization configuration
+├── docker-compose.yml            # Multi-service container orchestration
+├── requirements.txt              # Production Python dependencies
+├── package.json                  # npm scripts for build, test, and execution
+└── README.md                     # Platform documentation
 ```
 
 ---
 
-## Quick Start
+## Evaluate in 60 Seconds
 
-### 1. Clone & Install
-
+### 1. Clone & Install Dependencies
 ```bash
 git clone https://github.com/Balaswamyvasamsetti/complaint-lifecycle-engine.git
 cd complaint-lifecycle-engine
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment
-
+### 2. Configure Environment (Optional)
 ```bash
 cp .env.example .env
-# Edit .env — set DATABASE_URL and optionally AWS_ACCESS_KEY_ID
 ```
+*(The system works out-of-the-box with embedded SQLite and rule-based AI fallback. To use Neon Cloud PostgreSQL or live Amazon Bedrock, populate `DATABASE_URL` and `AWS_ACCESS_KEY_ID` in `.env`)*
 
-| Variable | Required | Description |
-|---|:---:|---|
-| `DATABASE_URL` | Recommended | Neon PostgreSQL connection string |
-| `AWS_ACCESS_KEY_ID` | Optional | For live Bedrock Claude calls |
-| `AWS_SECRET_ACCESS_KEY` | Optional | Paired with above |
-| `AWS_DEFAULT_REGION` | Optional | e.g. `eu-west-2` |
-
-> If `DATABASE_URL` is unset, the system automatically falls back to SQLite.  
-> If AWS credentials are not configured, the system uses deterministic rule-based semantic fallback.
-
-### 3. Generate Synthetic Dataset
-
-```bash
-# Full baseline (5,000 customers · 8,000 orders · 2,000 complaints · 6,000 messages)
-python src/run.py --scale 1.0 --clean
-
-# 10% scale for quick testing
-python src/run.py --scale 0.1
-```
-
-### 4. Run Test Suite
-
+### 3. Run the Automated Test Suite (9/9 Tests)
 ```bash
 python -m pytest tests/ -v
 ```
 
-### 5. Start API Server
-
-```bash
-python -m uvicorn src.api:app --reload --host 127.0.0.1 --port 8000
-```
-
-| Endpoint | Target URL | Description |
-|---|---|---|
-| Executive UI | http://localhost:8000/dashboard | Interactive Executive Control Plane UI |
-| Swagger Docs | http://localhost:8000/docs | Interactive OpenAPI documentation |
-| Health Probe | http://localhost:8000/health | Database & system health check |
-
-### 6. Verify Reproducibility
-
+### 4. Verify Deterministic Bit-Level Reproducibility
 ```bash
 python src/run.py --reproducibility-check
 ```
+
+### 5. Launch the Executive Control Plane UI
+```bash
+python -m uvicorn src.api:app --reload --host 127.0.0.1 --port 8000
+```
+- **Executive Control Plane UI:** [http://localhost:8000/dashboard](http://localhost:8000/dashboard)
+- **Interactive OpenAPI Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **System Health & Database Probe:** [http://localhost:8000/health](http://localhost:8000/health)
 
 ---
 
 ## Test Results
 
-### Pytest Suite — 9/9 PASSED
+### Automated Pytest Suite — 9/9 PASSED
 
 ```
 tests/test_system.py::test_schema_reference_data              PASSED  [ 11%]
@@ -194,7 +233,7 @@ tests/test_system.py::test_fastapi_rest_endpoints             PASSED  [100%]
 
 ## Live API Verification Output
 
-All 7 end-to-end live tests executed against **Neon Cloud PostgreSQL**:
+Execution against **Neon Cloud PostgreSQL** covering the full complaint lifecycle:
 
 ```
 =================================================================
@@ -281,203 +320,96 @@ All 7 end-to-end live tests executed against **Neon Cloud PostgreSQL**:
   +---------------------+--------+--------+-------------+----------------+
 
   Overall Status: PASSED — 100% BIT-LEVEL MATCH
+  Audit report saved: output/reproducibility_report.json
 =================================================================
 ```
 
 ---
 
-## Dataset Volume (Full Scale 1.0x)
+## Dataset Scale & Distribution (Scale 1.0x)
 
-| Table | Row Count | Description |
-|---|:---:|---|
-| `customers` | **5,000** | Synthetic UK customers with zero-padded `CUS-000001` IDs |
-| `products` | 15 | Product catalogue reference |
-| `orders` | **8,000** | Orders linked to customers, `ORD-2026-000001` format |
-| `categories` | 10 | Complaint category taxonomy |
-| `priority_rules` | 4 | Deterministic SLA multiplier rules |
-| `complaints` | **2,000** | Zero-padded `CMP-2026-000001` through `CMP-2026-002000` |
-| `complaint_events` | 5,743 | Immutable audit event log |
-| `assignments` | 2,193 | Full ownership history |
-| `sla_clocks` | 2,000 | 1:1 binding to complaints |
-| `messages` | **6,000** | Customer/agent communication threads |
-| `resolutions` | 775 | Settled complaint resolutions |
-| `surveys` | 775 | CSAT + NPS feedback records |
-| `anomalies` | **6** | Injected edge cases (isolated in ground truth) |
-
----
-
-## Injected Edge Cases & Ground Truth
-
-All 6 mandatory negative test cases are **deliberately injected** into the first 6 sequential complaint IDs and **strictly isolated** in `output/ground_truth/` — labels are stripped from all feature CSVs/JSONs to prevent target leakage.
-
-```json
-[
-  {
-    "complaint_id": "CMP-2026-000001",
-    "issue_type": "missing_customer",
-    "anomaly_category": "Referential Integrity",
-    "description": "Complaint submitted without a valid customer reference",
-    "entity_affected": "complaints.customer_id",
-    "rule_violated": "FK_CUSTOMER_MISSING"
-  },
-  {
-    "complaint_id": "CMP-2026-000002",
-    "issue_type": "resolution_before_complaint",
-    "anomaly_category": "Chronological Inversion",
-    "description": "Resolution timestamp precedes complaint creation timestamp",
-    "entity_affected": "resolutions.resolved_at",
-    "rule_violated": "DATE_RESOLUTION_BEFORE_COMPLAINT"
-  },
-  {
-    "complaint_id": "CMP-2026-000003",
-    "issue_type": "sla_pause_no_resume",
-    "anomaly_category": "SLA State Machine",
-    "description": "SLA clock was paused but never resumed — time frozen incorrectly",
-    "entity_affected": "sla_clocks.resumed_at",
-    "rule_violated": "DATE_SLA_PAUSE_NO_RESUME"
-  },
-  {
-    "complaint_id": "CMP-2026-000004",
-    "issue_type": "repeat_not_linked",
-    "anomaly_category": "Duplicate Detection",
-    "description": "Repeat complaint (recurrence_count >= 2) has no parent_complaint_id link",
-    "entity_affected": "complaints.parent_complaint_id",
-    "rule_violated": "REPEAT_ISSUE_NOT_LINKED"
-  },
-  {
-    "complaint_id": "CMP-2026-000005",
-    "issue_type": "safety_low_priority",
-    "anomaly_category": "Priority Rule Engine",
-    "description": "Critical safety issue misrouted to low-priority queue instead of Safety-Response",
-    "entity_affected": "complaints.priority",
-    "rule_violated": "PRIORITY_SAFETY_ANOMALY"
-  },
-  {
-    "complaint_id": "CMP-2026-000006",
-    "issue_type": "survey_before_closure",
-    "anomaly_category": "Lifecycle State Flow",
-    "description": "CSAT survey submitted before the complaint was formally resolved",
-    "entity_affected": "surveys.submitted_at",
-    "rule_violated": "DATE_SURVEY_BEFORE_CLOSURE"
-  }
-]
-```
-
-> **Zero Label Leakage Confirmed:** `output/csv/complaints.csv` header does **NOT** contain `issue_type`, `anomaly_category`, `description`, `entity_affected`, or `rule_violated`.
-
----
-
-## ID Conventions (Zero-Padded Sequential)
-
-| Entity | Format | Example |
-|---|---|---|
-| Customer | `CUS-{6d}` | `CUS-000001` |
-| Order | `ORD-2026-{6d}` | `ORD-2026-000001` |
-| Complaint | `CMP-2026-{6d}` | `CMP-2026-000001` |
-| Assignment | `ASN-{6d}` | `ASN-000001` |
-| SLA Clock | `SLA-{6d}` | `SLA-000001` |
-| Message | `MSG-{6d}` | `MSG-000001` |
-| Resolution | `RES-{6d}` | `RES-000001` |
-| Survey | `SRV-{6d}` | `SRV-000001` |
-| Event | `EVT-{6d}` | `EVT-000001` |
+| Entity / Table | Record Count | Description | Primary Key Format |
+|---|:---:|---|---|
+| `customers` | **5,000** | Synthetic UK retail customers with segment & vulnerability indicators | `CUS-000001` |
+| `products` | 15 | Reference product catalog with SKU, category, and safety flags | `PRD-001` |
+| `orders` | **8,000** | Customer orders with purchase values and line-item details | `ORD-2026-000001` |
+| `categories` | 10 | Standard grievance taxonomy (`CAT-01` to `CAT-10`) | `CAT-01` |
+| `priority_rules` | 4 | Deterministic priority rules (`PR-01` to `PR-04`) | `PR-01` |
+| `complaints` | **2,000** | Evaluated customer complaints with sentiment & priority | `CMP-2026-000001` |
+| `complaint_events` | 5,743 | Immutable audit log of all domain state changes | `EVT-000001` |
+| `assignments` | 2,193 | Full routing and ownership history across specialist queues | `ASN-000001` |
+| `sla_clocks` | 2,000 | 1:1 binding tracking started, deadline, pause, and breach states | `SLA-000001` |
+| `messages` | **6,000** | Chronological customer and internal caseworker notes | `MSG-000001` |
+| `resolutions` | 775 | Formal legal/financial settlements committing case closure | `RES-000001` |
+| `surveys` | 775 | Customer CSAT star ratings (1-5) and NPS scores (0-10) | `SRV-000001` |
+| `anomalies` | **6** | Injected edge cases isolated in ground truth | `CMP-2026-000001` |
 
 ---
 
 ## REST API Reference
 
-| Method | Endpoint | Actor | Description |
+| Method | Endpoint | Actor Persona | Description |
 |---|---|---|---|
-| `GET` | `/health` | System | Health check & DB connection probe |
-| `POST` | `/complaints` | Requester | Ingest complaint — AI triage, priority, routing |
-| `GET` | `/complaints` | Operations | Query with status/priority/category filters |
-| `GET` | `/complaints/{id}` | Operations | Full detail: SLA, assignment, resolution |
-| `PATCH` | `/complaints/{id}/status` | Process Owner | Advance state machine, log event |
-| `GET` | `/complaints/{id}/events` | Auditor | Immutable event sourcing timeline |
-| `GET` | `/complaints/{id}/assignments` | Process Owner | Full ownership history |
-| `POST` | `/complaints/{id}/reassign` | Process Owner | Escalate or reassign ticket |
-| `GET` | `/complaints/{id}/sla` | Process Owner | Real-time SLA hours remaining |
-| `POST` | `/complaints/{id}/sla/pause` | Agent | Pause SLA clock (awaiting info) |
-| `POST` | `/complaints/{id}/sla/resume` | Agent | Resume clock, adjust deadline |
-| `POST` | `/complaints/{id}/resolve` | Agent/Approver | Conclude; checks £250 Approver threshold |
-| `GET` | `/complaints/{id}/messages` | Requester/Agent | Chronological communication thread |
-| `POST` | `/complaints/{id}/messages` | Requester/Agent | Post customer or internal agent note |
-| `POST` | `/complaints/{id}/survey` | Requester | Record CSAT (1-5) and NPS (0-10) |
-| `GET` | `/analytics/summary` | Analyst | KPIs: SLA breach rate, CSAT, NPS |
-| `GET` | `/ground-truth` | Analyst | Isolated ground-truth anomalies |
-| `POST` | `/ai/classify` | AI Direct | Test Bedrock Claude classification |
-| `POST` | `/ai/sentiment` | AI Direct | Test Bedrock Claude sentiment |
-| `GET` | `/dashboard` | All | Executive Control Plane UI |
+| `GET` | `/health` | System | Health check & dual-engine persistence probe |
+| `POST` | `/complaints` | Business Requester | Ingest complaint with AI triage, routing & SLA initiation |
+| `GET` | `/complaints` | Operations Analyst | Query queue with status, priority, and category filters |
+| `GET` | `/complaints/{id}` | Operations Analyst | Full detail: complaint, SLA clock, assignment & settlement |
+| `PATCH` | `/complaints/{id}/status` | Process Owner | Advance lifecycle state machine and append audit event |
+| `GET` | `/complaints/{id}/events` | Auditor / Compliance | Immutable event sourcing journal and actor traceability |
+| `GET` | `/complaints/{id}/assignments` | Process Owner | Full ownership history (retains past agents and teams) |
+| `POST` | `/complaints/{id}/reassign` | Process Owner | Escalate ticket to specialist team (e.g. Safety-Response) |
+| `GET` | `/complaints/{id}/sla` | Caseworker | Real-time SLA hours remaining and breach indicator |
+| `POST` | `/complaints/{id}/sla/pause` | Caseworker | Pause SLA clock (awaiting inspection or customer photos) |
+| `POST` | `/complaints/{id}/sla/resume` | Caseworker | Resume SLA clock and adjust deadline timestamp |
+| `POST` | `/complaints/{id}/resolve` | Caseworker / Approver | Settle case; enforces £250 Approver authorization gate |
+| `GET` | `/complaints/{id}/messages` | Customer / Caseworker | Chronological communication thread |
+| `POST` | `/complaints/{id}/messages` | Customer / Caseworker | Post customer response or internal caseworker note |
+| `POST` | `/complaints/{id}/survey` | Business Requester | Record customer CSAT rating (1-5) and NPS score (0-10) |
+| `GET` | `/analytics/summary` | Analyst / Leadership | Operational KPIs: SLA breach rate, CSAT, NPS, queues |
+| `GET` | `/ground-truth` | Analyst / ML Engineer | Isolated ground-truth anomalies for benchmark evaluation |
+| `POST` | `/ai/classify` | AI Direct | Test Bedrock Claude text classification |
+| `POST` | `/ai/sentiment` | AI Direct | Test Bedrock Claude sentiment analysis |
+| `POST` | `/ai/suggest-resolution`| AI Direct | Request Bedrock Claude settlement recommendations |
+| `GET` | `/dashboard` | All Personas | Native Executive Control Plane UI |
 
 ---
 
-## 10-Step Rubric Compliance Matrix
+## Primary Actor Personas & Workflows
 
-| Step | Requirement | Implementation | Status |
-|:---:|---|---|:---:|
-| **1** | Data dictionary for 11+ entities (types, nullability, constraints, enums) | [`docs/data_dictionary.md`](docs/data_dictionary.md) | COMPLETED |
-| **2** | Parent tables first, then dependent transaction & event records | [`src/generator.py`](src/generator.py) | COMPLETED |
-| **3** | Zero-padded sequential IDs: `CUS-000001`, `ORD-2026-000001`, `CMP-2026-000001` | [`src/generator.py`](src/generator.py) | COMPLETED |
-| **4** | 5,000 customers · 8,000 orders · 2,000 complaints · 6,000 messages (seed `20261022`) | `python src/run.py --scale 1.0` | COMPLETED |
-| **5** | 6 labelled edge cases injected & isolated without feature leakage | [`src/generator.py`](src/generator.py) · [`src/ground_truth.py`](src/ground_truth.py) | COMPLETED |
-| **6** | Derived values: order totals, SLA deadlines, breach flags from source data | [`src/generator.py`](src/generator.py) | COMPLETED |
-| **7** | Separate `ground_truth.csv` & `ground_truth.json` with zero label leakage | [`output/ground_truth/`](output/ground_truth/) | COMPLETED |
-| **8** | 7-layer validation (PK, FK, enums, chronology, arithmetic, lifecycle, rules) | [`src/validator.py`](src/validator.py) | COMPLETED |
-| **9** | Export CSV, JSON, SQL DDL+seed, manifest, validation summary | [`src/exporter.py`](src/exporter.py) | COMPLETED |
-| **10** | Bit-level reproducibility: 2× generation with seed `20261022` -> identical SHA-256 | `python src/run.py --reproducibility-check` | COMPLETED |
+1. **Business Requester (Customer / Branch Staff):**
+   - Ingests complaints via Email, Web, Mobile App, or Phone.
+   - Observes ticket progress in real-time.
+   - Exchanges threaded messages with caseworkers.
+   - Submits post-resolution CSAT (1 to 5 Stars) and NPS (0 to 10) evaluations.
 
----
+2. **Process Owner (Operations Manager):**
+   - Monitors active queue depths, team capacities, and SLA breach rates.
+   - Triggers inter-team reassignments and escalations to specialist queues.
+   - Audits lifecycle transition latencies and bottlenecks.
 
-## Validation Summary
+3. **Approver (Finance & Compliance Director):**
+   - Reviews and authorizes high-value refund concessions exceeding **£250.00**.
+   - Validates regulatory compliance for safety-critical product returns.
 
-```json
-{
-  "status": "PASSED",
-  "genuine_data_defects": 0,
-  "expected_edge_cases_caught": 6,
-  "defect_breakdown": {},
-  "edge_case_breakdown": {
-    "FK_CUSTOMER_MISSING": 1,
-    "DATE_RESOLUTION_BEFORE_COMPLAINT": 1,
-    "DATE_SLA_PAUSE_NO_RESUME": 1,
-    "REPEAT_ISSUE_NOT_LINKED": 1,
-    "PRIORITY_SAFETY_ANOMALY": 1,
-    "DATE_SURVEY_BEFORE_CLOSURE": 1
-  }
-}
-```
+4. **Operations Analyst (BI & Quality Assurance):**
+   - Audits classification accuracy and sentiment polarity distributions.
+   - Evaluates priority rule conformance and detects misrouted queues.
+   - Inspects isolated ground-truth anomaly benchmarks.
+
+5. **System Administrator (DevOps / Reliability Engineer):**
+   - Manages database engine connectivity (Neon Cloud vs. SQLite).
+   - Oversees database schema migrations and seed scripts.
+   - Monitors health probes and API latency metrics.
 
 ---
 
-## Key Commands Reference
+## Data Provenance & Legal Compliance
 
-```bash
-# --- TESTING ---
-python -m pytest tests/ -v                           # 9/9 unit + integration tests
-python tests/verify_live_api.py                      # 7/7 live API tests vs Neon DB
-
-# --- DATA GENERATION ---
-python src/run.py --scale 1.0 --clean                # Full 1.0x baseline (clean DB first)
-python src/run.py --scale 0.1                        # Quick 10% dataset
-python src/run.py --reproducibility-check            # SHA-256 bit-level match proof
-
-# --- SERVER ---
-python -m uvicorn src.api:app --reload --host 127.0.0.1 --port 8000
-
-# --- DOCKER ---
-docker-compose up --build
-```
-
----
-
-## Data Provenance & Compliance
-
-- **100% Synthetically Generated** — No real customer data, PII, or scraping involved
-- **UK GDPR Compliant** — Names use reserved domains (`example.com`, `enterprise.co.uk`)
-- Phone numbers prefixed `+44` are non-routable synthetic patterns
-- All generated under a reproducible fixed seed for auditability
+- **100% Lawfully Synthesized:** All records, identities, email addresses, order IDs, and synthetic flags are deterministically synthesized in memory. No scraping, proprietary data extraction, or personally identifiable information (PII) is involved.
+- **UK GDPR & Privacy Compliance:** Phone numbers (`+44`) and emails use reserved non-routable domains (`example.com`, `enterprise.co.uk`) strictly for benchmark evaluation.
 
 ---
 
 ## License
 
-MIT License — built for the Yottaflex Hackathon evaluation.
+Distributed under the MIT License. Developed for the Yottaflex Hackathon technical evaluation.

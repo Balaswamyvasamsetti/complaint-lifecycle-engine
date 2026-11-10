@@ -55,13 +55,13 @@
   },
   {
     "table": "resolutions",
-    "row_count": 75,
+    "row_count": 80,
     "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\resolutions.csv",
     "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\resolutions.json"
   },
   {
     "table": "surveys",
-    "row_count": 75,
+    "row_count": 80,
     "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\surveys.csv",
     "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\surveys.json"
   }

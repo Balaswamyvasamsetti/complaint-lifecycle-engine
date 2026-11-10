@@ -1,76 +1,81 @@
 survey_id,complaint_id,rating,feedback_text,submitted_at,nps_score
-SRV-000001,CMP-2026-000001,3,The issue was resolved quickly.,2025-09-29T10:48:01,6
-SRV-000002,CMP-2025-000003,4,"Excellent service, will shop again.",2025-07-16T13:28:07,7
-SRV-000003,CMP-2026-000004,4,Very satisfied with the resolution.,2024-02-07T18:23:13,6
-SRV-000004,CMP-2025-000005,3,Took too long but eventually resolved.,2025-05-13T16:44:19,6
-SRV-000005,CMP-2025-000006,4,Not happy with the outcome.,2024-07-28T17:04:13,8
-SRV-000006,CMP-2025-000013,4,Very satisfied with the resolution.,2025-05-27T23:33:42,7
-SRV-000007,CMP-2025-000017,4,Not happy with the outcome.,2025-07-23T01:26:09,6
-SRV-000008,CMP-2026-000022,5,Took too long but eventually resolved.,2024-01-28T21:34:46,9
-SRV-000009,CMP-2025-000023,5,The agent was helpful and professional.,2026-07-02T04:14:00,10
-SRV-000010,CMP-2026-000026,5,Took too long but eventually resolved.,2024-04-20T21:50:22,9
-SRV-000011,CMP-2025-000028,4,I had to follow up multiple times.,2024-07-04T00:44:16,6
-SRV-000012,CMP-2026-000029,4,I had to follow up multiple times.,2024-03-24T08:19:22,7
-SRV-000013,CMP-2026-000032,4,Not happy with the outcome.,2024-04-14T02:56:31,6
-SRV-000014,CMP-2025-000033,5,I had to follow up multiple times.,2024-10-16T15:59:41,10
-SRV-000015,CMP-2025-000040,5,"Average experience, could be better.",2025-07-14T18:05:59,8
-SRV-000016,CMP-2025-000041,4,Took too long but eventually resolved.,2024-01-23T04:00:37,7
-SRV-000017,CMP-2026-000042,5,The issue was resolved quickly.,2025-12-15T03:04:56,8
-SRV-000018,CMP-2025-000043,4,Very satisfied with the resolution.,2025-04-27T21:35:08,6
-SRV-000019,CMP-2025-000044,2,Very satisfied with the resolution.,2025-10-23T22:53:10,2
-SRV-000020,CMP-2026-000045,2,"Excellent service, will shop again.",2024-10-30T08:02:09,3
-SRV-000021,CMP-2025-000046,4,"Average experience, could be better.",2026-04-20T11:14:51,8
-SRV-000022,CMP-2025-000052,3,Not happy with the outcome.,2026-01-05T12:24:58,5
-SRV-000023,CMP-2026-000054,3,Took too long but eventually resolved.,2024-01-04T19:41:43,5
-SRV-000024,CMP-2026-000059,5,Very satisfied with the resolution.,2025-06-18T19:41:35,8
-SRV-000025,CMP-2025-000060,4,I had to follow up multiple times.,2025-05-17T09:23:13,8
-SRV-000026,CMP-2026-000061,4,I had to follow up multiple times.,2026-04-20T16:15:14,8
-SRV-000027,CMP-2025-000065,5,"Average experience, could be better.",2024-05-21T10:16:33,10
-SRV-000028,CMP-2025-000067,5,Took too long but eventually resolved.,2024-01-06T20:30:47,10
-SRV-000029,CMP-2026-000071,4,"Average experience, could be better.",2025-04-26T14:20:06,7
-SRV-000030,CMP-2026-000075,3,"Excellent service, will shop again.",2025-09-26T01:53:54,6
-SRV-000031,CMP-2025-000081,4,"Average experience, could be better.",2024-10-31T18:28:01,7
-SRV-000032,CMP-2025-000082,3,The issue was resolved quickly.,2024-04-13T01:35:36,4
-SRV-000033,CMP-2026-000084,3,Took too long but eventually resolved.,2026-03-08T03:31:19,6
-SRV-000034,CMP-2026-000086,2,The agent was helpful and professional.,2026-06-23T03:54:43,3
-SRV-000035,CMP-2026-000089,5,Very satisfied with the resolution.,2026-03-09T07:08:35,8
-SRV-000036,CMP-2026-000092,4,The agent was helpful and professional.,2024-11-23T03:53:50,7
-SRV-000037,CMP-2026-000094,4,Not happy with the outcome.,2026-01-03T07:20:41,7
-SRV-000038,CMP-2025-000097,5,Not happy with the outcome.,2024-11-29T13:20:51,9
-SRV-000039,CMP-2026-000099,3,The issue was resolved quickly.,2024-02-14T16:21:38,5
-SRV-000040,CMP-2025-000101,5,Very satisfied with the resolution.,2024-02-01T12:22:46,9
-SRV-000041,CMP-2025-000107,4,Not happy with the outcome.,2026-06-17T09:38:43,7
-SRV-000042,CMP-2026-000108,4,Not happy with the outcome.,2024-03-31T17:52:41,7
-SRV-000043,CMP-2026-000112,5,The agent was helpful and professional.,2024-12-30T13:01:41,9
-SRV-000044,CMP-2026-000115,1,Very satisfied with the resolution.,2025-12-06T22:01:45,1
-SRV-000045,CMP-2025-000117,4,I had to follow up multiple times.,2024-10-26T21:12:02,8
-SRV-000046,CMP-2025-000125,3,Very satisfied with the resolution.,2025-09-23T09:19:24,5
-SRV-000047,CMP-2025-000126,3,"Average experience, could be better.",2024-12-30T19:28:22,5
-SRV-000048,CMP-2025-000127,3,Took too long but eventually resolved.,2025-11-08T06:27:07,5
-SRV-000049,CMP-2025-000130,5,Very satisfied with the resolution.,2024-08-19T01:15:48,8
-SRV-000050,CMP-2025-000135,3,The issue was resolved quickly.,2025-02-24T08:34:38,5
-SRV-000051,CMP-2025-000138,5,The issue was resolved quickly.,2025-03-12T03:19:04,10
-SRV-000052,CMP-2025-000139,4,The agent was helpful and professional.,2024-03-18T11:06:03,7
-SRV-000053,CMP-2025-000141,4,Took too long but eventually resolved.,2024-05-31T13:50:39,6
-SRV-000054,CMP-2026-000144,4,The agent was helpful and professional.,2025-11-22T11:45:12,7
-SRV-000055,CMP-2026-000149,4,The agent was helpful and professional.,2025-09-04T23:37:01,7
-SRV-000056,CMP-2026-000154,1,Very satisfied with the resolution.,2025-06-22T17:03:57,2
-SRV-000057,CMP-2025-000160,3,"Average experience, could be better.",2026-02-03T03:08:59,5
-SRV-000058,CMP-2026-000163,4,Not happy with the outcome.,2026-05-17T09:40:35,8
-SRV-000059,CMP-2026-000170,4,"Excellent service, will shop again.",2025-03-01T09:55:26,7
-SRV-000060,CMP-2026-000171,4,"Average experience, could be better.",2024-07-20T22:04:25,7
-SRV-000061,CMP-2026-000178,3,I had to follow up multiple times.,2024-06-11T04:10:10,6
-SRV-000062,CMP-2025-000180,5,Not happy with the outcome.,2026-04-24T20:58:28,8
-SRV-000063,CMP-2026-000181,2,"Average experience, could be better.",2024-02-15T17:19:49,3
-SRV-000064,CMP-2025-000182,4,Very satisfied with the resolution.,2024-08-05T11:46:42,8
-SRV-000065,CMP-2026-000183,5,Very satisfied with the resolution.,2024-12-08T15:07:16,10
-SRV-000066,CMP-2025-000184,5,Very satisfied with the resolution.,2024-09-20T01:43:06,10
-SRV-000067,CMP-2026-000186,3,Very satisfied with the resolution.,2025-05-23T12:48:14,6
-SRV-000068,CMP-2025-000187,5,Very satisfied with the resolution.,2024-10-28T13:20:15,10
-SRV-000069,CMP-2026-000188,5,I had to follow up multiple times.,2025-12-27T00:47:39,9
-SRV-000070,CMP-2025-000189,5,Very satisfied with the resolution.,2025-05-14T23:36:36,10
-SRV-000071,CMP-2026-000190,4,Very satisfied with the resolution.,2025-08-11T11:00:49,7
-SRV-000072,CMP-2025-000193,4,I had to follow up multiple times.,2025-12-13T17:49:06,8
-SRV-000073,CMP-2026-000197,2,The agent was helpful and professional.,2024-08-16T13:40:20,4
-SRV-000074,CMP-2025-000200,4,Not happy with the outcome.,2026-05-09T18:47:17,6
-SRV-EDGE-000005,CMP-2026-000001,4,EDGE: survey before closure,2025-09-28T18:48:01,7
+SRV-000001,CMP-2025-000003,4,The agent was helpful and professional.,2024-05-11T02:31:49,8
+SRV-000002,CMP-2026-000004,1,"Average experience, could be better.",2024-02-16T05:21:00,0
+SRV-000003,CMP-2025-000005,3,Took too long but eventually resolved.,2024-02-01T23:53:05,6
+SRV-000004,CMP-2025-000008,5,Very satisfied with the resolution.,2025-07-06T13:25:52,10
+SRV-000005,CMP-2025-000009,3,The issue was resolved quickly.,2024-12-01T09:23:25,5
+SRV-000006,CMP-2025-000010,5,Took too long but eventually resolved.,2025-05-28T05:23:03,10
+SRV-000007,CMP-2026-000013,4,Not happy with the outcome.,2025-06-16T21:24:24,8
+SRV-000008,CMP-2025-000018,5,The issue was resolved quickly.,2026-06-24T18:45:25,10
+SRV-000009,CMP-2026-000019,4,Took too long but eventually resolved.,2025-01-20T21:29:55,7
+SRV-000010,CMP-2026-000020,3,Very satisfied with the resolution.,2025-04-18T21:48:49,6
+SRV-000011,CMP-2025-000021,5,The issue was resolved quickly.,2025-02-02T12:54:00,8
+SRV-000012,CMP-2025-000022,5,The issue was resolved quickly.,2025-04-12T15:46:33,9
+SRV-000013,CMP-2025-000025,5,"Excellent service, will shop again.",2025-08-30T04:05:19,8
+SRV-000014,CMP-2025-000026,3,Very satisfied with the resolution.,2024-09-27T02:08:59,5
+SRV-000015,CMP-2025-000027,3,The agent was helpful and professional.,2025-05-05T07:42:14,4
+SRV-000016,CMP-2025-000028,3,Very satisfied with the resolution.,2024-01-12T04:02:40,5
+SRV-000017,CMP-2025-000029,3,The agent was helpful and professional.,2025-09-13T18:00:15,6
+SRV-000018,CMP-2025-000032,4,"Average experience, could be better.",2024-02-10T13:52:42,7
+SRV-000019,CMP-2025-000033,3,The issue was resolved quickly.,2024-05-31T09:20:51,6
+SRV-000020,CMP-2025-000035,1,"Excellent service, will shop again.",2026-06-28T17:33:40,0
+SRV-000021,CMP-2025-000036,5,"Excellent service, will shop again.",2024-07-21T10:55:56,10
+SRV-000022,CMP-2026-000037,4,The issue was resolved quickly.,2025-06-22T09:51:04,8
+SRV-000023,CMP-2026-000038,4,The agent was helpful and professional.,2024-11-25T10:12:23,6
+SRV-000024,CMP-2026-000042,3,Not happy with the outcome.,2026-04-13T04:19:06,5
+SRV-000025,CMP-2026-000043,3,"Excellent service, will shop again.",2026-06-07T22:34:31,6
+SRV-000026,CMP-2025-000049,5,"Excellent service, will shop again.",2025-11-25T06:37:12,10
+SRV-000027,CMP-2025-000051,5,I had to follow up multiple times.,2024-08-18T20:36:06,9
+SRV-000028,CMP-2025-000054,4,The agent was helpful and professional.,2025-03-10T05:01:39,6
+SRV-000029,CMP-2026-000055,2,The issue was resolved quickly.,2025-08-07T07:11:22,3
+SRV-000030,CMP-2026-000059,5,I had to follow up multiple times.,2024-08-17T04:08:15,10
+SRV-000031,CMP-2025-000060,5,Very satisfied with the resolution.,2024-03-23T04:53:28,8
+SRV-000032,CMP-2026-000061,3,Not happy with the outcome.,2025-09-30T00:40:05,6
+SRV-000033,CMP-2025-000062,5,"Excellent service, will shop again.",2026-04-06T21:06:54,9
+SRV-000034,CMP-2025-000065,5,Took too long but eventually resolved.,2024-12-28T18:12:10,9
+SRV-000035,CMP-2026-000071,3,I had to follow up multiple times.,2025-03-24T07:49:22,4
+SRV-000036,CMP-2025-000075,4,Very satisfied with the resolution.,2025-07-07T16:45:02,7
+SRV-000037,CMP-2025-000078,2,Not happy with the outcome.,2025-09-08T08:33:28,4
+SRV-000038,CMP-2025-000079,5,Took too long but eventually resolved.,2024-08-31T09:24:04,9
+SRV-000039,CMP-2025-000080,2,The agent was helpful and professional.,2026-04-17T07:35:21,3
+SRV-000040,CMP-2025-000085,4,Very satisfied with the resolution.,2024-05-23T07:29:21,6
+SRV-000041,CMP-2026-000088,5,The agent was helpful and professional.,2024-10-13T05:15:35,10
+SRV-000042,CMP-2026-000091,4,The issue was resolved quickly.,2024-06-17T06:21:00,6
+SRV-000043,CMP-2026-000092,4,Not happy with the outcome.,2024-03-07T12:53:13,6
+SRV-000044,CMP-2025-000096,4,"Excellent service, will shop again.",2025-07-22T19:45:43,6
+SRV-000045,CMP-2026-000100,3,Very satisfied with the resolution.,2024-02-23T23:18:00,5
+SRV-000046,CMP-2025-000104,4,The issue was resolved quickly.,2024-12-10T08:42:21,7
+SRV-000047,CMP-2026-000108,5,Took too long but eventually resolved.,2025-12-26T14:47:32,8
+SRV-000048,CMP-2025-000114,5,Took too long but eventually resolved.,2025-01-11T09:16:05,8
+SRV-000049,CMP-2025-000116,5,Took too long but eventually resolved.,2025-05-16T07:44:33,8
+SRV-000050,CMP-2026-000119,3,The agent was helpful and professional.,2025-08-28T11:37:48,5
+SRV-000051,CMP-2025-000124,3,Not happy with the outcome.,2024-02-05T12:32:46,6
+SRV-000052,CMP-2025-000128,3,Not happy with the outcome.,2025-07-18T03:26:09,5
+SRV-000053,CMP-2026-000133,5,Not happy with the outcome.,2024-01-28T12:34:46,9
+SRV-000054,CMP-2026-000137,2,Not happy with the outcome.,2025-03-26T20:15:16,2
+SRV-000055,CMP-2025-000139,4,Very satisfied with the resolution.,2024-07-04T03:44:16,7
+SRV-000056,CMP-2026-000140,4,Very satisfied with the resolution.,2024-03-25T06:19:22,8
+SRV-000057,CMP-2025-000144,1,Not happy with the outcome.,2025-10-28T09:56:22,2
+SRV-000058,CMP-2026-000146,3,Not happy with the outcome.,2024-06-14T20:26:58,4
+SRV-000059,CMP-2025-000151,4,Took too long but eventually resolved.,2025-07-10T03:05:59,7
+SRV-000060,CMP-2025-000153,5,Very satisfied with the resolution.,2025-09-19T13:50:25,9
+SRV-000061,CMP-2025-000154,4,Took too long but eventually resolved.,2025-01-14T15:38:15,7
+SRV-000062,CMP-2025-000158,4,The agent was helpful and professional.,2024-11-02T05:18:27,8
+SRV-000063,CMP-2025-000163,4,"Excellent service, will shop again.",2026-01-05T11:24:58,8
+SRV-000064,CMP-2026-000165,2,"Average experience, could be better.",2024-01-03T14:41:43,4
+SRV-000065,CMP-2025-000169,4,"Excellent service, will shop again.",2026-04-10T08:14:48,6
+SRV-000066,CMP-2026-000170,4,Very satisfied with the resolution.,2026-06-16T01:19:03,7
+SRV-000067,CMP-2025-000171,3,The issue was resolved quickly.,2025-12-21T08:41:36,6
+SRV-000068,CMP-2025-000172,5,"Average experience, could be better.",2024-02-20T10:06:30,9
+SRV-000069,CMP-2025-000173,3,Took too long but eventually resolved.,2026-05-08T07:44:59,6
+SRV-000070,CMP-2025-000175,5,Not happy with the outcome.,2025-12-01T16:27:28,8
+SRV-000071,CMP-2025-000176,5,Very satisfied with the resolution.,2024-06-07T09:43:18,8
+SRV-000072,CMP-2026-000177,5,I had to follow up multiple times.,2025-01-27T13:39:24,9
+SRV-000073,CMP-2026-000180,2,I had to follow up multiple times.,2025-03-25T15:01:39,4
+SRV-000074,CMP-2026-000185,4,"Average experience, could be better.",2025-09-27T00:53:54,8
+SRV-000075,CMP-2025-000191,4,"Excellent service, will shop again.",2024-10-29T21:28:01,6
+SRV-000076,CMP-2025-000192,4,Not happy with the outcome.,2024-04-14T14:35:36,7
+SRV-000077,CMP-2026-000196,5,The agent was helpful and professional.,2025-09-03T20:06:24,10
+SRV-000078,CMP-2026-000197,4,"Average experience, could be better.",2025-04-27T23:10:12,7
+SRV-000079,CMP-2026-000198,2,Not happy with the outcome.,2026-04-24T09:33:20,3
+SRV-EDGE-000005,CMP-2025-000003,4,EDGE: survey before closure,2024-05-10T05:31:49,7

@@ -1,7 +1,7 @@
 complaint_id,issue_type,description
 CMP-EDGE-000001,missing_customer,Complaint with no customer_id
-CMP-2026-000001,resolution_before_complaint,Resolution timestamp precedes complaint created_at
-CMP-2026-000011,sla_pause_no_resume,SLA paused but resumed_at is missing
+CMP-2025-000003,resolution_before_complaint,Resolution timestamp precedes complaint created_at
+CMP-2025-000011,sla_pause_no_resume,SLA paused but resumed_at is missing
 CMP-EDGE-000004,safety_low_priority,Critical safety issue assigned to General-Support (low priority)
-CMP-2026-000001,survey_before_closure,Survey submitted before resolution/closure
-CMP-2026-000038,repeat_not_linked,Repeat complaint (recurrence>=2) with no parent_complaint_id
+CMP-2025-000003,survey_before_closure,Survey submitted before resolution/closure
+CMP-2025-000021,repeat_not_linked,Repeat complaint (recurrence>=2) with no parent_complaint_id

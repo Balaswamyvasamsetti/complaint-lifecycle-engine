@@ -1,0 +1,50 @@
+$ python tests/verify_live_api.py
+
+=================================================================
+  LIVE API END-TO-END VERIFICATION
+=================================================================
+
+[TEST 1/7] Probing /health...
+  -> Health Status: ok | DB: connected (PostgreSQL)
+
+[TEST 2/7] Submitting new complaint via POST /complaints...
+  -> Complaint Created: CMP-2026-002005
+  -> AI Category:       Product Safety
+  -> Priority:          CRITICAL (SLA: 1.0 hrs)
+  -> Assigned Team:     Safety-Response (Agent: AGT-SR-02)
+  -> SLA Deadline:      2026-11-10T08:50:53
+
+[TEST 3/7] Checking SLA clock via GET /complaints/CMP-2026-002005/sla...
+  -> SLA Status: Active | Hours Remaining: 1.00
+
+[TEST 4/7] Testing SLA pause/resume...
+  -> Clock Paused: Paused
+  -> Clock Resumed: Active (Adjusted Deadline: 2026-11-10T08:50:57)
+
+[TEST 5/7] Resolving complaint via POST /complaints/CMP-2026-002005/resolve...
+  -> Resolution: Refund | Refund: £299.99
+  -> Approver Sign-off Required: True (> £250.00 rule)
+
+[TEST 6/7] Submitting CSAT & NPS survey...
+  -> Survey Logged: ID SRV-000779
+
+[TEST 7/7] Verifying immutable event sourcing timeline & analytics...
+  -> Audit Trace: 7 events captured:
+     * [2026-11-10T07:50:51] ASSIGNED             by System Administrator -> State: Safety-Response
+     * [2026-11-10T07:50:55] COMPLAINT_CREATED    by Business Requester   -> State: Open
+     * [2026-11-10T07:51:00] SLA_PAUSED           by AGT-SR-01            -> State: Paused
+     * [2026-11-10T07:51:04] SLA_RESUMED          by Agent                -> State: Active
+     * [2026-11-10T07:51:10] STATUS_CHANGED       by AGT-SR-01            -> State: Resolved
+     * [2026-11-10T07:51:12] RESOLVED             by AGT-SR-01            -> State: Resolved
+     * [2026-11-10T07:51:17] SURVEY_SUBMITTED     by Business Requester   -> State: Closed
+
+  -> Operational KPIs:
+     Total Complaints:     2005
+     Resolved Complaints:  780
+     SLA Breach Rate:      26.73%
+     Average CSAT:         3.74 / 5.0
+     Average NPS:          6.47 / 10.0
+
+=================================================================
+  ALL LIVE API VERIFICATION TESTS PASSED SUCCESSFULLY!
+=================================================================

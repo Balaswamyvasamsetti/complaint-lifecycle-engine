@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complaint Lifecycle Engine — Enterprise Operational Control Plane</title>
+  
+  <!-- Professional Typography: Inter and JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS & FontAwesome 6 Pro Vector Icons & Chart.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'SFMono-Regular', 'Menlo', 'monospace'],
+          },
+          colors: {
+            canvas: '#f8fafc',
+            panel: '#ffffff',
+            surface: '#f1f5f9',
+            surfaceHover: '#e2e8f0',
+            borderSubtle: '#e2e8f0',
+            borderActive: '#cbd5e1',
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .panel-card {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .panel-card:hover {
+      border-color: #cbd5e1;
+    }
+
+    .panel-inset {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Clean Badges (Light Mode) */
+    .prio-critical {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    .prio-high {
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+    .prio-medium {
+      background: #f0f9ff;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+    .prio-low {
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .status-resolved {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+    .status-inprogress {
+      background: #eef2ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+    }
+    .status-open {
+      background: #f0f9ff;
+      color: #0284c7;
+      border: 1px solid #bae6fd;
+    }
+    .status-closed {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Selected Table Row */
+    .row-selected {
+      background-color: #eff6ff !important;
+      border-left: 3px solid #2563eb !important;
+    }
+
+    /* Custom Refined Scrollbars */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #f8fafc; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Animated Toast Notification */
+    @keyframes toastSlide {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .toast-anim {
+      animation: toastSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-canvas selection:bg-brand-500 selection:text-white">
+
+  <!-- Enterprise Header Bar (White Background, Fully Responsive) -->
+  <header class="border-b border-borderSubtle bg-white sticky top-0 z-50 px-3.5 sm:px-6 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 shadow-xs">
+    <div class="flex items-center space-x-3 min-w-0">
+      <div class="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-brand-600 flex items-center justify-center text-white shadow-xs shrink-0">
+        <i class="fa-solid fa-layer-group text-xs sm:text-sm"></i>
+      </div>
+      <div class="min-w-0">
+        <div class="flex items-center flex-wrap gap-1.5 sm:gap-2">
+          <h1 class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight whitespace-nowrap">Complaint Lifecycle Engine</h1>
+          <span class="text-slate-300 font-bold hidden sm:inline">•</span>
+          <span class="text-[9px] sm:text-[10px] font-mono font-semibold tracking-wider text-brand-600 uppercase hidden sm:inline">Executive Control Plane</span>
+          <span class="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">Live Online</span>
+        </div>
+        <p class="text-[10px] sm:text-[11px] text-slate-500 truncate hidden md:block">Autonomous AI Classification, Deterministic SLA Orchestration & Event Sourcing</p>
+      </div>
+    </div>
+
+    <!-- Status Badges & Quick Action Links -->
+    <div class="flex items-center flex-wrap gap-1.5 sm:gap-2 text-xs">
+      <div class="flex items-center space-x-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg bg-surface border border-borderSubtle text-[10px] sm:text-[11px]" id="api-status-badge">
+        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" id="api-dot"></span>
+        <span class="text-slate-700 font-medium whitespace-nowrap" id="api-indicator">API: Connected</span>
+      </div>
+      <div class="flex items-center space-x-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg bg-surface border border-borderSubtle text-[10px] sm:text-[11px] hidden sm:flex">
+        <i class="fa-solid fa-database text-brand-600 text-[10px] shrink-0"></i>
+        <span class="text-slate-700 font-medium whitespace-nowrap" id="db-indicator">PostgreSQL (Neon)</span>
+      </div>
+      <div class="flex items-center space-x-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg bg-surface border border-borderSubtle text-[10px] sm:text-[11px] hidden md:flex">
+        <i class="fa-solid fa-brain text-indigo-600 text-[10px] shrink-0"></i>
+        <span class="text-slate-700 font-medium whitespace-nowrap">Bedrock (Claude 3)</span>
+      </div>
+      <a href="/docs" target="_blank" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium transition text-[11px] sm:text-xs shadow-xs flex items-center space-x-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        <span>API Docs</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Notification Toast Box -->
+  <div id="toast-box" class="fixed top-14 right-4 sm:right-6 z-50 pointer-events-none flex flex-col space-y-2"></div>
+
+  <!-- Main Application Body (Optimized Tight Spacing & Responsive Fit) -->
+  <main class="max-w-[1560px] w-full mx-auto px-3.5 sm:px-5 lg:px-6 py-3.5 sm:py-4 space-y-3.5 sm:space-y-4 flex-1">
+
+    <!-- KPI Metric Ribbon (Responsive Grid: 2 cols on mobile, 3 on tablet, 5 on desktop) -->
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+      
+      <!-- Metric 1: Total Volume -->
+      <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between">
+        <div class="space-y-0.5 sm:space-y-1 min-w-0">
+          <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">Total Complaints</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-slate-900 tracking-tight" id="stat-total">--</div>
+          <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
+            <i class="fa-solid fa-database text-[9px] text-brand-600 shrink-0"></i>
+            <span class="truncate">Neon Store</span>
+          </div>
+        </div>
+        <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-brand-50 text-brand-600 border border-brand-100 flex items-center justify-center shrink-0 ml-2">
+          <i class="fa-solid fa-inbox text-sm sm:text-base"></i>
+        </div>
+      </div>
+
+      <!-- Metric 2: Open Queue -->
+      <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between">
+        <div class="space-y-0.5 sm:space-y-1 min-w-0">
+          <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">Active Queue Depth</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-sky-600 tracking-tight" id="stat-open">--</div>
+          <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
+            <i class="fa-solid fa-hourglass-half text-[9px] text-sky-600 shrink-0"></i>
+            <span class="truncate">In Investigation</span>
+          </div>
+        </div>
+        <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center shrink-0 ml-2">
+          <i class="fa-solid fa-clock text-sm sm:text-base"></i>
+        </div>
+      </div>
+
+      <!-- Metric 3: Resolved Tickets -->
+      <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between">
+        <div class="space-y-0.5 sm:space-y-1 min-w-0">
+          <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">Resolved Tickets</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-emerald-600 tracking-tight" id="stat-resolved">--</div>
+          <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
+            <i class="fa-solid fa-circle-check text-[9px] text-emerald-600 shrink-0"></i>
+            <span class="truncate">Settled Cases</span>
+          </div>
+        </div>
+        <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0 ml-2">
+          <i class="fa-solid fa-shield-check text-sm sm:text-base"></i>
+        </div>
+      </div>
+
+      <!-- Metric 4: SLA Breach Rate -->
+      <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between">
+        <div class="space-y-0.5 sm:space-y-1 min-w-0">
+          <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">SLA Breach Ratio</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-rose-600 tracking-tight" id="stat-breach-rate">--%</div>
+          <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
+            <i class="fa-solid fa-triangle-exclamation text-[9px] text-rose-600 shrink-0"></i>
+            <span class="truncate">SLA Target Metric</span>
+          </div>
+        </div>
+        <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center shrink-0 ml-2">
+          <i class="fa-solid fa-stopwatch text-sm sm:text-base"></i>
+        </div>
+      </div>
+
+      <!-- Metric 5: CSAT / NPS (Spans 2 cols on mobile to balance grid) -->
+      <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between col-span-2 md:col-span-1 lg:col-span-1">
+        <div class="space-y-0.5 sm:space-y-1 min-w-0">
+          <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">CSAT / NPS Index</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-amber-600 tracking-tight truncate" id="stat-csat">-- / 5.0</div>
+          <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
+            <i class="fa-solid fa-star text-[9px] text-amber-500 shrink-0"></i>
+            <span class="truncate">Customer Verified</span>
+          </div>
+        </div>
+        <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0 ml-2">
+          <i class="fa-solid fa-chart-line text-sm sm:text-base"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Grid: Interactive AI Triage Studio + Operations Telemetry (Equal Height, Responsive) -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 items-stretch">
+
+      <!-- AI Triage Studio (Task 1) - 5 cols -->
+      <div class="lg:col-span-5 panel-card rounded-xl p-3.5 sm:p-4 flex flex-col justify-between space-y-3">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
+            <div class="flex items-center space-x-2 min-w-0">
+              <i class="fa-solid fa-wand-magic-sparkles text-brand-600 text-xs sm:text-sm shrink-0"></i>
+              <h2 class="font-semibold text-xs sm:text-sm text-slate-900 truncate">Task: Ingest & AI Triage Ticket</h2>
+            </div>
+            <span class="text-[9px] sm:text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 shrink-0">Actor: Requester</span>
+          </div>
+
+          <!-- Scenario Quick Presets -->
+          <div class="space-y-1">
+            <span class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono">1-Click Scenarios</span>
+            <div class="grid grid-cols-2 gap-1.5 sm:gap-2">
+              <button onclick="applyPreset(1)" class="text-left px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] transition text-slate-700 flex items-center space-x-1.5 min-w-0">
+                <i class="fa-solid fa-fire text-rose-500 text-xs shrink-0"></i>
+                <span class="truncate font-medium">Critical Fire Hazard</span>
+              </button>
+              <button onclick="applyPreset(2)" class="text-left px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] transition text-slate-700 flex items-center space-x-1.5 min-w-0">
+                <i class="fa-solid fa-credit-card text-brand-600 text-xs shrink-0"></i>
+                <span class="truncate font-medium">Fraud Dispute (£350)</span>
+              </button>
+              <button onclick="applyPreset(3)" class="text-left px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] transition text-slate-700 flex items-center space-x-1.5 min-w-0">
+                <i class="fa-solid fa-truck text-amber-500 text-xs shrink-0"></i>
+                <span class="truncate font-medium">Missing Order Delivery</span>
+              </button>
+              <button onclick="applyPreset(4)" class="text-left px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] transition text-slate-700 flex items-center space-x-1.5 min-w-0">
+                <i class="fa-solid fa-receipt text-sky-500 text-xs shrink-0"></i>
+                <span class="truncate font-medium">Invoice Discrepancy</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Triage Form -->
+          <form id="triage-form" class="space-y-2.5 pt-0.5" onsubmit="event.preventDefault(); executeTriage();">
+            <div>
+              <label class="block text-[11px] font-medium text-slate-700 mb-1">Customer Grievance Statement</label>
+              <textarea id="inp-text" rows="2" required
+                class="w-full rounded-lg bg-slate-50 border border-borderSubtle p-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 transition font-sans leading-relaxed resize-none"
+                placeholder="Enter customer statement for automated NLP classification and SLA rule evaluation..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 sm:gap-2.5">
+              <div>
+                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Ingestion Channel</label>
+                <select id="inp-channel" class="w-full rounded-lg bg-slate-50 border border-borderSubtle px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-brand-600">
+                  <option value="Email">Email</option>
+                  <option value="Web">Web Portal</option>
+                  <option value="Mobile App">Mobile App</option>
+                  <option value="Phone">Phone Support</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Order Value (£ GBP)</label>
+                <input type="number" id="inp-value" value="199.99" step="0.01"
+                  class="w-full rounded-lg bg-slate-50 border border-borderSubtle px-2 py-1.5 text-xs text-slate-800 font-mono focus:outline-none focus:border-brand-600">
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-4 pt-0.5">
+              <label class="flex items-center space-x-1.5 text-xs text-slate-700 cursor-pointer">
+                <input type="checkbox" id="inp-safety" checked class="rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="text-[11px]">Safety Risk</span>
+              </label>
+              <label class="flex items-center space-x-1.5 text-xs text-slate-700 cursor-pointer">
+                <input type="checkbox" id="inp-vulnerable" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                <span class="text-[11px]">Vulnerable Customer</span>
+              </label>
+            </div>
+
+            <button type="submit" id="btn-triage"
+              class="w-full py-2 sm:py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs transition shadow-xs flex items-center justify-center space-x-2">
+              <i class="fa-solid fa-bolt text-xs"></i>
+              <span>Ingest & Execute AI Triage</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Triage Inference Response Card -->
+        <div id="triage-output" class="hidden rounded-lg panel-inset p-2.5 sm:p-3 space-y-2 text-xs mt-2">
+          <div class="flex items-center justify-between border-b border-borderSubtle pb-1.5">
+            <span class="text-slate-500 font-medium">Generated Ticket ID:</span>
+            <span class="font-mono font-bold text-brand-600 text-xs sm:text-sm" id="res-id">--</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <span class="text-slate-500 block text-[9px] uppercase font-mono font-semibold">Predicted Category</span>
+              <span class="font-semibold text-slate-900 text-[11px]" id="res-category">--</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block text-[9px] uppercase font-mono font-semibold">Priority Level</span>
+              <div id="res-priority-badge" class="mt-0.5">--</div>
+            </div>
+            <div>
+              <span class="text-slate-500 block text-[9px] uppercase font-mono font-semibold">Routing Team</span>
+              <span class="font-medium text-slate-700 text-[11px]" id="res-team">--</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block text-[9px] uppercase font-mono font-semibold">Enforced SLA Target</span>
+              <span class="font-mono font-semibold text-emerald-600 text-[11px]" id="res-sla">-- hrs</span>
+            </div>
+          </div>
+
+          <div class="pt-1.5 border-t border-borderSubtle">
+            <span class="text-slate-500 block text-[9px] uppercase font-mono font-semibold mb-0.5">Synthesized Briefing</span>
+            <p class="text-slate-700 leading-relaxed text-[11px] italic bg-white p-2 rounded border border-borderSubtle" id="res-summary">--</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Real-Time Operations Telemetry (Charts) - 7 cols -->
+      <div class="lg:col-span-7 panel-card rounded-xl p-3.5 sm:p-4 flex flex-col justify-between space-y-3">
+        <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
+          <div class="flex items-center space-x-2 min-w-0">
+            <i class="fa-solid fa-chart-column text-brand-600 text-xs sm:text-sm shrink-0"></i>
+            <h2 class="font-semibold text-xs sm:text-sm text-slate-900 truncate">Operations Analyst Telemetry</h2>
+          </div>
+          <div class="flex items-center space-x-2 shrink-0">
+            <span class="text-[10px] sm:text-[11px] font-mono text-slate-500 hidden sm:inline">Live Neon Sync</span>
+            <button onclick="refreshAll(true)" class="text-xs px-2 sm:px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 transition flex items-center space-x-1.5 font-medium">
+              <i class="fa-solid fa-rotate text-[10px]"></i>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 flex-1">
+          <!-- Donut Chart: Category Distribution -->
+          <div class="panel-inset rounded-lg p-3 flex flex-col justify-between min-h-[220px]">
+            <div class="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
+              <span class="text-[11px] sm:text-xs font-semibold text-slate-800">Category Ingestion Volume</span>
+              <span class="text-[9px] text-slate-500 font-mono">10 Taxonomy Nodes</span>
+            </div>
+            <div class="relative w-full h-44 sm:h-48 flex items-center justify-center my-auto">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Bar Chart: Priority Distribution -->
+          <div class="panel-inset rounded-lg p-3 flex flex-col justify-between min-h-[220px]">
+            <div class="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
+              <span class="text-[11px] sm:text-xs font-semibold text-slate-800">Priority Tier Allocation</span>
+              <span class="text-[9px] text-slate-500 font-mono">4 Governance Rules</span>
+            </div>
+            <div class="relative w-full h-44 sm:h-48 flex items-center justify-center my-auto">
+              <canvas id="priorityChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Queue & Interactive Action Cockpit Split (Clean Fit, Zero Extra Space) -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 items-stretch">
+
+      <!-- Live Complaint Queue (6 cols) -->
+      <div class="lg:col-span-6 panel-card rounded-xl p-3.5 sm:p-4 flex flex-col justify-between space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-borderSubtle pb-2.5">
+          <div class="flex items-center space-x-2 shrink-0">
+            <i class="fa-solid fa-list-check text-emerald-600 text-xs sm:text-sm"></i>
+            <h2 class="font-semibold text-xs sm:text-sm text-slate-900">Complaint Queue</h2>
+            <span class="text-xs font-mono text-slate-500" id="queue-count">(0)</span>
+          </div>
+          
+          <!-- Filters Toolbar (Responsive Wrapping) -->
+          <div class="flex items-center flex-wrap gap-1.5 sm:gap-2">
+            <div class="relative min-w-[120px] flex-1 sm:flex-initial">
+              <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-[10px] text-slate-400"></i>
+              <input type="text" id="filter-search" oninput="filterComplaintsTable()" placeholder="Search ID..."
+                class="pl-7 pr-2 py-1 text-xs rounded-lg bg-slate-50 border border-borderSubtle text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-600 w-full sm:w-32 md:w-36 font-mono">
+            </div>
+            <select id="filter-priority" onchange="loadComplaints()" class="text-xs rounded-lg bg-slate-50 border border-borderSubtle px-2 py-1 text-slate-700 focus:outline-none focus:border-brand-600 shrink-0">
+              <option value="">Priority: All</option>
+              <option value="CRITICAL">Critical</option>
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+            </select>
+            <select id="filter-status" onchange="loadComplaints()" class="text-xs rounded-lg bg-slate-50 border border-borderSubtle px-2 py-1 text-slate-700 focus:outline-none focus:border-brand-600 shrink-0">
+              <option value="">Status: All</option>
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto max-h-[390px] rounded-lg border border-borderSubtle flex-1">
+          <table class="w-full text-left text-xs min-w-[480px]">
+            <thead class="sticky top-0 bg-slate-50 text-slate-600 font-semibold border-b border-borderSubtle z-10 text-[11px]">
+              <tr>
+                <th class="py-2 px-2.5 sm:px-3">Ticket ID</th>
+                <th class="py-2 px-2.5 sm:px-3">Category</th>
+                <th class="py-2 px-2.5 sm:px-3">Priority</th>
+                <th class="py-2 px-2.5 sm:px-3">Status</th>
+                <th class="py-2 px-2.5 sm:px-3">Created</th>
+              </tr>
+            </thead>
+            <tbody id="complaints-tbody" class="divide-y divide-borderSubtle text-slate-700">
+              <tr><td colspan="5" class="text-center py-8 text-slate-400">Loading complaints registry...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Interactive Ticket Action Cockpit (Task Performing Workspace) - 6 cols -->
+      <div class="lg:col-span-6 panel-card rounded-xl p-3.5 sm:p-4 flex flex-col justify-between space-y-3">
+        <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
+          <div class="flex items-center space-x-2 min-w-0">
+            <i class="fa-solid fa-sliders text-brand-600 text-xs sm:text-sm shrink-0"></i>
+            <h2 class="font-semibold text-xs sm:text-sm text-slate-900 truncate">Ticket Workspace & Actions</h2>
+          </div>
+          <div class="flex items-center space-x-1.5 shrink-0">
+            <span class="font-mono text-xs font-bold text-brand-600" id="selected-ticket-label">No Ticket Selected</span>
+            <button id="btn-copy-id" onclick="copySelectedTicketId()" class="hidden text-slate-400 hover:text-slate-800 px-1.5 py-0.5 rounded border border-slate-200 text-xs transition" title="Copy Ticket ID">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Cockpit Workspace Navigation Tabs (Horizontal Scrollable for Mobile) -->
+        <div class="flex items-center space-x-1 border-b border-borderSubtle pb-1.5 text-xs font-medium overflow-x-auto no-scrollbar whitespace-nowrap">
+          <button id="tab-btn-overview" onclick="switchCockpitTab('overview')" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200">
+            <i class="fa-solid fa-circle-info mr-1"></i>Overview & Clock
+          </button>
+          <button id="tab-btn-resolve" onclick="switchCockpitTab('resolve')" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-slate-600 hover:bg-slate-100">
+            <i class="fa-solid fa-shield-check mr-1 text-emerald-600"></i>Resolve Case
+          </button>
+          <button id="tab-btn-messages" onclick="switchCockpitTab('messages')" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-slate-600 hover:bg-slate-100">
+            <i class="fa-solid fa-comments mr-1 text-indigo-600"></i>Messages
+          </button>
+          <button id="tab-btn-audit" onclick="switchCockpitTab('audit')" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-slate-600 hover:bg-slate-100">
+            <i class="fa-solid fa-clock-rotate-left mr-1 text-amber-600"></i>Audit Trace
+          </button>
+        </div>
+
+        <!-- TAB CONTENT 1: Overview, SLA Controls & Reassignment -->
+        <div id="tab-content-overview" class="space-y-3 flex-1 flex flex-col justify-between">
+          <div id="overview-card" class="panel-inset rounded-lg p-2.5 sm:p-3 space-y-2 text-xs">
+            <div class="grid grid-cols-2 gap-2 sm:gap-2.5 text-[11px]">
+              <div>
+                <span class="text-slate-500 block uppercase font-mono font-semibold text-[9px]">Customer Reference</span>
+                <span class="font-mono font-medium text-slate-800 truncate block" id="meta-customer">--</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block uppercase font-mono font-semibold text-[9px]">Order ID & Value</span>
+                <span class="font-mono font-medium text-slate-800 truncate block" id="meta-order">--</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block uppercase font-mono font-semibold text-[9px]">Assigned Owner</span>
+                <span class="font-medium text-slate-800 truncate block" id="meta-agent">--</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block uppercase font-mono font-semibold text-[9px]">SLA Status & Remaining</span>
+                <span class="font-mono font-bold text-emerald-600 truncate block" id="meta-sla">--</span>
+              </div>
+            </div>
+            <div class="pt-1.5 border-t border-slate-200">
+              <span class="text-slate-500 block text-[9px] uppercase font-mono font-semibold mb-0.5">Grievance Description</span>
+              <p class="text-slate-700 italic bg-white p-2 rounded border border-slate-200 text-xs max-h-20 overflow-y-auto" id="meta-text">--</p>
+            </div>
+          </div>
+
+          <!-- Interactive Actions: SLA & Status Controls -->
+          <div class="space-y-2">
+            <span class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono">Perform Operations Actions</span>
+            
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="pauseSLA()" class="px-2.5 py-1.5 sm:py-2 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                <i class="fa-solid fa-circle-pause text-amber-600"></i>
+                <span>Pause SLA Clock</span>
+              </button>
+              <button onclick="resumeSLA()" class="px-2.5 py-1.5 sm:py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                <i class="fa-solid fa-circle-play text-emerald-600"></i>
+                <span>Resume SLA Clock</span>
+              </button>
+            </div>
+
+            <!-- Lifecycle Transition & Reassign Strip -->
+            <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs">
+              <div class="flex items-center justify-between flex-wrap gap-1.5">
+                <span class="font-medium text-slate-700 text-[11px]">Lifecycle Transition:</span>
+                <div class="space-x-1">
+                  <button onclick="updateStatusDirect('In Progress')" class="px-2 py-0.5 sm:py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[10px] font-semibold">In Progress</button>
+                  <button onclick="updateStatusDirect('Escalated')" class="px-2 py-0.5 sm:py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-semibold">Escalated</button>
+                  <button onclick="updateStatusDirect('Closed')" class="px-2 py-0.5 sm:py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-[10px] font-semibold">Close</button>
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-1.5 sm:gap-2 items-center">
+                <div class="sm:col-span-5">
+                  <select id="reassign-team" class="w-full text-[11px] rounded bg-white border border-slate-300 p-1.5 text-slate-700">
+                    <option value="Safety-Response">Safety-Response</option>
+                    <option value="Escalations">Escalations</option>
+                    <option value="Tier-2-Technical">Tier-2-Technical</option>
+                    <option value="Executive-Complaints">Executive-Complaints</option>
+                    <option value="General-Support">General-Support</option>
+                  </select>
+                </div>
+                <div class="sm:col-span-4">
+                  <input type="text" id="reassign-agent" placeholder="Agent (e.g. AGT-ES-01)" value="AGT-ES-01" class="w-full text-[11px] rounded bg-white border border-slate-300 p-1.5 text-slate-700 font-mono">
+                </div>
+                <div class="sm:col-span-3">
+                  <button onclick="executeReassignment()" class="w-full py-1.5 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-[11px]">Reassign</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB CONTENT 2: Settle & Resolve Case -->
+        <div id="tab-content-resolve" class="hidden space-y-2.5 flex-1 flex flex-col justify-between">
+          <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2.5 text-xs">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
+              <span class="font-semibold text-slate-800">Formal Settlement & Closure</span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">SLA Enforced</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+              <div>
+                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Resolution Strategy</label>
+                <select id="res-type" class="w-full rounded bg-white border border-slate-300 p-1.5 text-xs text-slate-800">
+                  <option value="Refund">Full / Partial Refund</option>
+                  <option value="Replacement">Product Replacement</option>
+                  <option value="Apology & Credit">Apology & Store Credit</option>
+                  <option value="Technical Fix">Technical Fix / Firmware</option>
+                  <option value="Explanation & Advice">Explanation & Guidance</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Refund Amount (£ GBP)</label>
+                <input type="number" id="res-amount" value="59.99" step="0.01" oninput="checkApproverThreshold()"
+                  class="w-full rounded bg-white border border-slate-300 p-1.5 text-xs text-slate-800 font-mono">
+              </div>
+            </div>
+
+            <!-- Approver Threshold Banner -->
+            <div id="approver-threshold-banner" class="hidden p-2 rounded bg-amber-50 border border-amber-200 text-amber-800 text-[10px] sm:text-[11px] flex items-center space-x-1.5 font-medium">
+              <i class="fa-solid fa-shield-exclamation text-amber-600 shrink-0"></i>
+              <span>High-Value Settlement (> £250.00 rule): Formal Approver role authorization required.</span>
+            </div>
+
+            <div>
+              <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Settlement Justification Notes</label>
+              <textarea id="res-notes" rows="2" class="w-full rounded bg-white border border-slate-300 p-2 text-xs text-slate-800 placeholder-slate-400 font-sans resize-none"
+                placeholder="Document resolution rationale, customer concessions, and approver references..."></textarea>
+            </div>
+
+            <button onclick="executeResolution()" class="w-full py-2 sm:py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs flex items-center justify-center space-x-2 transition">
+              <i class="fa-solid fa-check"></i>
+              <span>Submit Resolution & Sign Off</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB CONTENT 3: Communication Thread -->
+        <div id="tab-content-messages" class="hidden space-y-2.5 flex-1 flex flex-col justify-between">
+          <div id="messages-container" class="space-y-2 max-h-[260px] sm:max-h-[290px] overflow-y-auto pr-1 text-xs flex-1">
+            <div class="text-center py-8 text-slate-400">Loading conversation history...</div>
+          </div>
+
+          <!-- Post Message Form -->
+          <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="text-[10px] sm:text-[11px] text-slate-600 font-medium">Post as:</span>
+                <select id="msg-sender" class="text-xs rounded bg-white border border-slate-300 px-2 py-0.5 text-slate-700">
+                  <option value="Agent">Support Agent</option>
+                  <option value="Customer">Customer</option>
+                  <option value="System">System</option>
+                </select>
+              </div>
+              <label class="flex items-center space-x-1 text-[10px] sm:text-[11px] text-slate-600 cursor-pointer">
+                <input type="checkbox" id="msg-internal" class="rounded border-slate-300 text-brand-600">
+                <span>Internal note only</span>
+              </label>
+            </div>
+            <div class="flex space-x-2">
+              <input type="text" id="msg-text" placeholder="Type message or internal case notes..."
+                class="flex-1 text-xs rounded bg-white border border-slate-300 px-2.5 py-1.5 text-slate-800 focus:outline-none focus:border-brand-600">
+              <button onclick="executePostMessage()" class="px-3 py-1.5 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shrink-0">
+                <i class="fa-solid fa-paper-plane mr-1"></i>Send
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB CONTENT 4: Event Audit Trace & CSAT Survey -->
+        <div id="tab-content-audit" class="hidden space-y-2.5 flex-1 flex flex-col justify-between">
+          <div id="timeline-container" class="space-y-1.5 max-h-[230px] sm:max-h-[250px] overflow-y-auto pr-1 text-xs flex-1">
+            <div class="text-center py-8 text-slate-400">Loading immutable event trail...</div>
+          </div>
+
+          <!-- Post-Resolution Customer Survey Box -->
+          <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-800 text-[11px]">Customer CSAT & NPS Survey</span>
+              <span class="text-[9px] text-slate-500 font-mono">Actor: Requester</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[9px] text-slate-500">CSAT Rating (1 to 5 Stars)</label>
+                <select id="srv-rating" class="w-full text-xs rounded bg-white border border-slate-300 p-1 text-slate-700">
+                  <option value="5">5 - Excellent (Highly Satisfied)</option>
+                  <option value="4">4 - Good (Satisfied)</option>
+                  <option value="3">3 - Neutral</option>
+                  <option value="2">2 - Poor</option>
+                  <option value="1">1 - Terrible</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[9px] text-slate-500">NPS Score (0 to 10)</label>
+                <input type="number" id="srv-nps" min="0" max="10" value="9" class="w-full text-xs rounded bg-white border border-slate-300 p-1 text-slate-700 font-mono">
+              </div>
+            </div>
+            <div class="flex space-x-2">
+              <input type="text" id="srv-feedback" placeholder="Optional survey comment..."
+                class="flex-1 text-xs rounded bg-white border border-slate-300 px-2 py-1 text-slate-800">
+              <button onclick="executeSurvey()" class="px-3 py-1 rounded bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs shrink-0">
+                <i class="fa-solid fa-star mr-1"></i>Submit
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Clean Enterprise Footer (White Background, Responsive) -->
+  <footer class="border-t border-borderSubtle bg-white px-3.5 sm:px-6 py-2.5 sm:py-3 text-[11px] sm:text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-xs">
+    <div class="flex items-center space-x-2 text-center sm:text-left">
+      <span class="font-semibold text-slate-800">Complaint Lifecycle Engine</span>
+      <span>•</span>
+      <span>Enterprise SLA Orchestration & Event Sourcing Suite</span>
+    </div>
+    <div class="flex items-center space-x-3 font-mono text-[10px] sm:text-[11px] text-slate-500">
+      <span class="flex items-center space-x-1.5">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+        <span id="footer-engine">Dual-Engine: Neon Cloud PostgreSQL + SQLite</span>
+      </span>
+      <span>•</span>
+      <span>Seed: 20261022</span>
+    </div>
+  </footer>
+
+  <!-- Application Logic & Backend Integration -->
+  <script>
+    // Robust Connection: Detects API endpoint whether served via FastAPI, file://, or live server
+    const API_BASE = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '8000'))
+      ? 'http://127.0.0.1:8000'
+      : '';
+
+    let categoryChartInstance = null;
+    let priorityChartInstance = null;
+    let cachedComplaints = [];
+    let currentSelectedId = null;
+
+    const PRESETS = {
+      1: {
+        text: "The electric coffee maker overheated, began smoking, and caught fire on the kitchen counter during brewing. The safety fuse failed to activate.",
+        channel: "Email",
+        value: 199.99,
+        safety: true,
+        vulnerable: false
+      },
+      2: {
+        text: "Unrecognized fraudulent charge of £350.00 posted to my credit card account. I have not authorized this transaction and demand an immediate reversal.",
+        channel: "Phone",
+        value: 350.00,
+        safety: false,
+        vulnerable: false
+      },
+      3: {
+        text: "My package was marked as delivered two days ago, but nothing was received. Courier tracking provides no proof of delivery. Please investigate.",
+        channel: "Web",
+        value: 89.99,
+        safety: false,
+        vulnerable: false
+      },
+      4: {
+        text: "Discrepancy in invoice statement for my subscription order. Monthly discount was omitted from the billed amount.",
+        channel: "Mobile App",
+        value: 45.00,
+        safety: false,
+        vulnerable: false
+      }
+    };
+
+    function showToast(message, type = 'info') {
+      const box = document.getElementById('toast-box');
+      const toast = document.createElement('div');
+      const isSuccess = type === 'success';
+      const isError = type === 'error';
+
+      toast.className = `toast-anim pointer-events-auto flex items-center space-x-2 px-3.5 py-2 rounded-lg border text-xs shadow-md transition-all ${
+        isSuccess ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+        isError ? 'bg-rose-50 text-rose-800 border-rose-200' :
+        'bg-white text-slate-800 border-slate-200'
+      }`;
+
+      const icon = isSuccess ? 'fa-solid fa-circle-check text-emerald-600' :
+                   isError ? 'fa-solid fa-triangle-exclamation text-rose-600' :
+                   'fa-solid fa-circle-info text-brand-600';
+
+      toast.innerHTML = `<i class="${icon}"></i><span class="font-medium">${message}</span>`;
+      box.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        setTimeout(() => toast.remove(), 250);
+      }, 3200);
+    }
+
+    function switchCockpitTab(tabName) {
+      ['overview', 'resolve', 'messages', 'audit'].forEach(t => {
+        const btn = document.getElementById('tab-btn-' + t);
+        const content = document.getElementById('tab-content-' + t);
+        if (t === tabName) {
+          btn.className = 'px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200 font-semibold';
+          content.classList.remove('hidden');
+        } else {
+          btn.className = 'px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-slate-600 hover:bg-slate-100 font-medium';
+          content.classList.add('hidden');
+        }
+      });
+      if (tabName === 'messages' && currentSelectedId) loadMessages(currentSelectedId);
+      if (tabName === 'audit' && currentSelectedId) loadAuditTrail(currentSelectedId);
+    }
+
+    function applyPreset(idx) {
+      const p = PRESETS[idx];
+      if (!p) return;
+      document.getElementById('inp-text').value = p.text;
+      document.getElementById('inp-channel').value = p.channel;
+      document.getElementById('inp-value').value = p.value;
+      document.getElementById('inp-safety').checked = p.safety;
+      document.getElementById('inp-vulnerable').checked = p.vulnerable;
+      showToast(`Loaded scenario preset #${idx}`);
+    }
+
+    async function fetchStats(notify = false) {
+      try {
+        fetch(`${API_BASE}/health`).then(r => r.json()).then(h => {
+          if (h && h.database) {
+            document.getElementById('db-indicator').innerText = `PostgreSQL (Neon)`;
+            document.getElementById('api-indicator').innerText = 'API: Connected';
+            document.getElementById('api-dot').className = 'h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0';
+          }
+        }).catch(() => {
+          document.getElementById('api-indicator').innerText = 'API: Offline';
+          document.getElementById('api-dot').className = 'h-2 w-2 rounded-full bg-rose-500 shrink-0';
+        });
+
+        const res = await fetch(`${API_BASE}/analytics/summary`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        document.getElementById('stat-total').innerText = (data.total_complaints || 0).toLocaleString();
+        document.getElementById('stat-open').innerText = (data.open_complaints || 0).toLocaleString();
+        document.getElementById('stat-resolved').innerText = (data.resolved_complaints || 0).toLocaleString();
+        document.getElementById('stat-breach-rate').innerText = (data.sla_breach_rate_pct || 0) + '%';
+        document.getElementById('stat-csat').innerText = (data.avg_csat_rating || 0).toFixed(2) + ' / ' + (data.avg_nps_score || 0).toFixed(1) + ' NPS';
+
+        renderCharts(data);
+        if (notify) showToast('Operational KPIs updated', 'info');
+      } catch (e) {
+        console.error('Failed to load telemetry:', e);
+      }
+    }
+
+    function renderCharts(data) {
+      // Category Chart (Donut)
+      const catLabels = (data.category_distribution || []).map(c => c.category_name);
+      const catCounts = (data.category_distribution || []).map(c => c.count);
+
+      const ctxCat = document.getElementById('categoryChart').getContext('2d');
+      if (categoryChartInstance) categoryChartInstance.destroy();
+      categoryChartInstance = new Chart(ctxCat, {
+        type: 'doughnut',
+        data: {
+          labels: catLabels,
+          datasets: [{
+            data: catCounts,
+            backgroundColor: [
+              '#ef4444', '#f97316', '#f59e0b', '#10b981', '#14b8a6',
+              '#06b6d4', '#3b82f6', '#6366f1', '#a855f7', '#64748b'
+            ],
+            borderColor: '#ffffff',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              padding: 8,
+              cornerRadius: 6,
+              titleFont: { family: 'Inter', size: 11, weight: 'bold' },
+              bodyFont: { family: 'Inter', size: 11 }
+            }
+          },
+          cutout: '72%'
+        }
+      });
+
+      // Priority Chart (Bar)
+      const prioLabels = (data.priority_distribution || []).map(p => p.priority);
+      const prioCounts = (data.priority_distribution || []).map(p => p.count);
+
+      const ctxPrio = document.getElementById('priorityChart').getContext('2d');
+      if (priorityChartInstance) priorityChartInstance.destroy();
+      priorityChartInstance = new Chart(ctxPrio, {
+        type: 'bar',
+        data: {
+          labels: prioLabels,
+          datasets: [{
+            data: prioCounts,
+            backgroundColor: ['#ef4444', '#f59e0b', '#0284c7', '#64748b'],
+            borderRadius: 6,
+            barThickness: 24
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              padding: 8,
+              cornerRadius: 6
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#64748b', font: { family: 'Inter', size: 10, weight: '500' } }
+            },
+            y: {
+              grid: { color: '#f1f5f9' },
+              ticks: { color: '#64748b', font: { family: 'Inter', size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    async function loadComplaints() {
+      const priority = document.getElementById('filter-priority').value;
+      const status = document.getElementById('filter-status').value;
+      let url = `${API_BASE}/complaints?limit=50`;
+      if (priority) url += '&priority=' + priority;
+      if (status) url += '&status=' + status;
+
+      try {
+        const res = await fetch(url);
+        cachedComplaints = await res.json();
+        renderComplaintsTable(cachedComplaints);
+
+        // Auto-select first ticket if none selected
+        if (!currentSelectedId && cachedComplaints.length > 0) {
+          inspectTicket(cachedComplaints[0].complaint_id);
+        }
+      } catch (e) {
+        console.error('Failed to load complaints:', e);
+      }
+    }
+
+    function filterComplaintsTable() {
+      const q = (document.getElementById('filter-search').value || '').toLowerCase().trim();
+      if (!q) {
+        renderComplaintsTable(cachedComplaints);
+        return;
+      }
+      const filtered = cachedComplaints.filter(c => 
+        (c.complaint_id && c.complaint_id.toLowerCase().includes(q)) ||
+        (c.category_name && c.category_name.toLowerCase().includes(q)) ||
+        (c.customer_id && c.customer_id.toLowerCase().includes(q)) ||
+        (c.complaint_text && c.complaint_text.toLowerCase().includes(q)) ||
+        (c.status && c.status.toLowerCase().includes(q))
+      );
+      renderComplaintsTable(filtered);
+    }
+
+    function renderComplaintsTable(complaints) {
+      const tbody = document.getElementById('complaints-tbody');
+      tbody.innerHTML = '';
+      document.getElementById('queue-count').innerText = `(${complaints.length})`;
+
+      if (!complaints || complaints.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-400">No matching tickets in queue.</td></tr>';
+        return;
+      }
+
+      complaints.forEach(c => {
+        const prioClass = c.priority === 'CRITICAL' ? 'prio-critical' :
+                          c.priority === 'HIGH' ? 'prio-high' :
+                          c.priority === 'MEDIUM' ? 'prio-medium' : 'prio-low';
+
+        const statusClass = c.status === 'Resolved' ? 'status-resolved' :
+                            c.status === 'In Progress' ? 'status-inprogress' :
+                            c.status === 'Closed' ? 'status-closed' : 'status-open';
+
+        const tr = document.createElement('tr');
+        tr.id = 'row-' + c.complaint_id;
+        tr.className = `hover:bg-slate-50 cursor-pointer transition border-b border-borderSubtle ${c.complaint_id === currentSelectedId ? 'row-selected' : ''}`;
+        
+        tr.onclick = () => inspectTicket(c.complaint_id);
+
+        tr.innerHTML = `
+          <td class="py-2 px-2.5 sm:px-3 font-mono font-medium text-brand-600 flex items-center space-x-1.5 whitespace-nowrap">
+            <span class="h-1.5 w-1.5 rounded-full ${c.priority === 'CRITICAL' ? 'bg-rose-500 animate-pulse' : 'bg-slate-400'} shrink-0"></span>
+            <span>${c.complaint_id}</span>
+          </td>
+          <td class="py-2 px-2.5 sm:px-3 text-slate-800 font-medium truncate max-w-[140px]">${c.category_name}</td>
+          <td class="py-2 px-2.5 sm:px-3 whitespace-nowrap"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold font-mono ${prioClass}">${c.priority}</span></td>
+          <td class="py-2 px-2.5 sm:px-3 whitespace-nowrap"><span class="px-1.5 py-0.5 rounded text-[10px] font-medium ${statusClass}">${c.status}</span></td>
+          <td class="py-2 px-2.5 sm:px-3 font-mono text-slate-500 text-[10px] sm:text-[11px] whitespace-nowrap">${c.created_at ? c.created_at.replace('T', ' ').substring(0, 16) : ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function inspectTicket(complaintId) {
+      currentSelectedId = complaintId;
+      document.getElementById('selected-ticket-label').innerText = complaintId;
+      document.getElementById('btn-copy-id').classList.remove('hidden');
+
+      // Highlight active table row
+      document.querySelectorAll('#complaints-tbody tr').forEach(r => r.classList.remove('row-selected'));
+      const activeRow = document.getElementById('row-' + complaintId);
+      if (activeRow) activeRow.classList.add('row-selected');
+
+      try {
+        const [resDetail, resSla] = await Promise.all([
+          fetch(`${API_BASE}/complaints/${complaintId}`),
+          fetch(`${API_BASE}/complaints/${complaintId}/sla`).catch(() => null)
+        ]);
+
+        if (resDetail.ok) {
+          const data = await resDetail.json();
+          const c = data.complaint || {};
+          const asgn = data.current_assignment || {};
+
+          document.getElementById('meta-customer').innerText = c.customer_id || 'CUS-GUEST';
+          document.getElementById('meta-order').innerText = `${c.order_id || 'N/A'} • £${(c.order_value || 0).toFixed(2)}`;
+          document.getElementById('meta-agent').innerText = `${asgn.assigned_agent || 'AGT-GS-01'} (${asgn.team || 'General-Support'})`;
+          document.getElementById('meta-text').innerText = c.complaint_text || c.ai_summary || 'No description recorded.';
+          
+          if (c.order_value) {
+            document.getElementById('res-amount').value = (c.order_value).toFixed(2);
+            checkApproverThreshold();
+          }
+        }
+
+        if (resSla && resSla.ok) {
+          const s = await resSla.json();
+          const hrs = s.hours_remaining;
+          const statusText = s.status || 'Active';
+          document.getElementById('meta-sla').innerText = `${statusText} (${hrs !== undefined ? hrs.toFixed(1) + ' hrs' : ''})`;
+          document.getElementById('meta-sla').className = s.is_breached ? 'font-mono font-bold text-rose-600 truncate block' : 'font-mono font-bold text-emerald-600 truncate block';
+        }
+
+        loadAuditTrail(complaintId);
+        loadMessages(complaintId);
+
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function checkApproverThreshold() {
+      const amt = parseFloat(document.getElementById('res-amount').value) || 0.0;
+      const banner = document.getElementById('approver-threshold-banner');
+      if (amt > 250.0) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    async function loadAuditTrail(complaintId) {
+      const container = document.getElementById('timeline-container');
+      container.innerHTML = '<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Loading audit history...</div>';
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${complaintId}/events`);
+        const data = await res.json();
+        const events = data.timeline || [];
+
+        if (events.length === 0) {
+          container.innerHTML = '<div class="text-center py-6 text-slate-400">No events logged for ticket.</div>';
+          return;
+        }
+
+        container.innerHTML = '';
+        events.forEach(evt => {
+          let icon = 'fa-solid fa-circle-dot text-brand-600';
+          let borderCol = 'border-brand-500';
+          if (evt.event_type === 'COMPLAINT_CREATED') { icon = 'fa-solid fa-file-lines text-sky-600'; borderCol = 'border-sky-500'; }
+          if (evt.event_type === 'ASSIGNED') { icon = 'fa-solid fa-user-check text-indigo-600'; borderCol = 'border-indigo-500'; }
+          if (evt.event_type === 'STATUS_CHANGED') { icon = 'fa-solid fa-arrow-right-arrow-left text-amber-600'; borderCol = 'border-amber-500'; }
+          if (evt.event_type === 'SLA_PAUSED') { icon = 'fa-solid fa-circle-pause text-amber-600'; borderCol = 'border-amber-500'; }
+          if (evt.event_type === 'SLA_RESUMED') { icon = 'fa-solid fa-circle-play text-emerald-600'; borderCol = 'border-emerald-500'; }
+          if (evt.event_type === 'RESOLVED') { icon = 'fa-solid fa-shield-check text-emerald-600'; borderCol = 'border-emerald-500'; }
+          if (evt.event_type === 'SURVEY_SUBMITTED') { icon = 'fa-solid fa-star text-amber-500'; borderCol = 'border-amber-400'; }
+
+          const card = document.createElement('div');
+          card.className = `border-l-2 ${borderCol} pl-2.5 py-1 space-y-0.5 relative bg-white border-y border-r border-slate-200 rounded-r-lg shadow-2xs`;
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="font-bold text-slate-900 flex items-center space-x-1.5">
+                <i class="${icon} text-xs"></i>
+                <span>${evt.event_type}</span>
+              </span>
+              <span class="text-slate-400 font-mono text-[10px]">${evt.event_timestamp ? evt.event_timestamp.replace('T', ' ').substring(0, 16) : ''}</span>
+            </div>
+            <div class="text-[10px] sm:text-[11px] text-slate-700 font-medium">Actor: <span class="text-brand-600 font-semibold">${evt.actor}</span></div>
+            <div class="text-[10px] sm:text-[11px] text-slate-600 leading-normal">${evt.details || ''}</div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (e) {
+        container.innerHTML = '<div class="text-center py-6 text-rose-500">Failed to load events.</div>';
+      }
+    }
+
+    async function loadMessages(complaintId) {
+      const container = document.getElementById('messages-container');
+      container.innerHTML = '<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Loading communication thread...</div>';
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${complaintId}/messages`);
+        const data = await res.json();
+        const msgs = data.messages || [];
+
+        if (msgs.length === 0) {
+          container.innerHTML = '<div class="text-center py-6 text-slate-400">No communication messages recorded yet.</div>';
+          return;
+        }
+
+        container.innerHTML = '';
+        msgs.forEach(m => {
+          const isInternal = m.is_internal;
+          const isCustomer = m.sender_type === 'Customer';
+
+          const card = document.createElement('div');
+          card.className = `p-2 rounded-lg border text-xs space-y-0.5 ${
+            isInternal ? 'bg-amber-50/70 border-amber-200 text-amber-900' :
+            isCustomer ? 'bg-slate-50 border-slate-200 text-slate-800' :
+            'bg-blue-50 border-blue-200 text-blue-900'
+          }`;
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between text-[10px] font-semibold">
+              <span class="flex items-center space-x-1">
+                <i class="${isCustomer ? 'fa-solid fa-user' : isInternal ? 'fa-solid fa-lock' : 'fa-solid fa-headset'}"></i>
+                <span>${m.sender_type} ${isInternal ? '(Internal Note)' : ''}</span>
+              </span>
+              <span class="font-mono text-slate-400 text-[9px]">${m.sent_at ? m.sent_at.replace('T', ' ').substring(0, 16) : ''}</span>
+            </div>
+            <p class="text-[11px] leading-relaxed">${m.message_text}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch (e) {
+        container.innerHTML = '<div class="text-center py-6 text-rose-500">Failed to load message thread.</div>';
+      }
+    }
+
+    // Interactive Action 1: Ingest & Triage
+    async function executeTriage() {
+      const text = document.getElementById('inp-text').value;
+      const channel = document.getElementById('inp-channel').value;
+      const orderValue = parseFloat(document.getElementById('inp-value').value) || 0.0;
+      const isSafety = document.getElementById('inp-safety').checked;
+      const isVulnerable = document.getElementById('inp-vulnerable').checked;
+
+      const btn = document.getElementById('btn-triage');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Running AI Classification...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            complaint_text: text,
+            channel: channel,
+            order_value: orderValue,
+            is_safety_issue: isSafety,
+            is_vulnerable: isVulnerable,
+            recurrence_count: 1
+          })
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        document.getElementById('res-id').innerText = data.complaint_id;
+        document.getElementById('res-category').innerText = data.category;
+        document.getElementById('res-team').innerText = data.assigned_team + ' (' + data.assigned_agent + ')';
+        document.getElementById('res-sla').innerText = data.sla_hours + ' hrs';
+        document.getElementById('res-summary').innerText = data.ai_summary;
+
+        const prioBadge = document.getElementById('res-priority-badge');
+        const prioClass = data.priority === 'CRITICAL' ? 'prio-critical' :
+                          data.priority === 'HIGH' ? 'prio-high' : 'prio-medium';
+        prioBadge.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono ${prioClass}">${data.priority}</span>`;
+
+        document.getElementById('triage-output').classList.remove('hidden');
+        showToast(`Ticket ${data.complaint_id} triaged (${data.priority})`, 'success');
+        
+        await refreshAll(false);
+        inspectTicket(data.complaint_id);
+
+      } catch (e) {
+        showToast('Triage failed: ' + e.message, 'error');
+      } finally {
+        btn.innerHTML = '<i class="fa-solid fa-bolt text-xs"></i><span>Ingest & Execute AI Triage</span>';
+        btn.disabled = false;
+      }
+    }
+
+    // Interactive Action 2: Pause SLA Clock
+    async function pauseSLA() {
+      if (!currentSelectedId) { showToast('Select a ticket first', 'error'); return; }
+      const reason = prompt('Enter reason for pausing SLA clock (e.g. Awaiting customer documentation):', 'Awaiting customer photos');
+      if (!reason) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${currentSelectedId}/sla/pause`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: reason, actor: 'AGT-SR-01' })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        showToast(`SLA Clock paused for ticket ${currentSelectedId}`, 'success');
+        inspectTicket(currentSelectedId);
+      } catch (e) {
+        showToast('Pause failed: ' + e.message, 'error');
+      }
+    }
+
+    // Interactive Action 3: Resume SLA Clock
+    async function resumeSLA() {
+      if (!currentSelectedId) { showToast('Select a ticket first', 'error'); return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${currentSelectedId}/sla/resume`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        showToast(`SLA Clock resumed (Adjusted: ${data.adjusted_deadline || 'Active'})`, 'success');
+        inspectTicket(currentSelectedId);
+      } catch (e) {
+        showToast('Resume failed: ' + e.message, 'error');
+      }
+    }
+
+    // Interactive Action 4: Update Status Direct
+    async function updateStatusDirect(targetStatus) {
+      if (!currentSelectedId) { showToast('Select a ticket first', 'error'); return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${currentSelectedId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: targetStatus, actor: 'Operations Analyst', notes: 'Status changed from workspace' })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        showToast(`Ticket status updated to ${targetStatus}`, 'success');
+        refreshAll(false);
+        inspectTicket(currentSelectedId);
+      } catch (e) {
+        showToast('Status update failed: ' + e.message, 'error');
+      }
+    }
+
+    // Interactive Action 5: Reassign Ticket
+    async function executeReassignment() {
+      if (!currentSelectedId) { showToast('Select a ticket first', 'error'); return; }
+      const team = document.getElementById('reassign-team').value;
+      const agent = document.getElementById('reassign-agent').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${currentSelectedId}/reassign`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ team: team, agent_id: agent, actor: 'Process Owner', reason: 'Reassigned via executive cockpit' })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        showToast(`Reassigned to ${team} (${agent})`, 'success');
+        inspectTicket(currentSelectedId);
+      } catch (e) {
+        showToast('Reassignment error: ' + e.message, 'error');
+      }
+    }
+
+    // Interactive Action 6: Settle & Resolve Case
+    async function executeResolution() {
+      if (!currentSelectedId) { showToast('Select a ticket first', 'error'); return; }
+      const resType = document.getElementById('res-type').value;
+      const amount = parseFloat(document.getElementById('res-amount').value) || 0.0;
+      const notes = document.getElementById('res-notes').value || 'Settled and confirmed by support agent.';
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${currentSelectedId}/resolve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            resolution_type: resType,
+            resolved_by: 'AGT-SR-01',
+            notes: notes,
+            refund_amount: amount
+          })
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        showToast(`Complaint ${currentSelectedId} resolved (${resType})!`, 'success');
+        refreshAll(false);
+        inspectTicket(currentSelectedId);
+        switchCockpitTab('overview');
+      } catch (e) {
+        showToast('Resolution failed: ' + e.message, 'error');
+      }
+    }
+
+    // Interactive Action 7: Post Communication Message
+    async function executePostMessage() {
+      if (!currentSelectedId) { showToast('Select a ticket first', 'error'); return; }
+      const text = document.getElementById('msg-text').value.trim();
+      if (!text) return;
+      const sender = document.getElementById('msg-sender').value;
+      const isInternal = document.getElementById('msg-internal').checked;
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${currentSelectedId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sender_type: sender, message_text: text, is_internal: isInternal })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        document.getElementById('msg-text').value = '';
+        showToast('Message logged to thread', 'success');
+        loadMessages(currentSelectedId);
+      } catch (e) {
+        showToast('Message failed: ' + e.message, 'error');
+      }
+    }
+
+    // Interactive Action 8: Post-Resolution Survey
+    async function executeSurvey() {
+      if (!currentSelectedId) { showToast('Select a ticket first', 'error'); return; }
+      const rating = parseInt(document.getElementById('srv-rating').value) || 5;
+      const nps = parseInt(document.getElementById('srv-nps').value) || 10;
+      const feedback = document.getElementById('srv-feedback').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${currentSelectedId}/survey`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rating: rating, nps_score: nps, feedback_text: feedback })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        showToast(`CSAT Survey logged: ${rating}/5 Stars!`, 'success');
+        document.getElementById('srv-feedback').value = '';
+        inspectTicket(currentSelectedId);
+        fetchStats(false);
+      } catch (e) {
+        showToast('Survey submission error: ' + e.message, 'error');
+      }
+    }
+
+    function copySelectedTicketId() {
+      if (!currentSelectedId) return;
+      navigator.clipboard.writeText(currentSelectedId).then(() => {
+        showToast(`Copied ${currentSelectedId} to clipboard`, 'success');
+      });
+    }
+
+    function refreshAll(notify = false) {
+      return Promise.all([
+        fetchStats(notify),
+        loadComplaints()
+      ]);
+    }
+
+    window.onload = () => {
+      refreshAll(false);
+      checkApproverThreshold();
+    };
+  </script>
+</body>
+</html>

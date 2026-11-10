@@ -1,0 +1,115 @@
+{
+  "timestamp": "2026-11-10T07:42:14.768159+00:00",
+  "seed": 20261022,
+  "scale": 0.1,
+  "overall_status": "PASSED",
+  "composite_sha256": "bd490d445f166ceb043c8733eaec5da097f05b3fa7b2f5239bd390197a116cbc",
+  "run1_sha256": "bd490d445f166ceb043c8733eaec5da097f05b3fa7b2f5239bd390197a116cbc",
+  "run2_sha256": "bd490d445f166ceb043c8733eaec5da097f05b3fa7b2f5239bd390197a116cbc",
+  "table_comparisons": {
+    "anomalies": {
+      "run1_count": 6,
+      "run2_count": 6,
+      "counts_match": true,
+      "run1_hash": "825c730c7a4f9e9a7fd62565695005fa62ef8ee8143dc443d59f4f1cd0872668",
+      "run2_hash": "825c730c7a4f9e9a7fd62565695005fa62ef8ee8143dc443d59f4f1cd0872668",
+      "checksum_match": true
+    },
+    "assignments": {
+      "run1_count": 216,
+      "run2_count": 216,
+      "counts_match": true,
+      "run1_hash": "f29103d3b17e143fdd8f5302fe5dff5ecd3bf3ee5265ace316534a2e5670d9cb",
+      "run2_hash": "f29103d3b17e143fdd8f5302fe5dff5ecd3bf3ee5265ace316534a2e5670d9cb",
+      "checksum_match": true
+    },
+    "categories": {
+      "run1_count": 10,
+      "run2_count": 10,
+      "counts_match": true,
+      "run1_hash": "9ec7e88017c03f6a4ec5c69a46bdf08a4f38ca99380c124005e0c10c7fbd7b5a",
+      "run2_hash": "9ec7e88017c03f6a4ec5c69a46bdf08a4f38ca99380c124005e0c10c7fbd7b5a",
+      "checksum_match": true
+    },
+    "complaint_events": {
+      "run1_count": 578,
+      "run2_count": 578,
+      "counts_match": true,
+      "run1_hash": "77dfbbbc54d8ebd85c232d7ba2ec571cc486898170d61e3b8525ba9061714013",
+      "run2_hash": "77dfbbbc54d8ebd85c232d7ba2ec571cc486898170d61e3b8525ba9061714013",
+      "checksum_match": true
+    },
+    "complaints": {
+      "run1_count": 200,
+      "run2_count": 200,
+      "counts_match": true,
+      "run1_hash": "32b687ec5fc8af943d4b9e5dbaa4da5a5cc0a683e337d86d3341a5745566d0b8",
+      "run2_hash": "32b687ec5fc8af943d4b9e5dbaa4da5a5cc0a683e337d86d3341a5745566d0b8",
+      "checksum_match": true
+    },
+    "customers": {
+      "run1_count": 500,
+      "run2_count": 500,
+      "counts_match": true,
+      "run1_hash": "3ce3e684fbf04633a2dfb9f219414e0d9573178d557cede4af95dfe0b23ff82f",
+      "run2_hash": "3ce3e684fbf04633a2dfb9f219414e0d9573178d557cede4af95dfe0b23ff82f",
+      "checksum_match": true
+    },
+    "messages": {
+      "run1_count": 600,
+      "run2_count": 600,
+      "counts_match": true,
+      "run1_hash": "0385b22d709e97ba573aa35ba18120f14bdc9c2e8456493835ed962d2c64a8be",
+      "run2_hash": "0385b22d709e97ba573aa35ba18120f14bdc9c2e8456493835ed962d2c64a8be",
+      "checksum_match": true
+    },
+    "orders": {
+      "run1_count": 800,
+      "run2_count": 800,
+      "counts_match": true,
+      "run1_hash": "0694436f440e09767760020bdaf138371f8b3456be5c4a227f09c48a2a43368c",
+      "run2_hash": "0694436f440e09767760020bdaf138371f8b3456be5c4a227f09c48a2a43368c",
+      "checksum_match": true
+    },
+    "priority_rules": {
+      "run1_count": 4,
+      "run2_count": 4,
+      "counts_match": true,
+      "run1_hash": "ae5416f903f41a0710750efc7e318b14937f0221d234390ac28066cdd6315bed",
+      "run2_hash": "ae5416f903f41a0710750efc7e318b14937f0221d234390ac28066cdd6315bed",
+      "checksum_match": true
+    },
+    "products": {
+      "run1_count": 15,
+      "run2_count": 15,
+      "counts_match": true,
+      "run1_hash": "f90cefd905ad252f700f6573a8f06779f15d10111bacbffaf608fcdea1a696c3",
+      "run2_hash": "f90cefd905ad252f700f6573a8f06779f15d10111bacbffaf608fcdea1a696c3",
+      "checksum_match": true
+    },
+    "resolutions": {
+      "run1_count": 83,
+      "run2_count": 83,
+      "counts_match": true,
+      "run1_hash": "c79cc73d5205d92732c2e978b4c7213a0dec5ca420b428662ad5923ac1d01618",
+      "run2_hash": "c79cc73d5205d92732c2e978b4c7213a0dec5ca420b428662ad5923ac1d01618",
+      "checksum_match": true
+    },
+    "sla_clocks": {
+      "run1_count": 200,
+      "run2_count": 200,
+      "counts_match": true,
+      "run1_hash": "9e66a50c6a2646df56e40b4f4a08aead9ac85dfbdc519595e6236341035ae82b",
+      "run2_hash": "9e66a50c6a2646df56e40b4f4a08aead9ac85dfbdc519595e6236341035ae82b",
+      "checksum_match": true
+    },
+    "surveys": {
+      "run1_count": 82,
+      "run2_count": 82,
+      "counts_match": true,
+      "run1_hash": "cef005cb9d703494da6f0a4a3583ae09619aee7b995168af1454eeec942ce703",
+      "run2_hash": "cef005cb9d703494da6f0a4a3583ae09619aee7b995168af1454eeec942ce703",
+      "checksum_match": true
+    }
+  }
+}

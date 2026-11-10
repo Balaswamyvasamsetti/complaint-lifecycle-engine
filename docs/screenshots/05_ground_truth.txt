@@ -1,0 +1,13 @@
+$ python -c "import json; [print(a['complaint_id'], '|', a['issue_type'], '|', a['rule_violated']) for a in json.load(open('output/ground_truth/ground_truth.json'))]"
+
+CMP-2026-000001 | missing_customer             | FK_CUSTOMER_MISSING
+CMP-2026-000002 | resolution_before_complaint  | DATE_RESOLUTION_BEFORE_COMPLAINT
+CMP-2026-000003 | sla_pause_no_resume          | DATE_SLA_PAUSE_NO_RESUME
+CMP-2026-000004 | repeat_not_linked            | REPEAT_ISSUE_NOT_LINKED
+CMP-2026-000005 | safety_low_priority          | PRIORITY_SAFETY_ANOMALY
+CMP-2026-000006 | survey_before_closure        | DATE_SURVEY_BEFORE_CLOSURE
+
+# Zero label leakage verification:
+$ python -c "import csv; h=next(csv.reader(open('output/csv/complaints.csv'))); print('issue_type' in h, 'anomaly_category' in h)"
+False False
+# CONFIRMED: No labels leaked into feature CSVs

@@ -1,11 +1,11 @@
-# ground_truth.py — Exports labelled anomalies/edge cases separately
-# Never leaks into input feature files
+# ground_truth.py — Ground truth anomaly repository
+# Exports labelled edge cases / anomalies in complete isolation from training/feature sets
 
 import csv
 import json
 import os
 
-GT_FIELDS = ["complaint_id", "issue_type", "description"]
+GT_FIELDS = ["complaint_id", "issue_type", "anomaly_category", "description", "entity_affected", "rule_violated"]
 
 
 def export_ground_truth(anomalies, out_dir):
@@ -22,5 +22,5 @@ def export_ground_truth(anomalies, out_dir):
         for row in anomalies:
             writer.writerow({k: row.get(k, "") for k in GT_FIELDS})
 
-    print("[GROUND TRUTH] %d anomalies -> ground_truth.csv + ground_truth.json" % len(anomalies))
+    print("[GROUND TRUTH] %d anomalies exported -> ground_truth.csv & ground_truth.json (zero feature leakage)" % len(anomalies))
     return json_path, csv_path

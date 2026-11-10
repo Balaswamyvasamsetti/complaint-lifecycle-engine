@@ -1,32 +1,50 @@
 [
   {
-    "complaint_id": "CMP-EDGE-000001",
+    "complaint_id": "CMP-2026-000001",
     "issue_type": "missing_customer",
-    "description": "Complaint with no customer_id"
+    "anomaly_category": "Referential Integrity",
+    "description": "Complaint submitted with null/empty customer_id reference",
+    "entity_affected": "complaints",
+    "rule_violated": "FK_CUSTOMER_MISSING"
   },
   {
-    "complaint_id": "CMP-2025-000003",
+    "complaint_id": "CMP-2026-000002",
     "issue_type": "resolution_before_complaint",
-    "description": "Resolution timestamp precedes complaint created_at"
+    "anomaly_category": "Chronological Inversion",
+    "description": "Resolution timestamp precedes complaint created_at",
+    "entity_affected": "resolutions",
+    "rule_violated": "DATE_RESOLUTION_BEFORE_COMPLAINT"
   },
   {
-    "complaint_id": "CMP-2025-000011",
+    "complaint_id": "CMP-2026-000003",
     "issue_type": "sla_pause_no_resume",
-    "description": "SLA paused but resumed_at is missing"
+    "anomaly_category": "SLA State Machine",
+    "description": "SLA clock paused indefinitely without resumption timestamp",
+    "entity_affected": "sla_clocks",
+    "rule_violated": "DATE_SLA_PAUSE_NO_RESUME"
   },
   {
-    "complaint_id": "CMP-EDGE-000004",
-    "issue_type": "safety_low_priority",
-    "description": "Critical safety issue assigned to General-Support (low priority)"
-  },
-  {
-    "complaint_id": "CMP-2025-000003",
-    "issue_type": "survey_before_closure",
-    "description": "Survey submitted before resolution/closure"
-  },
-  {
-    "complaint_id": "CMP-2025-000021",
+    "complaint_id": "CMP-2026-000004",
     "issue_type": "repeat_not_linked",
-    "description": "Repeat complaint (recurrence>=2) with no parent_complaint_id"
+    "anomaly_category": "Duplicate Detection",
+    "description": "Repeat complaint (recurrence=3) without valid parent_complaint_id link",
+    "entity_affected": "complaints",
+    "rule_violated": "REPEAT_ISSUE_NOT_LINKED"
+  },
+  {
+    "complaint_id": "CMP-2026-000005",
+    "issue_type": "safety_low_priority",
+    "anomaly_category": "Priority Rule Engine",
+    "description": "Critical product safety hazard misclassified and assigned to low-priority General-Support queue",
+    "entity_affected": "complaints,assignments",
+    "rule_violated": "PRIORITY_SAFETY_ANOMALY"
+  },
+  {
+    "complaint_id": "CMP-2026-000006",
+    "issue_type": "survey_before_closure",
+    "anomaly_category": "Lifecycle State Flow",
+    "description": "Customer CSAT survey recorded prior to case resolution timestamp",
+    "entity_affected": "surveys",
+    "rule_violated": "DATE_SURVEY_BEFORE_CLOSURE"
   }
 ]

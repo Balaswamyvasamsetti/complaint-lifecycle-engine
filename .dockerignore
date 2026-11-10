@@ -1,0 +1,11 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+node_modules
+.git
+.gitignore
+.env
+output/complaints.db
+

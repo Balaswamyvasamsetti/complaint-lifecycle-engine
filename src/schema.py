@@ -1,26 +1,50 @@
-# schema.py — Master reference data, allowed values and business rules
+# schema.py — Master reference data, allowed values, business rules and entity specifications
 
 # ---------------------------------------------------------------------------
-# Categories
+# Primary Actors / Systems
 # ---------------------------------------------------------------------------
+ACTORS = {
+    "BUSINESS_REQUESTER": {
+        "role": "Business Requester",
+        "description": "Customer or account manager submitting complaints, tracking progress, receiving updates.",
+    },
+    "PROCESS_OWNER": {
+        "role": "Process Owner",
+        "description": "Monitors SLA compliance, team workloads, resolution velocity, and customer satisfaction.",
+    },
+    "APPROVER": {
+        "role": "Approver",
+        "description": "Reviews and authorizes high-value refunds (> £250), policy exceptions, and executive escalations.",
+    },
+    "OPERATIONS_ANALYST": {
+        "role": "Operations Analyst",
+        "description": "Evaluates model accuracy, audits priority rules, inspects anomalies, and runs operational reporting.",
+    },
+    "SYSTEM_ADMINISTRATOR": {
+        "role": "System Administrator",
+        "description": "Manages configuration, rules, SLA parameters, integrations, and database maintenance.",
+    },
+}
 
+# ---------------------------------------------------------------------------
+# Categories (10 categories)
+# ---------------------------------------------------------------------------
 CATEGORIES = [
-    {"category_id": "CAT-01", "name": "Billing & Payment",      "default_sla_hours": 48},
-    {"category_id": "CAT-02", "name": "Product Defect",         "default_sla_hours": 72},
-    {"category_id": "CAT-03", "name": "Delivery / Logistics",   "default_sla_hours": 48},
-    {"category_id": "CAT-04", "name": "Product Safety",         "default_sla_hours": 4},
-    {"category_id": "CAT-05", "name": "Customer Service",       "default_sla_hours": 24},
-    {"category_id": "CAT-06", "name": "Refund / Return",        "default_sla_hours": 72},
-    {"category_id": "CAT-07", "name": "Missing Order",          "default_sla_hours": 24},
-    {"category_id": "CAT-08", "name": "Technical / App Issue",  "default_sla_hours": 96},
-    {"category_id": "CAT-09", "name": "Fraud / Unauthorized",   "default_sla_hours": 8},
-    {"category_id": "CAT-10", "name": "General Enquiry",        "default_sla_hours": 120},
+    {"category_id": "CAT-01", "name": "Billing & Payment",     "default_sla_hours": 48},
+    {"category_id": "CAT-02", "name": "Product Defect",        "default_sla_hours": 72},
+    {"category_id": "CAT-03", "name": "Delivery / Logistics",  "default_sla_hours": 48},
+    {"category_id": "CAT-04", "name": "Product Safety",        "default_sla_hours": 4},
+    {"category_id": "CAT-05", "name": "Customer Service",      "default_sla_hours": 24},
+    {"category_id": "CAT-06", "name": "Refund / Return",       "default_sla_hours": 72},
+    {"category_id": "CAT-07", "name": "Missing Order",         "default_sla_hours": 24},
+    {"category_id": "CAT-08", "name": "Technical / App Issue", "default_sla_hours": 96},
+    {"category_id": "CAT-09", "name": "Fraud / Unauthorized",  "default_sla_hours": 8},
+    {"category_id": "CAT-10", "name": "General Enquiry",       "default_sla_hours": 120},
 ]
 
 # ---------------------------------------------------------------------------
-# Priority Rules  (PR-01 = highest, PR-04 = lowest)
+# Priority Rules (PR-01 = highest, PR-04 = lowest)
 # ---------------------------------------------------------------------------
-
 PRIORITY_RULES = [
     {
         "rule_id":             "PR-01",
@@ -57,9 +81,8 @@ PRIORITY_RULES = [
 ]
 
 # ---------------------------------------------------------------------------
-# Teams and Agents  (keyed by priority level)
+# Teams and Agents (keyed by priority level)
 # ---------------------------------------------------------------------------
-
 TEAMS = {
     "CRITICAL": ["Safety-Response", "Fraud-Team"],
     "HIGH":     ["Senior-Support",  "Escalations"],
@@ -79,18 +102,34 @@ AGENTS = {
 # ---------------------------------------------------------------------------
 # Enum allowed values
 # ---------------------------------------------------------------------------
-
 CHANNELS           = ["Email", "Phone", "Web", "Mobile App", "Social Media", "In-Store"]
 SENTIMENTS         = ["Positive", "Neutral", "Negative"]
 COMPLAINT_STATUSES = ["Open", "In Progress", "Pending Customer", "Escalated", "Resolved", "Closed", "Reopened"]
 ORDER_STATUSES     = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned"]
 RESOLUTION_TYPES   = ["Refund", "Replacement", "Apology", "Fix Applied", "Escalated Externally", "No Action Required"]
 SURVEY_RATINGS     = [1, 2, 3, 4, 5]
+SENDER_TYPES       = ["Customer", "Agent", "System"]
+CUSTOMER_SEGMENTS  = ["Premium", "Standard", "Basic"]
+SLA_STATUSES       = ["Active", "Paused", "Met", "Breached"]
+EVENT_TYPES        = [
+    "COMPLAINT_CREATED",
+    "ASSIGNED",
+    "STATUS_CHANGED",
+    "SLA_PAUSED",
+    "SLA_RESUMED",
+    "SLA_BREACHED",
+    "MESSAGE_RECEIVED",
+    "MESSAGE_SENT",
+    "RESOLUTION_PROPOSED",
+    "RESOLUTION_APPROVED",
+    "RESOLVED",
+    "SURVEY_SUBMITTED",
+    "REOPENED"
+]
 
 # ---------------------------------------------------------------------------
-# Products  (safety_risk=True triggers CRITICAL priority)
+# Products (safety_risk=True triggers CRITICAL priority)
 # ---------------------------------------------------------------------------
-
 PRODUCTS = [
     {"product_id": "PRD-001", "name": "SmartWatch Pro",      "category": "Electronics", "price": 299.99, "safety_risk": False},
     {"product_id": "PRD-002", "name": "Wireless Earbuds",    "category": "Electronics", "price": 89.99,  "safety_risk": False},

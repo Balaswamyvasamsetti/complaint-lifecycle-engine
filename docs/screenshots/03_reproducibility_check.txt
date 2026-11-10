@@ -1,0 +1,30 @@
+$ python src/run.py --reproducibility-check
+
+=================================================================
+  DETERMINISTIC REPRODUCIBILITY CHECK  (Seed: 20261022)
+=================================================================
+
+  Generating Run 1 (scale=0.1, seed=20261022)...
+  Generating Run 2 (scale=0.1, seed=20261022)...
+
+  Run 1 SHA-256: bd490d445f166ceb043c8733eaec5da097f05b3fa7b2f5239bd390197a116cbc
+  Run 2 SHA-256: bd490d445f166ceb043c8733eaec5da097f05b3fa7b2f5239bd390197a116cbc
+
+  Table-by-table comparison (all 13 tables):
+  anomalies        run1=6    run2=6    rows=MATCH  checksum=MATCH
+  assignments      run1=216  run2=216  rows=MATCH  checksum=MATCH
+  categories       run1=10   run2=10   rows=MATCH  checksum=MATCH
+  complaint_events run1=578  run2=578  rows=MATCH  checksum=MATCH
+  complaints       run1=200  run2=200  rows=MATCH  checksum=MATCH
+  customers        run1=500  run2=500  rows=MATCH  checksum=MATCH
+  messages         run1=600  run2=600  rows=MATCH  checksum=MATCH
+  orders           run1=800  run2=800  rows=MATCH  checksum=MATCH
+  priority_rules   run1=4    run2=4    rows=MATCH  checksum=MATCH
+  products         run1=15   run2=15   rows=MATCH  checksum=MATCH
+  resolutions      run1=83   run2=83   rows=MATCH  checksum=MATCH
+  sla_clocks       run1=200  run2=200  rows=MATCH  checksum=MATCH
+  surveys          run1=82   run2=82   rows=MATCH  checksum=MATCH
+
+  Overall Status: PASSED — 100% BIT-LEVEL MATCH
+  Audit report saved: output/reproducibility_report.json
+=================================================================

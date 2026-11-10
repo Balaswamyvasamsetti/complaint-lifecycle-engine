@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  engine:
+    build: .
+    container_name: complaint-lifecycle-engine
+    ports:
+      - "8000:8000"
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - DATABASE_URL=postgresql://neon_user:neon_pass@db:5432/complaints_db
+      - AWS_REGION=us-east-1
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: complaint-lifecycle-postgres
+    environment:
+      - POSTGRES_USER=neon_user
+      - POSTGRES_PASSWORD=neon_pass
+      - POSTGRES_DB=complaints_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./output/sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U neon_user -d complaints_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+

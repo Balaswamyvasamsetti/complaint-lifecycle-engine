@@ -1,0 +1,16 @@
+$ python -m pytest tests/ -v
+=========================== test session starts ============================
+platform win32 -- Python 3.14.0, pytest-8.3.5
+collected 9 items
+
+tests/test_system.py::test_schema_reference_data              PASSED  [  11%]
+tests/test_system.py::test_deterministic_id_conventions       PASSED  [  22%]
+tests/test_system.py::test_priority_rule_engine               PASSED  [  33%]
+tests/test_system.py::test_sla_calculation                    PASSED  [  44%]
+tests/test_system.py::test_validation_engine                  PASSED  [  55%]
+tests/test_system.py::test_ground_truth_isolation             PASSED  [  66%]
+tests/test_system.py::test_reproducibility                    PASSED  [  77%]
+tests/test_system.py::test_database_persistence_and_event_sourcing  PASSED  [  88%]
+tests/test_system.py::test_fastapi_rest_endpoints             PASSED  [ 100%]
+
+========================= 9 passed in 49.23s =========================

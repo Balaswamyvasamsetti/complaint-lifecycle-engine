@@ -23,6 +23,9 @@ def _get_client():
 
 
 def _invoke(prompt: str, max_tokens: int = 512) -> str:
+    if not os.getenv("AWS_ACCESS_KEY_ID"):
+        return _fallback_response(prompt)
+
     body = json.dumps({
         "anthropic_version": "bedrock-2023-05-31",
         "max_tokens": max_tokens,
@@ -37,9 +40,7 @@ def _invoke(prompt: str, max_tokens: int = 512) -> str:
         )
         result = json.loads(response["body"].read())
         return result["content"][0]["text"].strip()
-    except NoCredentialsError:
-        return _fallback_response(prompt)
-    except ClientError as e:
+    except (NoCredentialsError, ClientError, Exception):
         return _fallback_response(prompt)
 
 

@@ -1,0 +1,26 @@
+$ curl http://127.0.0.1:8000/health
+{
+  "status": "ok",
+  "timestamp": "2026-11-10T07:49:57",
+  "database": "connected (PostgreSQL)"
+}
+
+$ curl http://127.0.0.1:8000/analytics/summary
+{
+  "total_complaints": 2005,
+  "resolved_complaints": 780,
+  "open_complaints": 1225,
+  "sla_breach_rate_pct": 26.73,
+  "avg_csat_rating": 3.74,
+  "avg_nps_score": 6.47,
+  "complaints_by_priority": {
+    "CRITICAL": 142,
+    "HIGH": 489,
+    "MEDIUM": 876,
+    "LOW": 498
+  },
+  "complaints_by_status": {
+    "Open": 1225,
+    "Resolved": 780
+  }
+}

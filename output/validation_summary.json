@@ -1,0 +1,15 @@
+{
+  "status": "PASSED",
+  "total_evaluations_checked": 6,
+  "genuine_data_defects": 0,
+  "expected_edge_cases_caught": 6,
+  "defect_breakdown": {},
+  "edge_case_breakdown": {
+    "FK_CUSTOMER_MISSING": 1,
+    "DATE_SLA_PAUSE_NO_RESUME": 1,
+    "DATE_RESOLUTION_BEFORE_COMPLAINT": 1,
+    "DATE_SURVEY_BEFORE_CLOSURE": 1,
+    "REPEAT_ISSUE_NOT_LINKED": 1,
+    "PRIORITY_SAFETY_ANOMALY": 1
+  }
+}

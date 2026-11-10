@@ -1,5 +1,5 @@
 rule_id,priority,level,description,sla_multiplier,auto_escalate_hours
 PR-01,CRITICAL,1,Safety issue OR fraud OR vulnerable customer,0.25,2
 PR-02,HIGH,2,Negative sentiment AND order_value > 500 OR recurrence >= 3,0.5,8
-PR-03,MEDIUM,3,Negative sentiment OR order_value 100-500,1.0,24
+PR-03,MEDIUM,3,Negative sentiment OR order_value 100-500,1,24
 PR-04,LOW,4,Neutral/positive sentiment AND order_value < 100,1.5,72

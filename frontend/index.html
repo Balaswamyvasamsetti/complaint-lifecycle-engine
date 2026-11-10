@@ -306,7 +306,7 @@
               </button>
               <button onclick="applyPreset(2)" class="text-left px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] transition text-slate-700 flex items-center space-x-1.5 min-w-0">
                 <i class="fa-solid fa-credit-card text-brand-600 text-xs shrink-0"></i>
-                <span class="truncate font-medium" id="disp-preset-fraud">Fraud Dispute (₹36,750 / £350)</span>
+                <span class="truncate font-medium" id="disp-preset-fraud">Fraud Dispute (₹36,750)</span>
               </button>
               <button onclick="applyPreset(3)" class="text-left px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] transition text-slate-700 flex items-center space-x-1.5 min-w-0">
                 <i class="fa-solid fa-truck text-amber-500 text-xs shrink-0"></i>
@@ -339,8 +339,8 @@
                 </select>
               </div>
               <div>
-                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Order Value (<span class="curr-unit">₹ INR</span> / £ GBP)</label>
-                <input type="number" id="inp-value" value="199.99" step="0.01"
+                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1" id="lbl-order-val">Order Value (<span class="curr-unit">₹ INR</span>)</label>
+                <input type="number" id="inp-value" value="20999" step="any"
                   class="w-full rounded-lg bg-slate-50 border border-borderSubtle px-2 py-1.5 text-xs text-slate-800 font-mono focus:outline-none focus:border-brand-600">
               </div>
             </div>
@@ -570,11 +570,11 @@
             <span class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono">Perform Operations Actions</span>
             
             <div class="grid grid-cols-2 gap-2">
-              <button onclick="pauseSLA()" class="px-2.5 py-1.5 sm:py-2 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+              <button type="button" onclick="pauseSLA()" class="px-2.5 py-1.5 sm:py-2 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
                 <i class="fa-solid fa-circle-pause text-amber-600"></i>
                 <span>Pause SLA Clock</span>
               </button>
-              <button onclick="resumeSLA()" class="px-2.5 py-1.5 sm:py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+              <button type="button" onclick="resumeSLA()" class="px-2.5 py-1.5 sm:py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
                 <i class="fa-solid fa-circle-play text-emerald-600"></i>
                 <span>Resume SLA Clock</span>
               </button>
@@ -585,21 +585,22 @@
               <div class="flex items-center justify-between flex-wrap gap-1.5">
                 <span class="font-medium text-slate-700 text-[11px]">Lifecycle Transition:</span>
                 <div class="space-x-1 flex flex-wrap gap-1">
-                  <button onclick="updateStatusDirect('In Progress')" class="px-2 py-0.5 sm:py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[10px] font-semibold">In Progress</button>
-                  <button onclick="updateStatusDirect('Pending Customer')" class="px-2 py-0.5 sm:py-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[10px] font-semibold">Pending Customer</button>
-                  <button onclick="updateStatusDirect('Escalated')" class="px-2 py-0.5 sm:py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-semibold">Escalated</button>
-                  <button onclick="updateStatusDirect('Closed')" class="px-2 py-0.5 sm:py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-[10px] font-semibold">Close</button>
-                  <button onclick="updateStatusDirect('Reopened')" class="px-2 py-0.5 sm:py-1 rounded bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[10px] font-semibold">Reopen</button>
+                  <button type="button" onclick="updateStatusDirect('In Progress')" class="px-2 py-0.5 sm:py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[10px] font-semibold">In Progress</button>
+                  <button type="button" onclick="updateStatusDirect('Pending Customer')" class="px-2 py-0.5 sm:py-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[10px] font-semibold">Pending Customer</button>
+                  <button type="button" onclick="updateStatusDirect('Escalated')" class="px-2 py-0.5 sm:py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-semibold">Escalated</button>
+                  <button type="button" onclick="updateStatusDirect('Closed')" class="px-2 py-0.5 sm:py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-[10px] font-semibold">Close</button>
+                  <button type="button" onclick="updateStatusDirect('Reopened')" class="px-2 py-0.5 sm:py-1 rounded bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[10px] font-semibold">Reopen</button>
                 </div>
               </div>
 
               <div class="pt-2 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-1.5 sm:gap-2 items-center">
                 <div class="sm:col-span-5">
-                  <select id="reassign-team" class="w-full text-[11px] rounded bg-white border border-slate-300 p-1.5 text-slate-700">
+                  <select id="reassign-team" onchange="onReassignTeamChange()" class="w-full text-[11px] rounded bg-white border border-slate-300 p-1.5 text-slate-700">
                     <option value="Safety-Response">Safety-Response</option>
-                    <option value="Escalations">Escalations</option>
-                    <option value="Tier-2-Technical">Tier-2-Technical</option>
-                    <option value="Executive-Complaints">Executive-Complaints</option>
+                    <option value="Fraud-Team">Fraud-Team</option>
+                    <option value="Senior-Support">Senior-Support</option>
+                    <option value="Escalations" selected>Escalations</option>
+                    <option value="Standard-Support">Standard-Support</option>
                     <option value="General-Support">General-Support</option>
                   </select>
                 </div>
@@ -607,7 +608,7 @@
                   <input type="text" id="reassign-agent" placeholder="Agent (e.g. AGT-ES-01)" value="AGT-ES-01" class="w-full text-[11px] rounded bg-white border border-slate-300 p-1.5 text-slate-700 font-mono">
                 </div>
                 <div class="sm:col-span-3">
-                  <button onclick="executeReassignment()" class="w-full py-1.5 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-[11px]">Reassign</button>
+                  <button type="button" onclick="executeReassignment()" class="w-full py-1.5 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-[11px]">Reassign</button>
                 </div>
               </div>
             </div>
@@ -628,14 +629,15 @@
                 <select id="res-type" class="w-full rounded bg-white border border-slate-300 p-1.5 text-xs text-slate-800">
                   <option value="Refund">Full / Partial Refund</option>
                   <option value="Replacement">Product Replacement</option>
-                  <option value="Apology & Credit">Apology & Store Credit</option>
-                  <option value="Technical Fix">Technical Fix / Firmware</option>
-                  <option value="Explanation & Advice">Explanation & Guidance</option>
+                  <option value="Apology">Formal Apology & Goodwill Credit</option>
+                  <option value="Fix Applied">Technical Fix / System Correction</option>
+                  <option value="Escalated Externally">Escalated Externally / Ombudsman</option>
+                  <option value="No Action Required">No Action Required / Advice Given</option>
                 </select>
               </div>
               <div>
-                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Refund Amount (<span class="curr-unit">₹ INR</span> / £ GBP)</label>
-                <input type="number" id="res-amount" value="59.99" step="0.01" oninput="checkApproverThreshold()"
+                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1" id="lbl-refund-amt">Refund Amount (<span class="curr-unit">₹ INR</span>)</label>
+                <input type="number" id="res-amount" value="6299" step="any" oninput="checkApproverThreshold()"
                   class="w-full rounded bg-white border border-slate-300 p-1.5 text-xs text-slate-800 font-mono">
               </div>
             </div>
@@ -643,7 +645,7 @@
             <!-- Approver Threshold Banner -->
             <div id="approver-threshold-banner" class="hidden p-2 rounded bg-amber-50 border border-amber-200 text-amber-800 text-[10px] sm:text-[11px] flex items-center space-x-1.5 font-medium">
               <i class="fa-solid fa-shield-exclamation text-amber-600 shrink-0"></i>
-              <span>High-Value Settlement (> ₹25,000 / £250.00 rule): Formal Approver role authorization required.</span>
+              <span id="approver-banner-text">High-Value Settlement (> ₹26,250 rule): Formal Approver role authorization required.</span>
             </div>
 
             <div>
@@ -658,7 +660,7 @@
                 placeholder="Document resolution rationale, customer concessions, and approver references..."></textarea>
             </div>
 
-            <button onclick="executeResolution()" class="w-full py-2 sm:py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs flex items-center justify-center space-x-2 transition">
+            <button type="button" onclick="executeResolution()" class="w-full py-2 sm:py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs flex items-center justify-center space-x-2 transition">
               <i class="fa-solid fa-check"></i>
               <span>Submit Resolution & Sign Off</span>
             </button>
@@ -690,7 +692,7 @@
             <div class="flex space-x-2">
               <input type="text" id="msg-text" placeholder="Type message or internal case notes (Press Enter to send)..." onkeydown="if(event.key==='Enter') executePostMessage()"
                 class="flex-1 text-xs rounded bg-white border border-slate-300 px-2.5 py-1.5 text-slate-800 focus:outline-none focus:border-brand-600">
-              <button onclick="executePostMessage()" class="px-3 py-1.5 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shrink-0 flex items-center space-x-1.5">
+              <button type="button" onclick="executePostMessage()" class="px-3 py-1.5 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shrink-0 flex items-center space-x-1.5">
                 <i class="fa-solid fa-paper-plane text-[10px]"></i>
                 <span>Send</span>
               </button>
@@ -729,7 +731,7 @@
             <div class="flex space-x-2">
               <input type="text" id="srv-feedback" placeholder="Optional survey comment (Press Enter to submit)..." onkeydown="if(event.key==='Enter') executeSurvey()"
                 class="flex-1 text-xs rounded bg-white border border-slate-300 px-2 py-1 text-slate-800">
-              <button onclick="executeSurvey()" class="px-3 py-1 rounded bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs shrink-0 flex items-center space-x-1">
+              <button type="button" onclick="executeSurvey()" class="px-3 py-1 rounded bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs shrink-0 flex items-center space-x-1">
                 <i class="fa-solid fa-star text-[10px]"></i>
                 <span>Submit</span>
               </button>
@@ -776,7 +778,10 @@
     const INR_PER_GBP = 105.0;
 
     function setCurrency(curr) {
+      if (currentCurrency === curr) return;
+      const prevCurr = currentCurrency;
       currentCurrency = curr;
+
       const btnInr = document.getElementById('btn-curr-inr');
       const btnGbp = document.getElementById('btn-curr-gbp');
       if (btnInr && btnGbp) {
@@ -788,24 +793,59 @@
           btnInr.className = 'px-2 py-0.5 rounded-md text-slate-600 hover:text-slate-900 transition font-normal';
         }
       }
+
+      // Update unit indicators
       const unitLabels = document.querySelectorAll('.curr-unit');
       unitLabels.forEach(el => el.innerText = curr === 'INR' ? '₹ INR' : '£ GBP');
 
+      // Update preset 2 display
       const presetDisp = document.getElementById('disp-preset-fraud');
       if (presetDisp) {
-        presetDisp.innerText = curr === 'INR' ? 'Fraud Dispute (₹36,750 / £350)' : 'Fraud Dispute (£350)';
+        presetDisp.innerText = curr === 'INR' ? 'Fraud Dispute (₹36,750)' : 'Fraud Dispute (£350.00)';
       }
+
+      // Dynamically convert values typed in inputs
+      const inpVal = document.getElementById('inp-value');
+      if (inpVal && inpVal.value) {
+        const num = parseFloat(inpVal.value) || 0.0;
+        if (curr === 'INR' && prevCurr === 'GBP') {
+          inpVal.value = Math.round(num * INR_PER_GBP);
+        } else if (curr === 'GBP' && prevCurr === 'INR') {
+          inpVal.value = (num / INR_PER_GBP).toFixed(2);
+        }
+      }
+
+      const resAmt = document.getElementById('res-amount');
+      if (resAmt && resAmt.value) {
+        const num = parseFloat(resAmt.value) || 0.0;
+        if (curr === 'INR' && prevCurr === 'GBP') {
+          resAmt.value = Math.round(num * INR_PER_GBP);
+        } else if (curr === 'GBP' && prevCurr === 'INR') {
+          resAmt.value = (num / INR_PER_GBP).toFixed(2);
+        }
+      }
+
+      // Update approver banner threshold
+      const bannerText = document.getElementById('approver-banner-text');
+      if (bannerText) {
+        bannerText.innerText = curr === 'INR'
+          ? 'High-Value Settlement (> ₹26,250 rule): Formal Approver role authorization required.'
+          : 'High-Value Settlement (> £250.00 rule): Formal Approver role authorization required.';
+      }
+
+      checkApproverThreshold();
+
       if (currentSelectedId) {
         inspectTicket(currentSelectedId);
       }
     }
 
     function formatMoney(amountGbp) {
-      if (amountGbp === undefined || amountGbp === null) return '0.00';
+      if (amountGbp === undefined || amountGbp === null) return currentCurrency === 'INR' ? '₹0' : '£0.00';
       const num = parseFloat(amountGbp) || 0.0;
       if (currentCurrency === 'INR') {
         const valInr = Math.round(num * INR_PER_GBP);
-        return `₹${valInr.toLocaleString('en-IN')} (approx £${num.toFixed(2)})`;
+        return `₹${valInr.toLocaleString('en-IN')}`;
       } else {
         return `£${num.toFixed(2)}`;
       }
@@ -815,28 +855,29 @@
       1: {
         text: "The electric coffee maker overheated, began smoking, and caught fire on the kitchen counter during brewing. The safety fuse failed to activate.",
         channel: "Email",
-        value: 199.99,
+        valueGbp: 199.99,
         safety: true,
         vulnerable: false
       },
       2: {
-        text: "Unrecognized fraudulent charge of ₹36,750 (£350.00) posted to my credit card account. I have not authorized this transaction and demand an immediate reversal.",
+        textGbp: "Unrecognized fraudulent charge of £350.00 posted to my credit card account. I have not authorized this transaction and demand an immediate reversal.",
+        textInr: "Unrecognized fraudulent charge of ₹36,750 posted to my credit card account. I have not authorized this transaction and demand an immediate reversal.",
         channel: "Phone",
-        value: 350.00,
+        valueGbp: 350.00,
         safety: false,
         vulnerable: false
       },
       3: {
         text: "My package was marked as delivered two days ago, but nothing was received. Courier tracking provides no proof of delivery. Please investigate.",
         channel: "Web",
-        value: 89.99,
+        valueGbp: 89.99,
         safety: false,
         vulnerable: false
       },
       4: {
         text: "Discrepancy in invoice statement for my subscription order. Monthly discount was omitted from the billed amount.",
         channel: "Mobile App",
-        value: 45.00,
+        valueGbp: 45.00,
         safety: false,
         vulnerable: false
       }
@@ -880,16 +921,34 @@
           content.classList.add('hidden');
         }
       });
+      if (tabName === 'resolve') checkApproverThreshold();
       if (tabName === 'messages' && currentSelectedId) loadMessages(currentSelectedId);
       if (tabName === 'audit' && currentSelectedId) loadAuditTrail(currentSelectedId);
+    }
+
+    function onReassignTeamChange() {
+      const team = document.getElementById('reassign-team').value;
+      const agentMap = {
+        'Safety-Response': 'AGT-SR-01',
+        'Fraud-Team': 'AGT-FR-01',
+        'Senior-Support': 'AGT-SS-01',
+        'Escalations': 'AGT-ES-01',
+        'Standard-Support': 'AGT-ST-01',
+        'General-Support': 'AGT-GS-01'
+      };
+      if (agentMap[team]) {
+        document.getElementById('reassign-agent').value = agentMap[team];
+      }
     }
 
     function applyPreset(idx) {
       const p = PRESETS[idx];
       if (!p) return;
-      document.getElementById('inp-text').value = p.text;
+      document.getElementById('inp-text').value = (currentCurrency === 'INR' && p.textInr) ? p.textInr : (p.textGbp || p.text);
       document.getElementById('inp-channel').value = p.channel;
-      document.getElementById('inp-value').value = p.value;
+      document.getElementById('inp-value').value = currentCurrency === 'INR'
+        ? Math.round(p.valueGbp * INR_PER_GBP)
+        : p.valueGbp;
       document.getElementById('inp-safety').checked = p.safety;
       document.getElementById('inp-vulnerable').checked = p.vulnerable;
       showToast(`Loaded scenario preset #${idx}`);
@@ -1123,7 +1182,10 @@
           document.getElementById('meta-text').innerText = c.complaint_text || c.ai_summary || `${c.category_name} grievance logged via ${c.channel}. Evaluated at ${c.priority} priority (${c.severity} severity). Order exposure: ${formatMoney(c.order_value || 0)}.`;
           
           if (c.order_value) {
-            document.getElementById('res-amount').value = (c.order_value).toFixed(2);
+            const rawGbp = parseFloat(c.order_value) || 0.0;
+            document.getElementById('res-amount').value = currentCurrency === 'INR'
+              ? Math.round(rawGbp * INR_PER_GBP)
+              : rawGbp.toFixed(2);
             checkApproverThreshold();
           }
 
@@ -1161,8 +1223,9 @@
 
     function checkApproverThreshold() {
       const amt = parseFloat(document.getElementById('res-amount').value) || 0.0;
+      const threshold = currentCurrency === 'INR' ? (250.0 * INR_PER_GBP) : 250.0;
       const banner = document.getElementById('approver-threshold-banner');
-      if (amt > 250.0) {
+      if (amt > threshold) {
         banner.classList.remove('hidden');
       } else {
         banner.classList.add('hidden');
@@ -1219,6 +1282,102 @@
       }
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(m) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+      });
+    }
+
+    async function loadMessages(complaintId) {
+      const container = document.getElementById('messages-container');
+      if (!container) return;
+      container.innerHTML = '<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Loading conversation history...</div>';
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${complaintId}/messages`);
+        if (!res.ok) throw new Error('Failed to load message thread');
+        const data = await res.json();
+        const msgs = data.messages || [];
+
+        if (msgs.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-8 text-slate-400 space-y-1">
+              <i class="fa-regular fa-comment-dots text-2xl text-slate-300 mb-1 block"></i>
+              <p class="font-medium text-slate-600">No message thread history yet</p>
+              <p class="text-[10px] text-slate-400">Use the form below to post a communication or internal case note.</p>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = '';
+        msgs.forEach(m => {
+          const isInternal = m.is_internal;
+          const sender = m.sender_type || 'Agent';
+          const isCustomer = sender === 'Customer';
+          const isSystem = sender === 'System';
+
+          const div = document.createElement('div');
+          
+          if (isInternal) {
+            div.className = 'p-2.5 rounded-lg bg-amber-50/90 border border-amber-200 text-slate-800 space-y-1 text-xs shadow-2xs';
+            div.innerHTML = `
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-bold text-amber-800 flex items-center space-x-1">
+                  <i class="fa-solid fa-lock text-amber-600 text-[10px]"></i>
+                  <span>INTERNAL CASE NOTE • ${escapeHtml(sender)}</span>
+                </span>
+                <span class="font-mono text-slate-400 text-[10px]">${m.sent_at ? m.sent_at.replace('T', ' ').substring(0, 16) : ''}</span>
+              </div>
+              <p class="text-slate-800 leading-relaxed text-[11px]">${escapeHtml(m.message_text)}</p>
+            `;
+          } else if (isCustomer) {
+            div.className = 'p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-800 space-y-1 text-xs shadow-2xs mr-3';
+            div.innerHTML = `
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-bold text-indigo-700 flex items-center space-x-1">
+                  <i class="fa-solid fa-user text-indigo-500 text-[10px]"></i>
+                  <span>Customer Grievance</span>
+                </span>
+                <span class="font-mono text-slate-400 text-[10px]">${m.sent_at ? m.sent_at.replace('T', ' ').substring(0, 16) : ''}</span>
+              </div>
+              <p class="text-slate-800 leading-relaxed text-[11px]">${escapeHtml(m.message_text)}</p>
+            `;
+          } else if (isSystem) {
+            div.className = 'p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 text-[11px] flex items-start space-x-2';
+            div.innerHTML = `
+              <i class="fa-solid fa-robot text-slate-400 mt-0.5 text-xs shrink-0"></i>
+              <div class="flex-1">
+                <div class="flex items-center justify-between text-[10px] text-slate-500 mb-0.5">
+                  <span class="font-semibold uppercase tracking-wider font-mono">System Notification</span>
+                  <span class="font-mono text-slate-400 text-[10px]">${m.sent_at ? m.sent_at.replace('T', ' ').substring(0, 16) : ''}</span>
+                </div>
+                <p class="text-slate-600 text-[11px]">${escapeHtml(m.message_text)}</p>
+              </div>
+            `;
+          } else {
+            div.className = 'p-2.5 rounded-lg bg-brand-50/70 border border-brand-200 text-slate-800 space-y-1 text-xs shadow-2xs ml-3';
+            div.innerHTML = `
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-bold text-brand-700 flex items-center space-x-1">
+                  <i class="fa-solid fa-headset text-brand-600 text-[10px]"></i>
+                  <span>Support Specialist</span>
+                </span>
+                <span class="font-mono text-slate-400 text-[10px]">${m.sent_at ? m.sent_at.replace('T', ' ').substring(0, 16) : ''}</span>
+              </div>
+              <p class="text-slate-800 leading-relaxed text-[11px]">${escapeHtml(m.message_text)}</p>
+            `;
+          }
+          container.appendChild(div);
+        });
+
+        container.scrollTop = container.scrollHeight;
+
+      } catch (e) {
+        container.innerHTML = '<div class="text-center py-6 text-rose-500">Failed to load message thread.</div>';
+      }
+    }
+
     async function extractErrorMessage(res, defaultMsg) {
       try {
         const data = await res.json();
@@ -1250,7 +1409,8 @@
     async function executeTriage() {
       const text = document.getElementById('inp-text').value;
       const channel = document.getElementById('inp-channel').value;
-      const orderValue = parseFloat(document.getElementById('inp-value').value) || 0.0;
+      const enteredValue = parseFloat(document.getElementById('inp-value').value) || 0.0;
+      const orderValue = currentCurrency === 'INR' ? (enteredValue / INR_PER_GBP) : enteredValue;
       const isSafety = document.getElementById('inp-safety').checked;
       const isVulnerable = document.getElementById('inp-vulnerable').checked;
 
@@ -1314,7 +1474,8 @@
         });
         if (!res.ok) throw new Error(await extractErrorMessage(res, 'Pause failed'));
         showToast(`SLA Clock paused for ticket ${currentSelectedId}`, 'success');
-        inspectTicket(currentSelectedId);
+        await inspectTicket(currentSelectedId);
+        loadAuditTrail(currentSelectedId);
       } catch (e) {
         showToast('Pause failed: ' + e.message, 'error');
       }
@@ -1332,7 +1493,8 @@
         if (!res.ok) throw new Error(await extractErrorMessage(res, 'Resume failed'));
         const data = await res.json();
         showToast(`SLA Clock resumed (Adjusted: ${data.adjusted_deadline || 'Active'})`, 'success');
-        inspectTicket(currentSelectedId);
+        await inspectTicket(currentSelectedId);
+        loadAuditTrail(currentSelectedId);
       } catch (e) {
         showToast('Resume failed: ' + e.message, 'error');
       }
@@ -1350,8 +1512,9 @@
         });
         if (!res.ok) throw new Error(await extractErrorMessage(res, 'Status update failed'));
         showToast(`Ticket status updated to ${targetStatus}`, 'success');
-        refreshAll(false);
-        inspectTicket(currentSelectedId);
+        await refreshAll(false);
+        await inspectTicket(currentSelectedId);
+        loadAuditTrail(currentSelectedId);
       } catch (e) {
         showToast('Status update failed: ' + e.message, 'error');
       }
@@ -1371,7 +1534,8 @@
         });
         if (!res.ok) throw new Error(await extractErrorMessage(res, 'Reassignment failed'));
         showToast(`Reassigned to ${team} (${agent})`, 'success');
-        inspectTicket(currentSelectedId);
+        await inspectTicket(currentSelectedId);
+        loadAuditTrail(currentSelectedId);
       } catch (e) {
         showToast('Reassignment error: ' + e.message, 'error');
       }
@@ -1381,8 +1545,13 @@
     async function executeResolution() {
       if (!currentSelectedId) { showToast('Select a ticket first', 'error'); return; }
       const resType = document.getElementById('res-type').value;
-      const amount = parseFloat(document.getElementById('res-amount').value) || 0.0;
+      const enteredAmount = parseFloat(document.getElementById('res-amount').value) || 0.0;
+      const amount = currentCurrency === 'INR' ? (enteredAmount / INR_PER_GBP) : enteredAmount;
       const notes = document.getElementById('res-notes').value || 'Settled and confirmed by support agent.';
+
+      const assignedAgentText = document.getElementById('meta-agent')?.innerText || '';
+      const agentMatch = assignedAgentText.match(/AGT-[A-Z0-9-]+/);
+      const resolvedBy = agentMatch ? agentMatch[0] : 'AGT-SR-01';
 
       try {
         const res = await fetch(`${API_BASE}/complaints/${currentSelectedId}/resolve`, {
@@ -1390,7 +1559,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             resolution_type: resType,
-            resolved_by: 'AGT-SR-01',
+            resolved_by: resolvedBy,
             notes: notes,
             refund_amount: amount
           })
@@ -1400,7 +1569,7 @@
         const data = await res.json();
         showToast(`Complaint ${currentSelectedId} resolved (${resType})!`, 'success');
         refreshAll(false);
-        inspectTicket(currentSelectedId);
+        await inspectTicket(currentSelectedId);
         switchCockpitTab('overview');
       } catch (e) {
         showToast('Resolution failed: ' + e.message, 'error');
@@ -1424,7 +1593,8 @@
         if (!res.ok) throw new Error(await extractErrorMessage(res, 'Message failed'));
         document.getElementById('msg-text').value = '';
         showToast('Message logged to thread', 'success');
-        loadMessages(currentSelectedId);
+        await loadMessages(currentSelectedId);
+        loadAuditTrail(currentSelectedId);
       } catch (e) {
         showToast('Message failed: ' + e.message, 'error');
       }
@@ -1446,7 +1616,8 @@
         if (!res.ok) throw new Error(await extractErrorMessage(res, 'Survey failed'));
         showToast(`CSAT Survey logged: ${rating}/5 Stars!`, 'success');
         document.getElementById('srv-feedback').value = '';
-        inspectTicket(currentSelectedId);
+        await inspectTicket(currentSelectedId);
+        loadAuditTrail(currentSelectedId);
         fetchStats(false);
       } catch (e) {
         showToast('Survey submission error: ' + e.message, 'error');

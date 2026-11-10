@@ -9,9 +9,15 @@ pydantic>=2.7.0
 # Data processing
 pandas>=2.2.0
 
+# Database
+psycopg2-binary>=2.9.9
+
 # AWS / AI
 boto3>=1.34.0
 botocore>=1.34.0
+
+# Testing & Quality
+pytest>=8.0.0
 
 # Utilities
 httpx>=0.27.0

@@ -6,8 +6,12 @@ import os
 import sqlite3
 import json
 import uuid
+import time
+import threading
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
+
+_sequence_lock = threading.RLock()
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -55,8 +59,16 @@ def get_conn():
         try:
             if _pg_conn is None or _pg_conn.closed != 0:
                 _pg_conn = psycopg2.connect(DATABASE_URL)
+                _pg_conn.autocommit = True
+            else:
+                try:
+                    if _pg_conn.get_transaction_status() == psycopg2.extensions.TRANSACTION_STATUS_ERROR:
+                        _pg_conn.rollback()
+                except Exception:
+                    pass
         except Exception:
             _pg_conn = psycopg2.connect(DATABASE_URL)
+            _pg_conn.autocommit = True
         return _PooledPostgresWrapper(_pg_conn)
     else:
         os.makedirs(os.path.dirname(os.path.abspath(DB_PATH)), exist_ok=True)
@@ -388,20 +400,28 @@ def init_db():
 
 def get_next_sequence_id(table: str, id_col: str, prefix: str, padding: int = 6) -> str:
     """Returns the next strictly sequential zero-padded ID (e.g. CMP-2026-000001, ASN-000001)."""
-    conn = get_conn()
-    cur = _execute(conn, f"SELECT {id_col} FROM {table} WHERE {id_col} LIKE ? ORDER BY {id_col} DESC LIMIT 1", (f"{prefix}%",))
-    row = _fetchone_dict(cur)
-    conn.close()
-    if row and row.get(id_col):
-        last_id = str(row[id_col])
-        num_part = last_id[len(prefix):]
-        try:
-            cnt = int(num_part) + 1
-        except ValueError:
-            cnt = 1
-    else:
+    with _sequence_lock:
+        conn = get_conn()
+        cur = _execute(conn, f"SELECT {id_col} FROM {table} WHERE {id_col} LIKE ? ORDER BY LENGTH({id_col}) DESC, {id_col} DESC LIMIT 1", (f"{prefix}%",))
+        row = _fetchone_dict(cur)
         cnt = 1
-    return f"{prefix}{cnt:0{padding}d}"
+        if row and row.get(id_col):
+            last_id = str(row[id_col])
+            num_part = last_id[len(prefix):]
+            try:
+                cnt = int(num_part) + 1
+            except ValueError:
+                cnt = 1
+
+        candidate = f"{prefix}{cnt:0{padding}d}"
+        cur2 = _execute(conn, f"SELECT 1 FROM {table} WHERE {id_col} = ?", (candidate,))
+        while cur2.fetchone():
+            cnt += 1
+            candidate = f"{prefix}{cnt:0{padding}d}"
+            cur2 = _execute(conn, f"SELECT 1 FROM {table} WHERE {id_col} = ?", (candidate,))
+
+        conn.close()
+        return candidate
 
 
 def clean_database():
@@ -429,17 +449,29 @@ def clean_database():
 
 def log_event(complaint_id: str, event_type: str, actor: str, old_state: str, new_state: str, details: str = ""):
     """Appends an immutable state change or action event with sequential zero-padded EVT-000001 ID."""
-    conn = get_conn()
-    event_id = get_next_sequence_id("complaint_events", "event_id", "EVT-", 6)
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
-
-    query = """
-        INSERT INTO complaint_events (event_id, complaint_id, event_type, actor, old_state, new_state, event_timestamp, details)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """
-    _execute(conn, query, (event_id, complaint_id, event_type, actor, old_state, new_state, now, details))
-    conn.commit()
-    conn.close()
+    with _sequence_lock:
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+        for attempt in range(10):
+            event_id = get_next_sequence_id("complaint_events", "event_id", "EVT-", 6)
+            conn = get_conn()
+            try:
+                query = """
+                    INSERT INTO complaint_events (event_id, complaint_id, event_type, actor, old_state, new_state, event_timestamp, details)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """
+                _execute(conn, query, (event_id, complaint_id, event_type, actor, old_state, new_state, now, details))
+                conn.commit()
+                conn.close()
+                break
+            except Exception as e:
+                try:
+                    conn.rollback()
+                    conn.close()
+                except Exception:
+                    pass
+                if attempt == 9:
+                    raise e
+                time.sleep(0.05)
     invalidate_analytics_cache()
 
 
@@ -614,18 +646,30 @@ def update_complaint_status(complaint_id: str, new_status: str, actor: str = "Sy
 
 
 def assign_complaint(complaint_id: str, team: str, agent_id: str, actor: str = "System", reason: str = ""):
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
-    conn = get_conn()
+    with _sequence_lock:
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+        for attempt in range(10):
+            new_asn_id = get_next_sequence_id("assignments", "assignment_id", "ASN-", 6)
+            conn = get_conn()
+            try:
+                # Deactivate current assignment
+                _execute(conn, "UPDATE assignments SET is_current = FALSE WHERE complaint_id = ?", (complaint_id,))
 
-    # Deactivate current assignment
-    _execute(conn, "UPDATE assignments SET is_current = FALSE WHERE complaint_id = ?", (complaint_id,))
-
-    # Create new assignment with sequential zero-padded ASN-000001 ID
-    new_asn_id = get_next_sequence_id("assignments", "assignment_id", "ASN-", 6)
-    _execute(conn, "INSERT INTO assignments VALUES (?,?,?,?,?,?,?)",
-             (new_asn_id, complaint_id, team, agent_id, now, True, reason))
-    conn.commit()
-    conn.close()
+                # Create new assignment with sequential zero-padded ASN-000001 ID
+                _execute(conn, "INSERT INTO assignments VALUES (?,?,?,?,?,?,?)",
+                         (new_asn_id, complaint_id, team, agent_id, now, True, reason))
+                conn.commit()
+                conn.close()
+                break
+            except Exception as e:
+                try:
+                    conn.rollback()
+                    conn.close()
+                except Exception:
+                    pass
+                if attempt == 9:
+                    raise e
+                time.sleep(0.05)
     invalidate_analytics_cache()
 
     log_event(complaint_id, "ASSIGNED", actor, "", team, "Assigned to %s (Agent: %s). %s" % (team, agent_id, reason))

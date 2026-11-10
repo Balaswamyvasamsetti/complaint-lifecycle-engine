@@ -51,10 +51,13 @@ def test_deterministic_id_conventions(sample_dataset):
         assert len(a["assignment_id"]) == 10  # ASN-000001
 
     for s in sample_dataset["sla_clocks"]:
-        assert s["sla_id"].startswith("SLA-")
+        assert s["sla_id"] == "SLA-%s" % s["complaint_id"]
 
     for r in sample_dataset["resolutions"]:
-        assert r["resolution_id"].startswith("RES-")
+        assert r["resolution_id"] == "RES-%s" % r["complaint_id"]
+
+    for m in sample_dataset["messages"]:
+        assert m["message_id"].startswith("MSG-%s-" % m["complaint_id"])
 
     for sv in sample_dataset["surveys"]:
         assert sv["survey_id"].startswith("SRV-")

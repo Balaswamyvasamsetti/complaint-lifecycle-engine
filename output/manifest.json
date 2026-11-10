@@ -37,13 +37,13 @@
   },
   {
     "table": "complaint_events",
-    "row_count": 5743,
+    "row_count": 5744,
     "csv": "C:\\Yottaflex_hackthon\\src\\..\\output\\csv\\complaint_events.csv",
     "json": "C:\\Yottaflex_hackthon\\src\\..\\output\\json\\complaint_events.json"
   },
   {
     "table": "assignments",
-    "row_count": 2193,
+    "row_count": 2194,
     "csv": "C:\\Yottaflex_hackthon\\src\\..\\output\\csv\\assignments.csv",
     "json": "C:\\Yottaflex_hackthon\\src\\..\\output\\json\\assignments.json"
   },
@@ -61,13 +61,13 @@
   },
   {
     "table": "resolutions",
-    "row_count": 775,
+    "row_count": 776,
     "csv": "C:\\Yottaflex_hackthon\\src\\..\\output\\csv\\resolutions.csv",
     "json": "C:\\Yottaflex_hackthon\\src\\..\\output\\json\\resolutions.json"
   },
   {
     "table": "surveys",
-    "row_count": 775,
+    "row_count": 776,
     "csv": "C:\\Yottaflex_hackthon\\src\\..\\output\\csv\\surveys.csv",
     "json": "C:\\Yottaflex_hackthon\\src\\..\\output\\json\\surveys.json"
   }

@@ -202,7 +202,7 @@ def generate_complaints(customers, orders, n):
         recurrence_counter[cust_id] = recurrence_counter.get(cust_id, 0) + 1
         recurrence = recurrence_counter[cust_id]
 
-        is_safety = product["safety_risk"] and (random.random() < 0.65)
+        is_safety = (category["category_id"] == "CAT-04") or (product["safety_risk"] and (random.random() < 0.65))
         is_vulnerable = cust["is_vulnerable"]
         is_fraud = category["category_id"] == "CAT-09"
 
@@ -326,7 +326,7 @@ def generate_sla_clocks(complaints):
             sla_status = "Active"
 
         sla_records.append({
-            "sla_id": "SLA-%06d" % i,
+            "sla_id": "SLA-%s" % cmp["complaint_id"],
             "complaint_id": cmp["complaint_id"],
             "sla_hours": sla_h,
             "started_at": started_at.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -369,7 +369,7 @@ def generate_messages(complaints, total):
             )
             sent_at = base_time + timedelta(hours=random.randint(0, 48), minutes=j * 15)
             messages.append({
-                "message_id": "MSG-%06d" % msg_idx,
+                "message_id": "MSG-%s-%03d" % (cmp_id, j),
                 "complaint_id": cmp_id,
                 "sender_type": sender,
                 "message_text": text,
@@ -393,7 +393,7 @@ def generate_resolutions(complaints, assignments):
         res_type = random.choice(RESOLUTION_TYPES)
         refund_amt = round(random.uniform(10.0, cmp["order_value"]), 2) if res_type == "Refund" else 0.0
         resolutions.append({
-            "resolution_id": "RES-%06d" % res_idx,
+            "resolution_id": "RES-%s" % cmp["complaint_id"],
             "complaint_id": cmp["complaint_id"],
             "resolution_type": res_type,
             "resolved_by": agent_id,
@@ -530,17 +530,18 @@ def inject_edge_cases(complaints, resolutions, sla_clocks, surveys, assignments)
     r2 = next((r for r in resolutions if r["complaint_id"] == c2["complaint_id"]), None)
     if not r2:
         r2 = {
-            "resolution_id": "RES-%06d" % (len(resolutions) + 1),
+            "resolution_id": "RES-%s" % c2["complaint_id"],
             "complaint_id": c2["complaint_id"],
             "resolution_type": "Refund",
             "resolved_by": "AGT-GS-01",
             "resolved_at": inverted_res_at,
-            "notes": "EDGE: resolution timestamp precedes complaint created_at",
+            "notes": "Full refund authorized by caseworker.",
             "refund_amount": 50.0,
             "issue_type": "resolution_before_complaint",
         }
         resolutions.append(r2)
     else:
+        r2["resolution_id"] = "RES-%s" % c2["complaint_id"]
         r2["resolved_at"] = inverted_res_at
         r2["issue_type"] = "resolution_before_complaint"
 
@@ -601,7 +602,7 @@ def inject_edge_cases(complaints, resolutions, sla_clocks, surveys, assignments)
     if a5:
         a5["team"] = "General-Support"
         a5["agent_id"] = "AGT-GS-01"
-        a5["reason"] = "EDGE: critical safety issue routed to low priority General-Support"
+        a5["reason"] = "Standard initial queue routing"
         a5["issue_type"] = "safety_low_priority"
 
     anomalies.append({
@@ -620,7 +621,7 @@ def inject_edge_cases(complaints, resolutions, sla_clocks, surveys, assignments)
     r6 = next((r for r in resolutions if r["complaint_id"] == c6["complaint_id"]), None)
     if not r6:
         r6 = {
-            "resolution_id": "RES-%06d" % (len(resolutions) + 1),
+            "resolution_id": "RES-%s" % c6["complaint_id"],
             "complaint_id": c6["complaint_id"],
             "resolution_type": "Replacement",
             "resolved_by": "AGT-SS-01",
@@ -629,6 +630,8 @@ def inject_edge_cases(complaints, resolutions, sla_clocks, surveys, assignments)
             "refund_amount": 0.0,
         }
         resolutions.append(r6)
+    else:
+        r6["resolution_id"] = "RES-%s" % c6["complaint_id"]
 
     res6_at = datetime.strptime(r6["resolved_at"], "%Y-%m-%dT%H:%M:%S")
     premature_survey_at = (res6_at - timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%S")
@@ -639,7 +642,7 @@ def inject_edge_cases(complaints, resolutions, sla_clocks, surveys, assignments)
             "survey_id": "SRV-%06d" % (len(surveys) + 1),
             "complaint_id": c6["complaint_id"],
             "rating": 4,
-            "feedback_text": "EDGE: survey submitted prematurely before case closed",
+            "feedback_text": "Case resolved swiftly.",
             "submitted_at": premature_survey_at,
             "nps_score": 8,
             "issue_type": "survey_before_closure",

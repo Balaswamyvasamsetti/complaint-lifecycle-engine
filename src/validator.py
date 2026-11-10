@@ -78,6 +78,27 @@ def validate(data):
             seen.add(pk)
 
     # ---------------------------------------------------------------------------
+    # 1b. Child Entity ID Format Conventions
+    # ---------------------------------------------------------------------------
+    for s in sla_clocks:
+        expected_sla_id = "SLA-%s" % s["complaint_id"]
+        if s["sla_id"] != expected_sla_id:
+            _fail(errors, "SLAClock", s["sla_id"], "ID_FORMAT_SLA",
+                  "SLA ID %s does not match expected %s" % (s["sla_id"], expected_sla_id))
+
+    for r in data.get("resolutions", []):
+        expected_res_id = "RES-%s" % r["complaint_id"]
+        if r["resolution_id"] != expected_res_id:
+            _fail(errors, "Resolution", r["resolution_id"], "ID_FORMAT_RESOLUTION",
+                  "Resolution ID %s does not match expected %s" % (r["resolution_id"], expected_res_id))
+
+    for m in messages:
+        prefix = "MSG-%s-" % m["complaint_id"]
+        if not m["message_id"].startswith(prefix):
+            _fail(errors, "Message", m["message_id"], "ID_FORMAT_MESSAGE",
+                  "Message ID %s does not start with expected prefix %s" % (m["message_id"], prefix))
+
+    # ---------------------------------------------------------------------------
     # 2. Foreign Key Integrity
     # ---------------------------------------------------------------------------
     for o in data["orders"]:

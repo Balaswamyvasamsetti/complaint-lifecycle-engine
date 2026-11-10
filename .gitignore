@@ -6,16 +6,16 @@
 __pycache__/
 *.py[cod]
 *.pyo
-
-# Output data (regenerate with python src/run.py)
-output/csv/
-output/json/
-output/ground_truth/
-output/manifest.json
-output/validation_errors.json
+.pytest_cache/
 
 # OS
 .DS_Store
 Thumbs.db
 .neon
 node_modules/
+
+# Local SQLite databases (reproducible from seed / generator)
+*.db
+*.sqlite
+*.sqlite3
+output/*.db

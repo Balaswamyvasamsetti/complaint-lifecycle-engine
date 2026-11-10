@@ -187,7 +187,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.reproducibility_check:
-        success = verify_reproducibility(scale=args.scale if args.scale != 1.0 else 0.1)
+        success = verify_reproducibility(scale=args.scale)
         sys.exit(0 if success else 1)
     else:
         run(scale=args.scale, seed_database=args.seed_db, clean_first=args.clean)

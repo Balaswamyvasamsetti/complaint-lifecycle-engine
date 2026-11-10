@@ -394,8 +394,11 @@ def reassign_complaint(complaint_id: str, req: ReassignmentRequest):
     if not c:
         raise HTTPException(status_code=404, detail="Complaint not found")
 
-    db.assign_complaint(complaint_id, req.team, req.agent_id, actor=req.actor, reason=req.reason)
-    return {"complaint_id": complaint_id, "team": req.team, "agent_id": req.agent_id, "status": "reassigned"}
+    try:
+        db.assign_complaint(complaint_id, req.team, req.agent_id, actor=req.actor, reason=req.reason)
+        return {"complaint_id": complaint_id, "team": req.team, "agent_id": req.agent_id, "status": "reassigned"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Reassignment failed: {str(e)}")
 
 
 # ---------------------------------------------------------------------------
@@ -428,6 +431,8 @@ def pause_sla(complaint_id: str, req: SLAPauseRequest):
     sla = db.get_sla(complaint_id)
     if not sla:
         raise HTTPException(status_code=404, detail="SLA record not found")
+    if sla.get("status") == "Paused":
+        raise HTTPException(status_code=400, detail="SLA clock is already paused")
 
     now = _now()
     conn = db.get_conn()
@@ -444,7 +449,7 @@ def pause_sla(complaint_id: str, req: SLAPauseRequest):
 def resume_sla(complaint_id: str, actor: str = "Agent"):
     """Resume a paused SLA clock and adjust the deadline accordingly."""
     sla = db.get_sla(complaint_id)
-    if not sla or not sla.get("paused_at"):
+    if not sla or sla.get("status") != "Paused" or not sla.get("paused_at"):
         raise HTTPException(status_code=400, detail="SLA is not currently paused")
 
     now = datetime.now(timezone.utc).replace(tzinfo=None)
@@ -455,7 +460,7 @@ def resume_sla(complaint_id: str, actor: str = "Agent"):
     new_deadline = old_deadline + pause_duration
 
     conn = db.get_conn()
-    db._execute(conn, "UPDATE sla_clocks SET resumed_at = ?, deadline_at = ?, status = 'Active' WHERE complaint_id = ?",
+    db._execute(conn, "UPDATE sla_clocks SET resumed_at = ?, paused_at = NULL, pause_reason = NULL, deadline_at = ?, status = 'Active' WHERE complaint_id = ?",
                 (now.strftime("%Y-%m-%dT%H:%M:%S"), new_deadline.strftime("%Y-%m-%dT%H:%M:%S"), complaint_id))
     conn.commit()
     conn.close()
@@ -494,14 +499,26 @@ def resolve_complaint(complaint_id: str, req: ResolutionCreateRequest):
     res_id = f"RES-{complaint_id}"
 
     conn = db.get_conn()
-    sql = """
-        INSERT INTO resolutions (resolution_id, complaint_id, resolution_type, resolved_by, resolved_at, notes, refund_amount)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    """
-    db._execute(conn, sql, (
-        res_id, complaint_id, req.resolution_type, req.resolved_by,
-        now, req.notes or "", req.refund_amount or 0.0
-    ))
+    existing_res = db.get_resolution(complaint_id)
+    if existing_res:
+        sql = """
+            UPDATE resolutions
+            SET resolution_type = ?, resolved_by = ?, resolved_at = ?, notes = ?, refund_amount = ?
+            WHERE complaint_id = ?
+        """
+        db._execute(conn, sql, (
+            req.resolution_type, req.resolved_by, now, req.notes or "",
+            req.refund_amount or 0.0, complaint_id
+        ))
+    else:
+        sql = """
+            INSERT INTO resolutions (resolution_id, complaint_id, resolution_type, resolved_by, resolved_at, notes, refund_amount)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """
+        db._execute(conn, sql, (
+            res_id, complaint_id, req.resolution_type, req.resolved_by,
+            now, req.notes or "", req.refund_amount or 0.0
+        ))
 
     # Mark SLA status as Met if before deadline
     db._execute(conn, "UPDATE sla_clocks SET status = 'Met' WHERE complaint_id = ? AND status = 'Active'", (complaint_id,))
@@ -582,10 +599,12 @@ def submit_survey(complaint_id: str, req: SurveySubmitRequest):
     conn.commit()
     conn.close()
 
-    db.update_complaint_status(complaint_id, "Closed", actor="Business Requester")
+    db.update_complaint_status(complaint_id, "Closed", actor="Customer")
 
-    db.log_event(complaint_id, "SURVEY_SUBMITTED", "Business Requester", "Resolved", "Closed",
-                 "Customer rating recorded: %d/5, NPS: %d" % (req.rating, req.nps_score or 0))
+    db.log_event(complaint_id, "SURVEY_SUBMITTED", "Customer", c.get("status", "Resolved"), "Closed",
+                 "CSAT: %d/5 Stars, NPS: %s. Feedback: %s" % (
+                     req.rating, str(req.nps_score if req.nps_score is not None else "N/A"), req.feedback_text or "None"
+                 ))
 
     return {"survey_id": survey_id, "complaint_id": complaint_id, "submitted_at": now, "status": "recorded"}
 

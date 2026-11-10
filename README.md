@@ -1,22 +1,22 @@
-# 🏆 Complaint Lifecycle Engine
+# Complaint Lifecycle Engine
 **Enterprise AI-Powered Complaint Management, SLA Orchestration & Event Sourcing Platform**  
-*Built for the Associate AI Forward Deployed Engineer (FDE) Hackathon*
+*Built for the Associate AI Forward Deployed Engineer (FDE) Role*
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon%20Cloud-336791.svg)](https://neon.tech/)
-[![Tests](https://img.shields.io/badge/Tests-9%2F9%20Passed-brightgreen.svg)](#-test-results)
-[![Live API](https://img.shields.io/badge/Live%20API-7%2F7%20Passed-brightgreen.svg)](#-live-api-verification-output)
-[![Reproducibility](https://img.shields.io/badge/Reproducibility-Bit--Level%20Verified-success.svg)](#-reproducibility-verification)
-[![Ground Truth](https://img.shields.io/badge/Ground%20Truth-6%20Edge%20Cases%20Isolated-orange.svg)](#-injected-edge-cases--ground-truth)
+[![Tests](https://img.shields.io/badge/Tests-9%2F9%20Passed-brightgreen.svg)](#test-results)
+[![Live API](https://img.shields.io/badge/Live%20API-7%2F7%20Passed-brightgreen.svg)](#live-api-verification-output)
+[![Reproducibility](https://img.shields.io/badge/Reproducibility-Bit--Level%20Verified-success.svg)](#reproducibility-verification)
+[![Ground Truth](https://img.shields.io/badge/Ground%20Truth-6%20Edge%20Cases%20Isolated-orange.svg)](#injected-edge-cases--ground-truth)
 
 ---
 
-## 📋 Executive Summary
+## Executive Summary
 
 The **Complaint Lifecycle Engine** is an industrial-grade end-to-end platform that automates:
 - Customer complaint **classification & AI triage** (Amazon Bedrock Claude 3 Haiku)
-- **Priority determination** via deterministic rule engine (Safety → CRITICAL, >£250 → Approver threshold)
+- **Priority determination** via deterministic rule engine (Safety -> CRITICAL, >£250 -> Approver threshold)
 - **SLA clock orchestration** with pause/resume/breach detection
 - **Ownership routing** to specialist teams (Safety-Response, Billing, Technical, General)
 - **Resolution settlement** with £250 Approver authorization rule
@@ -28,34 +28,34 @@ The **Complaint Lifecycle Engine** is an industrial-grade end-to-end platform th
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Multi-Channel Ingestion                       │
-│         Email  ·  Web Portal  ·  Mobile App  ·  Phone/CRM       │
-└─────────────────────────┬───────────────────────────────────────┘
-                           │
-┌─────────────────────────▼───────────────────────────────────────┐
-│                FastAPI REST API Gateway (/docs)                  │
-│                     src/api.py                                   │
-└──────┬──────────────────┬──────────────────────┬────────────────┘
-       │                  │                       │
-┌──────▼──────┐  ┌────────▼────────┐  ┌──────────▼──────────────┐
-│  AI Engine  │  │  Rule Engine    │  │  Event Sourcing Engine   │
-│  Bedrock    │  │  Priority/SLA   │  │  complaint_events table  │
-│  Claude 3   │  │  Routing/Assign │  │  Immutable Audit Log     │
-└──────┬──────┘  └────────┬────────┘  └──────────┬──────────────┘
-       │                  │                       │
-┌──────▼──────────────────▼───────────────────────▼──────────────┐
-│          Dual-Engine Persistence Layer  (src/db.py)             │
-│    PostgreSQL on Neon Cloud    ·    SQLite (Local Fallback)      │
-└─────────────────────────────────────────────────────────────────┘
++-----------------------------------------------------------------+
+|                    Multi-Channel Ingestion                      |
+|         Email  ·  Web Portal  ·  Mobile App  ·  Phone/CRM       |
++--------------------------------┬--------------------------------+
+                                 |
++--------------------------------v--------------------------------+
+|                FastAPI REST API Gateway (/docs)                 |
+|                           src/api.py                            |
++--------┬───────────────────────┬──────────────────────┬---------+
+         |                       |                      |
++--------v-----+        +--------v-------+     +--------v--------+
+|  AI Engine   |        |  Rule Engine   |     |  Event Sourcing |
+|  Bedrock     |        |  Priority/SLA  |     |  complaint_     |
+|  Claude 3    |        |  Routing       |     |  events table   |
++--------┬-----+        +--------┬-------+     +--------┬--------+
+         |                       |                      |
++--------v-----------------------v----------------------v---------+
+|          Dual-Engine Persistence Layer  (src/db.py)             |
+|    PostgreSQL on Neon Cloud    ·    SQLite (Local Fallback)     |
++-----------------------------------------------------------------+
 ```
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 complaint-lifecycle-engine/
@@ -84,7 +84,7 @@ complaint-lifecycle-engine/
 ├── docs/
 │   ├── data_dictionary.md        # 11-entity schema with types, constraints, enums
 │   ├── architecture.md           # System design & state machine diagrams
-│   └── screenshots/              # Output screenshots for verification
+│   └── screenshots/              # Output execution logs for audit verification
 │
 ├── output/
 │   ├── csv/                      # CSV exports (12 entities)
@@ -109,7 +109,7 @@ complaint-lifecycle-engine/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone & Install
 
@@ -133,8 +133,8 @@ cp .env.example .env
 | `AWS_SECRET_ACCESS_KEY` | Optional | Paired with above |
 | `AWS_DEFAULT_REGION` | Optional | e.g. `eu-west-2` |
 
-> If `DATABASE_URL` is unset → system auto-falls back to SQLite.  
-> If AWS keys absent → system uses deterministic rule-based fallback (no hang, no error).
+> If `DATABASE_URL` is unset, the system automatically falls back to SQLite.  
+> If AWS credentials are not configured, the system uses deterministic rule-based semantic fallback.
 
 ### 3. Generate Synthetic Dataset
 
@@ -158,11 +158,11 @@ python -m pytest tests/ -v
 python -m uvicorn src.api:app --reload --host 127.0.0.1 --port 8000
 ```
 
-| URL | Description |
-|---|---|
-| http://localhost:8000/dashboard | Executive Control Plane UI |
-| http://localhost:8000/docs | Interactive Swagger API docs |
-| http://localhost:8000/health | Health probe + DB status |
+| Endpoint | Target URL | Description |
+|---|---|---|
+| Executive UI | http://localhost:8000/dashboard | Interactive Executive Control Plane UI |
+| Swagger Docs | http://localhost:8000/docs | Interactive OpenAPI documentation |
+| Health Probe | http://localhost:8000/health | Database & system health check |
 
 ### 6. Verify Reproducibility
 
@@ -172,29 +172,29 @@ python src/run.py --reproducibility-check
 
 ---
 
-## ✅ Test Results
+## Test Results
 
 ### Pytest Suite — 9/9 PASSED
 
 ```
-tests/test_system.py::test_schema_reference_data              PASSED  [  11%]
-tests/test_system.py::test_deterministic_id_conventions       PASSED  [  22%]
-tests/test_system.py::test_priority_rule_engine               PASSED  [  33%]
-tests/test_system.py::test_sla_calculation                    PASSED  [  44%]
-tests/test_system.py::test_validation_engine                  PASSED  [  55%]
-tests/test_system.py::test_ground_truth_isolation             PASSED  [  66%]
-tests/test_system.py::test_reproducibility                    PASSED  [  77%]
-tests/test_system.py::test_database_persistence_and_event_sourcing  PASSED  [  88%]
-tests/test_system.py::test_fastapi_rest_endpoints             PASSED  [ 100%]
+tests/test_system.py::test_schema_reference_data              PASSED  [ 11%]
+tests/test_system.py::test_deterministic_id_conventions       PASSED  [ 22%]
+tests/test_system.py::test_priority_rule_engine               PASSED  [ 33%]
+tests/test_system.py::test_sla_calculation                    PASSED  [ 44%]
+tests/test_system.py::test_validation_engine                  PASSED  [ 55%]
+tests/test_system.py::test_ground_truth_isolation             PASSED  [ 66%]
+tests/test_system.py::test_reproducibility                    PASSED  [ 77%]
+tests/test_system.py::test_database_persistence_and_event_sourcing  PASSED  [ 88%]
+tests/test_system.py::test_fastapi_rest_endpoints             PASSED  [100%]
 
 ========================= 9 passed in 49.23s =========================
 ```
 
 ---
 
-## 🔴 Live API Verification Output
+## Live API Verification Output
 
-All 7 end-to-end live tests against **Neon Cloud PostgreSQL**:
+All 7 end-to-end live tests executed against **Neon Cloud PostgreSQL**:
 
 ```
 =================================================================
@@ -205,42 +205,44 @@ All 7 end-to-end live tests against **Neon Cloud PostgreSQL**:
   -> Health Status: ok | DB: connected (PostgreSQL)
 
 [TEST 2/7] Submitting new complaint via POST /complaints...
-  -> Complaint Created: CMP-2026-002005
+  -> Complaint Created: CMP-2026-002010
   -> AI Category:       Product Safety
   -> Priority:          CRITICAL (SLA: 1.0 hrs)
-  -> Assigned Team:     Safety-Response (Agent: AGT-SR-02)
-  -> SLA Deadline:      2026-11-10T08:50:53
+  -> Assigned Team:     Safety-Response (Agent: AGT-SR-01)
+  -> SLA Deadline:      2026-11-10T09:50:27
 
-[TEST 3/7] Checking SLA clock via GET /complaints/CMP-2026-002005/sla...
+[TEST 3/7] Checking SLA clock via GET /complaints/CMP-2026-002010/sla...
   -> SLA Status: Active | Hours Remaining: 1.00
 
 [TEST 4/7] Testing SLA pause/resume...
   -> Clock Paused: Paused
-  -> Clock Resumed: Active (Adjusted Deadline: 2026-11-10T08:50:57)
+  -> Clock Resumed: Active (Adjusted Deadline: 2026-11-10T09:50:31)
 
-[TEST 5/7] Resolving complaint via POST /complaints/CMP-2026-002005/resolve...
+[TEST 5/7] Resolving complaint via POST /complaints/CMP-2026-002010/resolve...
   -> Resolution: Refund | Refund: £299.99
   -> Approver Sign-off Required: True (> £250.00 rule)
 
 [TEST 6/7] Submitting CSAT & NPS survey...
-  -> Survey Logged: ID SRV-000779
+  -> Survey Logged: ID SRV-000782
 
 [TEST 7/7] Verifying immutable event sourcing timeline & analytics...
-  -> Audit Trace: 7 events captured:
-     * [2026-11-10T07:50:51] ASSIGNED             by System Administrator -> State: Safety-Response
-     * [2026-11-10T07:50:55] COMPLAINT_CREATED    by Business Requester   -> State: Open
-     * [2026-11-10T07:51:00] SLA_PAUSED           by AGT-SR-01            -> State: Paused
-     * [2026-11-10T07:51:04] SLA_RESUMED          by Agent                -> State: Active
-     * [2026-11-10T07:51:10] STATUS_CHANGED       by AGT-SR-01            -> State: Resolved
-     * [2026-11-10T07:51:12] RESOLVED             by AGT-SR-01            -> State: Resolved
-     * [2026-11-10T07:51:17] SURVEY_SUBMITTED     by Business Requester   -> State: Closed
+  -> Audit Trace: 9 events captured:
+     * [2026-11-10T08:50:26] ASSIGNED             by System Administrator -> State: Safety-Response
+     * [2026-11-10T08:50:30] COMPLAINT_CREATED    by Business Requester   -> State: Open
+     * [2026-11-10T08:50:33] MESSAGE_RECEIVED     by Customer             -> State: 
+     * [2026-11-10T08:50:37] SLA_PAUSED           by AGT-SR-01            -> State: Paused
+     * [2026-11-10T08:50:41] SLA_RESUMED          by Agent                -> State: Active
+     * [2026-11-10T08:50:48] STATUS_CHANGED       by AGT-SR-01            -> State: Resolved
+     * [2026-11-10T08:50:49] RESOLVED             by AGT-SR-01            -> State: Resolved
+     * [2026-11-10T08:50:55] STATUS_CHANGED       by Business Requester   -> State: Closed
+     * [2026-11-10T08:50:57] SURVEY_SUBMITTED     by Business Requester   -> State: Closed
 
   -> Operational KPIs:
-     Total Complaints:     2005
-     Resolved Complaints:  780
-     SLA Breach Rate:      26.73%
-     Average CSAT:         3.74 / 5.0
-     Average NPS:          6.47 / 10.0
+     Total Complaints:     2010
+     Resolved Complaints:  784
+     SLA Breach Rate:      26.67%
+     Average CSAT:         3.75 / 5.0
+     Average NPS:          6.48 / 10.0
 
 =================================================================
   ALL LIVE API VERIFICATION TESTS PASSED SUCCESSFULLY!
@@ -249,7 +251,7 @@ All 7 end-to-end live tests against **Neon Cloud PostgreSQL**:
 
 ---
 
-## 🔁 Reproducibility Verification
+## Reproducibility Verification
 
 ```
 =================================================================
@@ -260,23 +262,23 @@ All 7 end-to-end live tests against **Neon Cloud PostgreSQL**:
   Run 2 SHA-256: bd490d445f166ceb043c8733eaec5da097f05b3fa7b2f5239bd390197a116cbc
 
   Table-by-table comparison (all 13 tables):
-  ┌─────────────────────┬────────┬────────┬─────────────┬────────────────┐
-  │ Table               │ Run 1  │ Run 2  │ Rows Match  │ Checksum Match │
-  ├─────────────────────┼────────┼────────┼─────────────┼────────────────┤
-  │ anomalies           │      6 │      6 │ ✅ MATCH    │ ✅ MATCH       │
-  │ assignments         │    216 │    216 │ ✅ MATCH    │ ✅ MATCH       │
-  │ categories          │     10 │     10 │ ✅ MATCH    │ ✅ MATCH       │
-  │ complaint_events    │    578 │    578 │ ✅ MATCH    │ ✅ MATCH       │
-  │ complaints          │    200 │    200 │ ✅ MATCH    │ ✅ MATCH       │
-  │ customers           │    500 │    500 │ ✅ MATCH    │ ✅ MATCH       │
-  │ messages            │    600 │    600 │ ✅ MATCH    │ ✅ MATCH       │
-  │ orders              │    800 │    800 │ ✅ MATCH    │ ✅ MATCH       │
-  │ priority_rules      │      4 │      4 │ ✅ MATCH    │ ✅ MATCH       │
-  │ products            │     15 │     15 │ ✅ MATCH    │ ✅ MATCH       │
-  │ resolutions         │     83 │     83 │ ✅ MATCH    │ ✅ MATCH       │
-  │ sla_clocks          │    200 │    200 │ ✅ MATCH    │ ✅ MATCH       │
-  │ surveys             │     82 │     82 │ ✅ MATCH    │ ✅ MATCH       │
-  └─────────────────────┴────────┴────────┴─────────────┴────────────────┘
+  +---------------------+--------+--------+-------------+----------------+
+  | Table               | Run 1  | Run 2  | Rows Match  | Checksum Match |
+  +---------------------+--------+--------+-------------+----------------+
+  | anomalies           |      6 |      6 | MATCH       | MATCH          |
+  | assignments         |    216 |    216 | MATCH       | MATCH          |
+  | categories          |     10 |     10 | MATCH       | MATCH          |
+  | complaint_events    |    578 |    578 | MATCH       | MATCH          |
+  | complaints          |    200 |    200 | MATCH       | MATCH          |
+  | customers           |    500 |    500 | MATCH       | MATCH          |
+  | messages            |    600 |    600 | MATCH       | MATCH          |
+  | orders              |    800 |    800 | MATCH       | MATCH          |
+  | priority_rules      |      4 |      4 | MATCH       | MATCH          |
+  | products            |     15 |     15 | MATCH       | MATCH          |
+  | resolutions         |     83 |     83 | MATCH       | MATCH          |
+  | sla_clocks          |    200 |    200 | MATCH       | MATCH          |
+  | surveys             |     82 |     82 | MATCH       | MATCH          |
+  +---------------------+--------+--------+-------------+----------------+
 
   Overall Status: PASSED — 100% BIT-LEVEL MATCH
 =================================================================
@@ -284,7 +286,7 @@ All 7 end-to-end live tests against **Neon Cloud PostgreSQL**:
 
 ---
 
-## 📊 Dataset Volume (Full Scale 1.0x)
+## Dataset Volume (Full Scale 1.0x)
 
 | Table | Row Count | Description |
 |---|:---:|---|
@@ -304,7 +306,7 @@ All 7 end-to-end live tests against **Neon Cloud PostgreSQL**:
 
 ---
 
-## 🚨 Injected Edge Cases & Ground Truth
+## Injected Edge Cases & Ground Truth
 
 All 6 mandatory negative test cases are **deliberately injected** into the first 6 sequential complaint IDs and **strictly isolated** in `output/ground_truth/` — labels are stripped from all feature CSVs/JSONs to prevent target leakage.
 
@@ -365,7 +367,7 @@ All 6 mandatory negative test cases are **deliberately injected** into the first
 
 ---
 
-## 🔑 ID Conventions (Zero-Padded Sequential)
+## ID Conventions (Zero-Padded Sequential)
 
 | Entity | Format | Example |
 |---|---|---|
@@ -381,7 +383,7 @@ All 6 mandatory negative test cases are **deliberately injected** into the first
 
 ---
 
-## 📡 REST API Reference
+## REST API Reference
 
 | Method | Endpoint | Actor | Description |
 |---|---|---|---|
@@ -408,24 +410,24 @@ All 6 mandatory negative test cases are **deliberately injected** into the first
 
 ---
 
-## 📏 10-Step Rubric Compliance Matrix
+## 10-Step Rubric Compliance Matrix
 
 | Step | Requirement | Implementation | Status |
 |:---:|---|---|:---:|
-| **1** | Data dictionary for 11+ entities (types, nullability, constraints, enums) | [`docs/data_dictionary.md`](docs/data_dictionary.md) | ✅ |
-| **2** | Parent tables first, then dependent transaction & event records | [`src/generator.py`](src/generator.py) | ✅ |
-| **3** | Zero-padded sequential IDs: `CUS-000001`, `ORD-2026-000001`, `CMP-2026-000001` | [`src/generator.py`](src/generator.py) | ✅ |
-| **4** | 5,000 customers · 8,000 orders · 2,000 complaints · 6,000 messages (seed `20261022`) | `python src/run.py --scale 1.0` | ✅ |
-| **5** | 6 labelled edge cases injected & isolated without feature leakage | [`src/generator.py`](src/generator.py) · [`src/ground_truth.py`](src/ground_truth.py) | ✅ |
-| **6** | Derived values: order totals, SLA deadlines, breach flags from source data | [`src/generator.py`](src/generator.py) | ✅ |
-| **7** | Separate `ground_truth.csv` & `ground_truth.json` with zero label leakage | [`output/ground_truth/`](output/ground_truth/) | ✅ |
-| **8** | 7-layer validation (PK, FK, enums, chronology, arithmetic, lifecycle, rules) | [`src/validator.py`](src/validator.py) | ✅ |
-| **9** | Export CSV, JSON, SQL DDL+seed, manifest, validation summary | [`src/exporter.py`](src/exporter.py) | ✅ |
-| **10** | Bit-level reproducibility: 2× generation with seed `20261022` → identical SHA-256 | `python src/run.py --reproducibility-check` | ✅ |
+| **1** | Data dictionary for 11+ entities (types, nullability, constraints, enums) | [`docs/data_dictionary.md`](docs/data_dictionary.md) | COMPLETED |
+| **2** | Parent tables first, then dependent transaction & event records | [`src/generator.py`](src/generator.py) | COMPLETED |
+| **3** | Zero-padded sequential IDs: `CUS-000001`, `ORD-2026-000001`, `CMP-2026-000001` | [`src/generator.py`](src/generator.py) | COMPLETED |
+| **4** | 5,000 customers · 8,000 orders · 2,000 complaints · 6,000 messages (seed `20261022`) | `python src/run.py --scale 1.0` | COMPLETED |
+| **5** | 6 labelled edge cases injected & isolated without feature leakage | [`src/generator.py`](src/generator.py) · [`src/ground_truth.py`](src/ground_truth.py) | COMPLETED |
+| **6** | Derived values: order totals, SLA deadlines, breach flags from source data | [`src/generator.py`](src/generator.py) | COMPLETED |
+| **7** | Separate `ground_truth.csv` & `ground_truth.json` with zero label leakage | [`output/ground_truth/`](output/ground_truth/) | COMPLETED |
+| **8** | 7-layer validation (PK, FK, enums, chronology, arithmetic, lifecycle, rules) | [`src/validator.py`](src/validator.py) | COMPLETED |
+| **9** | Export CSV, JSON, SQL DDL+seed, manifest, validation summary | [`src/exporter.py`](src/exporter.py) | COMPLETED |
+| **10** | Bit-level reproducibility: 2× generation with seed `20261022` -> identical SHA-256 | `python src/run.py --reproducibility-check` | COMPLETED |
 
 ---
 
-## 🗄️ Validation Summary
+## Validation Summary
 
 ```json
 {
@@ -446,7 +448,7 @@ All 6 mandatory negative test cases are **deliberately injected** into the first
 
 ---
 
-## 🛠️ Key Commands Reference
+## Key Commands Reference
 
 ```bash
 # --- TESTING ---
@@ -467,7 +469,7 @@ docker-compose up --build
 
 ---
 
-## 🔒 Data Provenance & Compliance
+## Data Provenance & Compliance
 
 - **100% Synthetically Generated** — No real customer data, PII, or scraping involved
 - **UK GDPR Compliant** — Names use reserved domains (`example.com`, `enterprise.co.uk`)
@@ -476,6 +478,6 @@ docker-compose up --build
 
 ---
 
-## 📄 License
+## License
 
 MIT License — built for the Yottaflex Hackathon evaluation.

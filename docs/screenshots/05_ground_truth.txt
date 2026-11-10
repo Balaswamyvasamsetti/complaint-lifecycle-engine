@@ -11,3 +11,4 @@ CMP-2026-000006 | survey_before_closure        | DATE_SURVEY_BEFORE_CLOSURE
 $ python -c "import csv; h=next(csv.reader(open('output/csv/complaints.csv'))); print('issue_type' in h, 'anomaly_category' in h)"
 False False
 # CONFIRMED: No labels leaked into feature CSVs
+

@@ -50,7 +50,49 @@ def _fallback_response(prompt: str) -> str:
     Keeps the system fully functional without AWS access.
     """
     p = prompt.lower()
-    if "classify" in p or "category" in p:
+
+    if "summar" in p:
+        cat = "general"
+        prio = "standard"
+        if "product safety" in p: cat = "Product Safety"
+        elif "fraud" in p: cat = "Fraud / Unauthorized"
+        elif "refund" in p or "return" in p: cat = "Refund / Return"
+        elif "billing" in p or "payment" in p: cat = "Billing & Payment"
+        elif "delivery" in p or "missing order" in p: cat = "Delivery / Logistics"
+        elif "defect" in p or "broken" in p: cat = "Product Defect"
+        elif "technical" in p or "app" in p: cat = "Technical Issue"
+        if "critical" in p: prio = "CRITICAL"
+        elif "high" in p: prio = "HIGH"
+        elif "medium" in p: prio = "MEDIUM"
+        elif "low" in p: prio = "LOW"
+        return "Customer reported a %s issue with %s priority. Review order history and reach out within the SLA window to provide proactive updates." % (cat, prio)
+
+    if "resolution" in p:
+        if "safety" in p or "critical" in p:
+            return "Immediate escalation to Safety-Response team required. Issue replacement or full refund and conduct a formal safety investigation. Document all findings for regulatory compliance."
+        if "fraud" in p:
+            return "Freeze account activity and initiate a chargeback investigation. Issue provisional credit within 24 hours while fraud team investigates. Notify customer of timeline."
+        if "refund" in p or "return" in p:
+            return "Process customer's refund request and arrange product return via prepaid courier. Confirm refund amount with Approver if exceeding £250 threshold."
+        return "Review the customer's complaint history, offer a suitable remedy (replacement, refund, or credit), and document the resolution with supporting justification notes."
+
+    if "sentiment" in p:
+        if any(w in p for w in ["angry", "furious", "terrible", "worst", "unacceptable", "disgusting"]):
+            return json.dumps({"sentiment": "Negative", "score": -0.9})
+        if any(w in p for w in ["unhappy", "disappointed", "frustrated", "bad", "poor"]):
+            return json.dumps({"sentiment": "Negative", "score": -0.6})
+        if any(w in p for w in ["great", "excellent", "happy", "satisfied", "good", "thank"]):
+            return json.dumps({"sentiment": "Positive", "score": 0.8})
+        return json.dumps({"sentiment": "Neutral", "score": 0.0})
+
+    if "priority engine" in p or ("priority" in p and "rule" in p):
+        if any(w in p for w in ["safety", "fraud", "vulnerable", "critical"]):
+            return json.dumps({"priority": "CRITICAL", "rule": "PR-01", "reason": "Safety/fraud/vulnerable trigger"})
+        if any(w in p for w in ["urgent", "escalate", "high value"]):
+            return json.dumps({"priority": "HIGH", "rule": "PR-02", "reason": "High urgency detected"})
+        return json.dumps({"priority": "MEDIUM", "rule": "PR-03", "reason": "Standard complaint"})
+
+    if "classification" in p or "classify" in p:
         if any(w in p for w in ["safety", "fire", "burn", "explode", "hazard"]):
             return json.dumps({"category": "Product Safety", "category_id": "CAT-04", "confidence": 0.95})
         if any(w in p for w in ["fraud", "unauthorized", "charge"]):
@@ -69,26 +111,7 @@ def _fallback_response(prompt: str) -> str:
             return json.dumps({"category": "Technical / App Issue", "category_id": "CAT-08", "confidence": 0.82})
         return json.dumps({"category": "General Enquiry", "category_id": "CAT-10", "confidence": 0.70})
 
-    if "sentiment" in p:
-        if any(w in p for w in ["angry", "furious", "terrible", "worst", "unacceptable", "disgusting"]):
-            return json.dumps({"sentiment": "Negative", "score": -0.9})
-        if any(w in p for w in ["unhappy", "disappointed", "frustrated", "bad", "poor"]):
-            return json.dumps({"sentiment": "Negative", "score": -0.6})
-        if any(w in p for w in ["great", "excellent", "happy", "satisfied", "good", "thank"]):
-            return json.dumps({"sentiment": "Positive", "score": 0.8})
-        return json.dumps({"sentiment": "Neutral", "score": 0.0})
-
-    if "priority" in p:
-        if any(w in p for w in ["safety", "fraud", "vulnerable", "critical"]):
-            return json.dumps({"priority": "CRITICAL", "rule": "PR-01", "reason": "Safety/fraud/vulnerable trigger"})
-        if any(w in p for w in ["urgent", "escalate", "high value"]):
-            return json.dumps({"priority": "HIGH", "rule": "PR-02", "reason": "High urgency detected"})
-        return json.dumps({"priority": "MEDIUM", "rule": "PR-03", "reason": "Standard complaint"})
-
-    if "summar" in p or "resolution" in p:
-        return "Customer reported an issue. Recommend reviewing order history and contacting the customer within the SLA window."
-
-    return "Unable to process request."
+    return "Complaint registered. Please review and respond within the designated SLA window."
 
 # ---------------------------------------------------------------------------
 # Public AI functions

@@ -210,7 +210,8 @@ def submit_complaint(req: ComplaintCreateRequest):
         "status": "Open",
         "channel": req.channel,
     }
-    ai_summary = ai_engine.generate_summary(complaint_stub)
+    raw_ai_summary = ai_engine.generate_summary(complaint_stub)
+    ai_summary = f"{req.complaint_text} — [AI Assessment: {raw_ai_summary}]"
 
     # 4. Generate Deterministic Sequential Zero-Padded ID & Timestamps
     now = _now()
@@ -265,6 +266,9 @@ def submit_complaint(req: ComplaintCreateRequest):
     # 7. Immutable Event Trace
     db.log_event(cmp_id, "COMPLAINT_CREATED", "Business Requester", "", "Open",
                  "Complaint created via %s with %s priority" % (req.channel, rule_priority))
+
+    # 8. Record initial message in communication thread
+    db.add_message(cmp_id, "Customer", req.complaint_text, is_internal=False)
 
     return {
         "complaint_id": cmp_id,
@@ -546,6 +550,8 @@ def submit_survey(complaint_id: str, req: SurveySubmitRequest):
     db._execute(conn, sql, (survey_id, complaint_id, req.rating, req.feedback_text or "", now, req.nps_score or 0))
     conn.commit()
     conn.close()
+
+    db.update_complaint_status(complaint_id, "Closed", actor="Business Requester")
 
     db.log_event(complaint_id, "SURVEY_SUBMITTED", "Business Requester", "Resolved", "Closed",
                  "Customer rating recorded: %d/5, NPS: %d" % (req.rating, req.nps_score or 0))

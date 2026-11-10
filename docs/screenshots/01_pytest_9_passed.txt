@@ -14,3 +14,4 @@ tests/test_system.py::test_database_persistence_and_event_sourcing  PASSED  [  8
 tests/test_system.py::test_fastapi_rest_endpoints             PASSED  [ 100%]
 
 ========================= 9 passed in 49.23s =========================
+

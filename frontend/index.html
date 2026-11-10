@@ -109,6 +109,21 @@
       color: #64748b;
       border: 1px solid #e2e8f0;
     }
+    .status-escalated {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    .status-pending {
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+    .status-reopened {
+      background: #faf5ff;
+      color: #7e22ce;
+      border: 1px solid #e9d5ff;
+    }
 
     /* Selected Table Row */
     .row-selected {
@@ -448,8 +463,11 @@
               <option value="">Status: All</option>
               <option value="Open">Open</option>
               <option value="In Progress">In Progress</option>
+              <option value="Pending Customer">Pending Customer</option>
+              <option value="Escalated">Escalated</option>
               <option value="Resolved">Resolved</option>
               <option value="Closed">Closed</option>
+              <option value="Reopened">Reopened</option>
             </select>
           </div>
         </div>
@@ -528,6 +546,16 @@
               <span class="text-slate-500 block text-[9px] uppercase font-mono font-semibold mb-0.5">Grievance Description</span>
               <p class="text-slate-700 italic bg-white p-2 rounded border border-slate-200 text-xs max-h-20 overflow-y-auto" id="meta-text">--</p>
             </div>
+            <!-- Resolution & Survey Badge (if ticket is resolved/closed) -->
+            <div id="meta-resolution-box" class="hidden pt-1 border-t border-slate-200">
+              <div class="p-2 rounded bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] flex items-center justify-between">
+                <div class="flex items-center space-x-1.5 truncate">
+                  <i class="fa-solid fa-circle-check text-emerald-600 shrink-0"></i>
+                  <span id="meta-resolution-text" class="truncate font-medium">--</span>
+                </div>
+                <span id="meta-survey-badge" class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold shrink-0">--</span>
+              </div>
+            </div>
           </div>
 
           <!-- Interactive Actions: SLA & Status Controls -->
@@ -549,10 +577,12 @@
             <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs">
               <div class="flex items-center justify-between flex-wrap gap-1.5">
                 <span class="font-medium text-slate-700 text-[11px]">Lifecycle Transition:</span>
-                <div class="space-x-1">
+                <div class="space-x-1 flex flex-wrap gap-1">
                   <button onclick="updateStatusDirect('In Progress')" class="px-2 py-0.5 sm:py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[10px] font-semibold">In Progress</button>
+                  <button onclick="updateStatusDirect('Pending Customer')" class="px-2 py-0.5 sm:py-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[10px] font-semibold">Pending Customer</button>
                   <button onclick="updateStatusDirect('Escalated')" class="px-2 py-0.5 sm:py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-semibold">Escalated</button>
                   <button onclick="updateStatusDirect('Closed')" class="px-2 py-0.5 sm:py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-[10px] font-semibold">Close</button>
+                  <button onclick="updateStatusDirect('Reopened')" class="px-2 py-0.5 sm:py-1 rounded bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[10px] font-semibold">Reopen</button>
                 </div>
               </div>
 
@@ -610,7 +640,13 @@
             </div>
 
             <div>
-              <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Settlement Justification Notes</label>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600">Settlement Justification Notes</label>
+                <button type="button" onclick="getAISuggestion()" class="text-[10px] text-brand-600 hover:text-brand-800 font-semibold flex items-center space-x-1 bg-brand-50 hover:bg-brand-100 px-2 py-0.5 rounded border border-brand-200 transition">
+                  <i class="fa-solid fa-wand-magic-sparkles text-[9px]"></i>
+                  <span>AI Recommendation</span>
+                </button>
+              </div>
               <textarea id="res-notes" rows="2" class="w-full rounded bg-white border border-slate-300 p-2 text-xs text-slate-800 placeholder-slate-400 font-sans resize-none"
                 placeholder="Document resolution rationale, customer concessions, and approver references..."></textarea>
             </div>
@@ -645,10 +681,11 @@
               </label>
             </div>
             <div class="flex space-x-2">
-              <input type="text" id="msg-text" placeholder="Type message or internal case notes..."
+              <input type="text" id="msg-text" placeholder="Type message or internal case notes (Press Enter to send)..." onkeydown="if(event.key==='Enter') executePostMessage()"
                 class="flex-1 text-xs rounded bg-white border border-slate-300 px-2.5 py-1.5 text-slate-800 focus:outline-none focus:border-brand-600">
-              <button onclick="executePostMessage()" class="px-3 py-1.5 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shrink-0">
-                <i class="fa-solid fa-paper-plane mr-1"></i>Send
+              <button onclick="executePostMessage()" class="px-3 py-1.5 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shrink-0 flex items-center space-x-1.5">
+                <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                <span>Send</span>
               </button>
             </div>
           </div>
@@ -683,10 +720,11 @@
               </div>
             </div>
             <div class="flex space-x-2">
-              <input type="text" id="srv-feedback" placeholder="Optional survey comment..."
+              <input type="text" id="srv-feedback" placeholder="Optional survey comment (Press Enter to submit)..." onkeydown="if(event.key==='Enter') executeSurvey()"
                 class="flex-1 text-xs rounded bg-white border border-slate-300 px-2 py-1 text-slate-800">
-              <button onclick="executeSurvey()" class="px-3 py-1 rounded bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs shrink-0">
-                <i class="fa-solid fa-star mr-1"></i>Submit
+              <button onclick="executeSurvey()" class="px-3 py-1 rounded bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs shrink-0 flex items-center space-x-1">
+                <i class="fa-solid fa-star text-[10px]"></i>
+                <span>Submit</span>
               </button>
             </div>
           </div>
@@ -953,6 +991,8 @@
         (c.category_name && c.category_name.toLowerCase().includes(q)) ||
         (c.customer_id && c.customer_id.toLowerCase().includes(q)) ||
         (c.complaint_text && c.complaint_text.toLowerCase().includes(q)) ||
+        (c.ai_summary && c.ai_summary.toLowerCase().includes(q)) ||
+        (c.priority && c.priority.toLowerCase().includes(q)) ||
         (c.status && c.status.toLowerCase().includes(q))
       );
       renderComplaintsTable(filtered);
@@ -975,7 +1015,10 @@
 
         const statusClass = c.status === 'Resolved' ? 'status-resolved' :
                             c.status === 'In Progress' ? 'status-inprogress' :
-                            c.status === 'Closed' ? 'status-closed' : 'status-open';
+                            c.status === 'Closed' ? 'status-closed' :
+                            c.status === 'Escalated' ? 'status-escalated' :
+                            c.status === 'Pending Customer' ? 'status-pending' :
+                            c.status === 'Reopened' ? 'status-reopened' : 'status-open';
 
         const tr = document.createElement('tr');
         tr.id = 'row-' + c.complaint_id;
@@ -1017,15 +1060,31 @@
           const data = await resDetail.json();
           const c = data.complaint || {};
           const asgn = data.current_assignment || {};
+          const res = data.resolution;
+          const srv = data.survey;
 
           document.getElementById('meta-customer').innerText = c.customer_id || 'CUS-GUEST';
           document.getElementById('meta-order').innerText = `${c.order_id || 'N/A'} • £${(c.order_value || 0).toFixed(2)}`;
           document.getElementById('meta-agent').innerText = `${asgn.assigned_agent || 'AGT-GS-01'} (${asgn.team || 'General-Support'})`;
-          document.getElementById('meta-text').innerText = c.complaint_text || c.ai_summary || 'No description recorded.';
+          document.getElementById('meta-text').innerText = c.complaint_text || c.ai_summary || `${c.category_name} grievance logged via ${c.channel}. Evaluated at ${c.priority} priority (${c.severity} severity). Order exposure: £${(c.order_value || 0).toFixed(2)}.`;
           
           if (c.order_value) {
             document.getElementById('res-amount').value = (c.order_value).toFixed(2);
             checkApproverThreshold();
+          }
+
+          // Resolution & Survey indicator box
+          const resBox = document.getElementById('meta-resolution-box');
+          if (res) {
+            resBox.classList.remove('hidden');
+            document.getElementById('meta-resolution-text').innerText = `Settled: ${res.resolution_type} (£${(res.refund_amount || 0).toFixed(2)}) by ${res.resolved_by}`;
+            if (srv) {
+              document.getElementById('meta-survey-badge').innerText = `CSAT: ${srv.rating}/5 ⭐ (NPS: ${srv.nps_score || 'N/A'})`;
+            } else {
+              document.getElementById('meta-survey-badge').innerText = 'Awaiting Survey';
+            }
+          } else {
+            resBox.classList.add('hidden');
           }
         }
 
@@ -1033,8 +1092,9 @@
           const s = await resSla.json();
           const hrs = s.hours_remaining;
           const statusText = s.status || 'Active';
+          const isBreached = s.is_breached || s.is_overdue || s.status === 'Breached';
           document.getElementById('meta-sla').innerText = `${statusText} (${hrs !== undefined ? hrs.toFixed(1) + ' hrs' : ''})`;
-          document.getElementById('meta-sla').className = s.is_breached ? 'font-mono font-bold text-rose-600 truncate block' : 'font-mono font-bold text-emerald-600 truncate block';
+          document.getElementById('meta-sla').className = isBreached ? 'font-mono font-bold text-rose-600 truncate block' : 'font-mono font-bold text-emerald-600 truncate block';
         }
 
         loadAuditTrail(complaintId);
@@ -1078,8 +1138,11 @@
           if (evt.event_type === 'STATUS_CHANGED') { icon = 'fa-solid fa-arrow-right-arrow-left text-amber-600'; borderCol = 'border-amber-500'; }
           if (evt.event_type === 'SLA_PAUSED') { icon = 'fa-solid fa-circle-pause text-amber-600'; borderCol = 'border-amber-500'; }
           if (evt.event_type === 'SLA_RESUMED') { icon = 'fa-solid fa-circle-play text-emerald-600'; borderCol = 'border-emerald-500'; }
+          if (evt.event_type === 'SLA_BREACHED') { icon = 'fa-solid fa-triangle-exclamation text-rose-600'; borderCol = 'border-rose-500'; }
           if (evt.event_type === 'RESOLVED') { icon = 'fa-solid fa-shield-check text-emerald-600'; borderCol = 'border-emerald-500'; }
           if (evt.event_type === 'SURVEY_SUBMITTED') { icon = 'fa-solid fa-star text-amber-500'; borderCol = 'border-amber-400'; }
+          if (evt.event_type === 'REOPENED') { icon = 'fa-solid fa-rotate-left text-purple-600'; borderCol = 'border-purple-500'; }
+          if (evt.event_type === 'MESSAGE_SENT' || evt.event_type === 'MESSAGE_RECEIVED') { icon = 'fa-solid fa-comment-dots text-indigo-600'; borderCol = 'border-indigo-500'; }
 
           const card = document.createElement('div');
           card.className = `border-l-2 ${borderCol} pl-2.5 py-1 space-y-0.5 relative bg-white border-y border-r border-slate-200 rounded-r-lg shadow-2xs`;
@@ -1102,46 +1165,30 @@
       }
     }
 
-    async function loadMessages(complaintId) {
-      const container = document.getElementById('messages-container');
-      container.innerHTML = '<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Loading communication thread...</div>';
-
+    async function extractErrorMessage(res, defaultMsg) {
       try {
-        const res = await fetch(`${API_BASE}/complaints/${complaintId}/messages`);
         const data = await res.json();
-        const msgs = data.messages || [];
+        if (data && data.detail) return data.detail;
+        if (data && data.message) return data.message;
+      } catch (_) {}
+      return `${defaultMsg} (HTTP ${res.status})`;
+    }
 
-        if (msgs.length === 0) {
-          container.innerHTML = '<div class="text-center py-6 text-slate-400">No communication messages recorded yet.</div>';
-          return;
+    // AI Helper: Resolution Recommendation
+    async function getAISuggestion() {
+      if (!currentSelectedId) { showToast('Select a ticket first', 'error'); return; }
+      showToast('Generating AI resolution recommendation...', 'info');
+      try {
+        const res = await fetch(`${API_BASE}/ai/suggest-resolution?complaint_id=${currentSelectedId}`, { method: 'POST' });
+        if (!res.ok) throw new Error(await extractErrorMessage(res, 'AI Suggestion failed'));
+        const data = await res.json();
+        const rec = data.recommended_resolution;
+        if (rec) {
+          document.getElementById('res-notes').value = rec;
+          showToast('AI recommendation applied to notes', 'success');
         }
-
-        container.innerHTML = '';
-        msgs.forEach(m => {
-          const isInternal = m.is_internal;
-          const isCustomer = m.sender_type === 'Customer';
-
-          const card = document.createElement('div');
-          card.className = `p-2 rounded-lg border text-xs space-y-0.5 ${
-            isInternal ? 'bg-amber-50/70 border-amber-200 text-amber-900' :
-            isCustomer ? 'bg-slate-50 border-slate-200 text-slate-800' :
-            'bg-blue-50 border-blue-200 text-blue-900'
-          }`;
-
-          card.innerHTML = `
-            <div class="flex items-center justify-between text-[10px] font-semibold">
-              <span class="flex items-center space-x-1">
-                <i class="${isCustomer ? 'fa-solid fa-user' : isInternal ? 'fa-solid fa-lock' : 'fa-solid fa-headset'}"></i>
-                <span>${m.sender_type} ${isInternal ? '(Internal Note)' : ''}</span>
-              </span>
-              <span class="font-mono text-slate-400 text-[9px]">${m.sent_at ? m.sent_at.replace('T', ' ').substring(0, 16) : ''}</span>
-            </div>
-            <p class="text-[11px] leading-relaxed">${m.message_text}</p>
-          `;
-          container.appendChild(card);
-        });
       } catch (e) {
-        container.innerHTML = '<div class="text-center py-6 text-rose-500">Failed to load message thread.</div>';
+        showToast(e.message, 'error');
       }
     }
 
@@ -1171,7 +1218,7 @@
           })
         });
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(await extractErrorMessage(res, 'Triage failed'));
 
         const data = await res.json();
         document.getElementById('res-id').innerText = data.complaint_id;
@@ -1211,7 +1258,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ reason: reason, actor: 'AGT-SR-01' })
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(await extractErrorMessage(res, 'Pause failed'));
         showToast(`SLA Clock paused for ticket ${currentSelectedId}`, 'success');
         inspectTicket(currentSelectedId);
       } catch (e) {
@@ -1228,7 +1275,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(await extractErrorMessage(res, 'Resume failed'));
         const data = await res.json();
         showToast(`SLA Clock resumed (Adjusted: ${data.adjusted_deadline || 'Active'})`, 'success');
         inspectTicket(currentSelectedId);
@@ -1247,7 +1294,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: targetStatus, actor: 'Operations Analyst', notes: 'Status changed from workspace' })
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(await extractErrorMessage(res, 'Status update failed'));
         showToast(`Ticket status updated to ${targetStatus}`, 'success');
         refreshAll(false);
         inspectTicket(currentSelectedId);
@@ -1268,7 +1315,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ team: team, agent_id: agent, actor: 'Process Owner', reason: 'Reassigned via executive cockpit' })
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(await extractErrorMessage(res, 'Reassignment failed'));
         showToast(`Reassigned to ${team} (${agent})`, 'success');
         inspectTicket(currentSelectedId);
       } catch (e) {
@@ -1295,7 +1342,7 @@
           })
         });
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(await extractErrorMessage(res, 'Resolution failed'));
         const data = await res.json();
         showToast(`Complaint ${currentSelectedId} resolved (${resType})!`, 'success');
         refreshAll(false);
@@ -1320,7 +1367,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ sender_type: sender, message_text: text, is_internal: isInternal })
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(await extractErrorMessage(res, 'Message failed'));
         document.getElementById('msg-text').value = '';
         showToast('Message logged to thread', 'success');
         loadMessages(currentSelectedId);
@@ -1342,7 +1389,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ rating: rating, nps_score: nps, feedback_text: feedback })
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(await extractErrorMessage(res, 'Survey failed'));
         showToast(`CSAT Survey logged: ${rating}/5 Stars!`, 'success');
         document.getElementById('srv-feedback').value = '';
         inspectTicket(currentSelectedId);

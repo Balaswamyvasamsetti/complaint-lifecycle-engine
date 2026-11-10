@@ -1,0 +1,11 @@
+category_id,name,default_sla_hours
+CAT-01,Billing & Payment,48
+CAT-02,Product Defect,72
+CAT-03,Delivery / Logistics,48
+CAT-04,Product Safety,4
+CAT-05,Customer Service,24
+CAT-06,Refund / Return,72
+CAT-07,Missing Order,24
+CAT-08,Technical / App Issue,96
+CAT-09,Fraud / Unauthorized,8
+CAT-10,General Enquiry,120

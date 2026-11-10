@@ -1,0 +1,107 @@
+[
+  {
+    "product_id": "PRD-001",
+    "name": "SmartWatch Pro",
+    "category": "Electronics",
+    "price": 299.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-002",
+    "name": "Wireless Earbuds",
+    "category": "Electronics",
+    "price": 89.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-003",
+    "name": "Laptop Stand",
+    "category": "Accessories",
+    "price": 49.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-004",
+    "name": "Power Bank 20000mAh",
+    "category": "Electronics",
+    "price": 59.99,
+    "safety_risk": true
+  },
+  {
+    "product_id": "PRD-005",
+    "name": "Running Shoes",
+    "category": "Footwear",
+    "price": 129.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-006",
+    "name": "Yoga Mat",
+    "category": "Sports",
+    "price": 39.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-007",
+    "name": "Coffee Maker",
+    "category": "Appliances",
+    "price": 199.99,
+    "safety_risk": true
+  },
+  {
+    "product_id": "PRD-008",
+    "name": "Desk Lamp LED",
+    "category": "Furniture",
+    "price": 34.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-009",
+    "name": "Gaming Mouse",
+    "category": "Electronics",
+    "price": 79.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-010",
+    "name": "Backpack 30L",
+    "category": "Bags",
+    "price": 69.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-011",
+    "name": "Bluetooth Speaker",
+    "category": "Electronics",
+    "price": 149.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-012",
+    "name": "Air Purifier",
+    "category": "Appliances",
+    "price": 249.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-013",
+    "name": "Electric Kettle",
+    "category": "Appliances",
+    "price": 44.99,
+    "safety_risk": true
+  },
+  {
+    "product_id": "PRD-014",
+    "name": "Mechanical Keyboard",
+    "category": "Electronics",
+    "price": 119.99,
+    "safety_risk": false
+  },
+  {
+    "product_id": "PRD-015",
+    "name": "Fitness Tracker",
+    "category": "Electronics",
+    "price": 89.99,
+    "safety_risk": false
+  }
+]

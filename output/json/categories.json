@@ -1,0 +1,52 @@
+[
+  {
+    "category_id": "CAT-01",
+    "name": "Billing & Payment",
+    "default_sla_hours": 48
+  },
+  {
+    "category_id": "CAT-02",
+    "name": "Product Defect",
+    "default_sla_hours": 72
+  },
+  {
+    "category_id": "CAT-03",
+    "name": "Delivery / Logistics",
+    "default_sla_hours": 48
+  },
+  {
+    "category_id": "CAT-04",
+    "name": "Product Safety",
+    "default_sla_hours": 4
+  },
+  {
+    "category_id": "CAT-05",
+    "name": "Customer Service",
+    "default_sla_hours": 24
+  },
+  {
+    "category_id": "CAT-06",
+    "name": "Refund / Return",
+    "default_sla_hours": 72
+  },
+  {
+    "category_id": "CAT-07",
+    "name": "Missing Order",
+    "default_sla_hours": 24
+  },
+  {
+    "category_id": "CAT-08",
+    "name": "Technical / App Issue",
+    "default_sla_hours": 96
+  },
+  {
+    "category_id": "CAT-09",
+    "name": "Fraud / Unauthorized",
+    "default_sla_hours": 8
+  },
+  {
+    "category_id": "CAT-10",
+    "name": "General Enquiry",
+    "default_sla_hours": 120
+  }
+]

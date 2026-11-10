@@ -1,0 +1,16 @@
+product_id,name,category,price,safety_risk
+PRD-001,SmartWatch Pro,Electronics,299.99,False
+PRD-002,Wireless Earbuds,Electronics,89.99,False
+PRD-003,Laptop Stand,Accessories,49.99,False
+PRD-004,Power Bank 20000mAh,Electronics,59.99,True
+PRD-005,Running Shoes,Footwear,129.99,False
+PRD-006,Yoga Mat,Sports,39.99,False
+PRD-007,Coffee Maker,Appliances,199.99,True
+PRD-008,Desk Lamp LED,Furniture,34.99,False
+PRD-009,Gaming Mouse,Electronics,79.99,False
+PRD-010,Backpack 30L,Bags,69.99,False
+PRD-011,Bluetooth Speaker,Electronics,149.99,False
+PRD-012,Air Purifier,Appliances,249.99,False
+PRD-013,Electric Kettle,Appliances,44.99,True
+PRD-014,Mechanical Keyboard,Electronics,119.99,False
+PRD-015,Fitness Tracker,Electronics,89.99,False

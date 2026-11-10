@@ -1,0 +1,68 @@
+[
+  {
+    "table": "customers",
+    "row_count": 500,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\customers.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\customers.json"
+  },
+  {
+    "table": "products",
+    "row_count": 15,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\products.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\products.json"
+  },
+  {
+    "table": "orders",
+    "row_count": 800,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\orders.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\orders.json"
+  },
+  {
+    "table": "categories",
+    "row_count": 10,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\categories.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\categories.json"
+  },
+  {
+    "table": "priority_rules",
+    "row_count": 4,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\priority_rules.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\priority_rules.json"
+  },
+  {
+    "table": "complaints",
+    "row_count": 202,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\complaints.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\complaints.json"
+  },
+  {
+    "table": "assignments",
+    "row_count": 201,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\assignments.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\assignments.json"
+  },
+  {
+    "table": "sla_clocks",
+    "row_count": 201,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\sla_clocks.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\sla_clocks.json"
+  },
+  {
+    "table": "messages",
+    "row_count": 600,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\messages.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\messages.json"
+  },
+  {
+    "table": "resolutions",
+    "row_count": 75,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\resolutions.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\resolutions.json"
+  },
+  {
+    "table": "surveys",
+    "row_count": 75,
+    "csv": "c:\\Yottaflex_hackthon\\src\\..\\output\\csv\\surveys.csv",
+    "json": "c:\\Yottaflex_hackthon\\src\\..\\output\\json\\surveys.json"
+  }
+]

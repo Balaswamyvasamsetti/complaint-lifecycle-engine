@@ -1,0 +1,602 @@
+[
+  {
+    "survey_id": "SRV-000001",
+    "complaint_id": "CMP-2026-000001",
+    "rating": 3,
+    "feedback_text": "The issue was resolved quickly.",
+    "submitted_at": "2025-09-29T10:48:01",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000002",
+    "complaint_id": "CMP-2025-000003",
+    "rating": 4,
+    "feedback_text": "Excellent service, will shop again.",
+    "submitted_at": "2025-07-16T13:28:07",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000003",
+    "complaint_id": "CMP-2026-000004",
+    "rating": 4,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2024-02-07T18:23:13",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000004",
+    "complaint_id": "CMP-2025-000005",
+    "rating": 3,
+    "feedback_text": "Took too long but eventually resolved.",
+    "submitted_at": "2025-05-13T16:44:19",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000005",
+    "complaint_id": "CMP-2025-000006",
+    "rating": 4,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2024-07-28T17:04:13",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000006",
+    "complaint_id": "CMP-2025-000013",
+    "rating": 4,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-05-27T23:33:42",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000007",
+    "complaint_id": "CMP-2025-000017",
+    "rating": 4,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2025-07-23T01:26:09",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000008",
+    "complaint_id": "CMP-2026-000022",
+    "rating": 5,
+    "feedback_text": "Took too long but eventually resolved.",
+    "submitted_at": "2024-01-28T21:34:46",
+    "nps_score": 9
+  },
+  {
+    "survey_id": "SRV-000009",
+    "complaint_id": "CMP-2025-000023",
+    "rating": 5,
+    "feedback_text": "The agent was helpful and professional.",
+    "submitted_at": "2026-07-02T04:14:00",
+    "nps_score": 10
+  },
+  {
+    "survey_id": "SRV-000010",
+    "complaint_id": "CMP-2026-000026",
+    "rating": 5,
+    "feedback_text": "Took too long but eventually resolved.",
+    "submitted_at": "2024-04-20T21:50:22",
+    "nps_score": 9
+  },
+  {
+    "survey_id": "SRV-000011",
+    "complaint_id": "CMP-2025-000028",
+    "rating": 4,
+    "feedback_text": "I had to follow up multiple times.",
+    "submitted_at": "2024-07-04T00:44:16",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000012",
+    "complaint_id": "CMP-2026-000029",
+    "rating": 4,
+    "feedback_text": "I had to follow up multiple times.",
+    "submitted_at": "2024-03-24T08:19:22",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000013",
+    "complaint_id": "CMP-2026-000032",
+    "rating": 4,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2024-04-14T02:56:31",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000014",
+    "complaint_id": "CMP-2025-000033",
+    "rating": 5,
+    "feedback_text": "I had to follow up multiple times.",
+    "submitted_at": "2024-10-16T15:59:41",
+    "nps_score": 10
+  },
+  {
+    "survey_id": "SRV-000015",
+    "complaint_id": "CMP-2025-000040",
+    "rating": 5,
+    "feedback_text": "Average experience, could be better.",
+    "submitted_at": "2025-07-14T18:05:59",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000016",
+    "complaint_id": "CMP-2025-000041",
+    "rating": 4,
+    "feedback_text": "Took too long but eventually resolved.",
+    "submitted_at": "2024-01-23T04:00:37",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000017",
+    "complaint_id": "CMP-2026-000042",
+    "rating": 5,
+    "feedback_text": "The issue was resolved quickly.",
+    "submitted_at": "2025-12-15T03:04:56",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000018",
+    "complaint_id": "CMP-2025-000043",
+    "rating": 4,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-04-27T21:35:08",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000019",
+    "complaint_id": "CMP-2025-000044",
+    "rating": 2,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-10-23T22:53:10",
+    "nps_score": 2
+  },
+  {
+    "survey_id": "SRV-000020",
+    "complaint_id": "CMP-2026-000045",
+    "rating": 2,
+    "feedback_text": "Excellent service, will shop again.",
+    "submitted_at": "2024-10-30T08:02:09",
+    "nps_score": 3
+  },
+  {
+    "survey_id": "SRV-000021",
+    "complaint_id": "CMP-2025-000046",
+    "rating": 4,
+    "feedback_text": "Average experience, could be better.",
+    "submitted_at": "2026-04-20T11:14:51",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000022",
+    "complaint_id": "CMP-2025-000052",
+    "rating": 3,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2026-01-05T12:24:58",
+    "nps_score": 5
+  },
+  {
+    "survey_id": "SRV-000023",
+    "complaint_id": "CMP-2026-000054",
+    "rating": 3,
+    "feedback_text": "Took too long but eventually resolved.",
+    "submitted_at": "2024-01-04T19:41:43",
+    "nps_score": 5
+  },
+  {
+    "survey_id": "SRV-000024",
+    "complaint_id": "CMP-2026-000059",
+    "rating": 5,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-06-18T19:41:35",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000025",
+    "complaint_id": "CMP-2025-000060",
+    "rating": 4,
+    "feedback_text": "I had to follow up multiple times.",
+    "submitted_at": "2025-05-17T09:23:13",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000026",
+    "complaint_id": "CMP-2026-000061",
+    "rating": 4,
+    "feedback_text": "I had to follow up multiple times.",
+    "submitted_at": "2026-04-20T16:15:14",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000027",
+    "complaint_id": "CMP-2025-000065",
+    "rating": 5,
+    "feedback_text": "Average experience, could be better.",
+    "submitted_at": "2024-05-21T10:16:33",
+    "nps_score": 10
+  },
+  {
+    "survey_id": "SRV-000028",
+    "complaint_id": "CMP-2025-000067",
+    "rating": 5,
+    "feedback_text": "Took too long but eventually resolved.",
+    "submitted_at": "2024-01-06T20:30:47",
+    "nps_score": 10
+  },
+  {
+    "survey_id": "SRV-000029",
+    "complaint_id": "CMP-2026-000071",
+    "rating": 4,
+    "feedback_text": "Average experience, could be better.",
+    "submitted_at": "2025-04-26T14:20:06",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000030",
+    "complaint_id": "CMP-2026-000075",
+    "rating": 3,
+    "feedback_text": "Excellent service, will shop again.",
+    "submitted_at": "2025-09-26T01:53:54",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000031",
+    "complaint_id": "CMP-2025-000081",
+    "rating": 4,
+    "feedback_text": "Average experience, could be better.",
+    "submitted_at": "2024-10-31T18:28:01",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000032",
+    "complaint_id": "CMP-2025-000082",
+    "rating": 3,
+    "feedback_text": "The issue was resolved quickly.",
+    "submitted_at": "2024-04-13T01:35:36",
+    "nps_score": 4
+  },
+  {
+    "survey_id": "SRV-000033",
+    "complaint_id": "CMP-2026-000084",
+    "rating": 3,
+    "feedback_text": "Took too long but eventually resolved.",
+    "submitted_at": "2026-03-08T03:31:19",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000034",
+    "complaint_id": "CMP-2026-000086",
+    "rating": 2,
+    "feedback_text": "The agent was helpful and professional.",
+    "submitted_at": "2026-06-23T03:54:43",
+    "nps_score": 3
+  },
+  {
+    "survey_id": "SRV-000035",
+    "complaint_id": "CMP-2026-000089",
+    "rating": 5,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2026-03-09T07:08:35",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000036",
+    "complaint_id": "CMP-2026-000092",
+    "rating": 4,
+    "feedback_text": "The agent was helpful and professional.",
+    "submitted_at": "2024-11-23T03:53:50",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000037",
+    "complaint_id": "CMP-2026-000094",
+    "rating": 4,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2026-01-03T07:20:41",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000038",
+    "complaint_id": "CMP-2025-000097",
+    "rating": 5,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2024-11-29T13:20:51",
+    "nps_score": 9
+  },
+  {
+    "survey_id": "SRV-000039",
+    "complaint_id": "CMP-2026-000099",
+    "rating": 3,
+    "feedback_text": "The issue was resolved quickly.",
+    "submitted_at": "2024-02-14T16:21:38",
+    "nps_score": 5
+  },
+  {
+    "survey_id": "SRV-000040",
+    "complaint_id": "CMP-2025-000101",
+    "rating": 5,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2024-02-01T12:22:46",
+    "nps_score": 9
+  },
+  {
+    "survey_id": "SRV-000041",
+    "complaint_id": "CMP-2025-000107",
+    "rating": 4,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2026-06-17T09:38:43",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000042",
+    "complaint_id": "CMP-2026-000108",
+    "rating": 4,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2024-03-31T17:52:41",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000043",
+    "complaint_id": "CMP-2026-000112",
+    "rating": 5,
+    "feedback_text": "The agent was helpful and professional.",
+    "submitted_at": "2024-12-30T13:01:41",
+    "nps_score": 9
+  },
+  {
+    "survey_id": "SRV-000044",
+    "complaint_id": "CMP-2026-000115",
+    "rating": 1,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-12-06T22:01:45",
+    "nps_score": 1
+  },
+  {
+    "survey_id": "SRV-000045",
+    "complaint_id": "CMP-2025-000117",
+    "rating": 4,
+    "feedback_text": "I had to follow up multiple times.",
+    "submitted_at": "2024-10-26T21:12:02",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000046",
+    "complaint_id": "CMP-2025-000125",
+    "rating": 3,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-09-23T09:19:24",
+    "nps_score": 5
+  },
+  {
+    "survey_id": "SRV-000047",
+    "complaint_id": "CMP-2025-000126",
+    "rating": 3,
+    "feedback_text": "Average experience, could be better.",
+    "submitted_at": "2024-12-30T19:28:22",
+    "nps_score": 5
+  },
+  {
+    "survey_id": "SRV-000048",
+    "complaint_id": "CMP-2025-000127",
+    "rating": 3,
+    "feedback_text": "Took too long but eventually resolved.",
+    "submitted_at": "2025-11-08T06:27:07",
+    "nps_score": 5
+  },
+  {
+    "survey_id": "SRV-000049",
+    "complaint_id": "CMP-2025-000130",
+    "rating": 5,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2024-08-19T01:15:48",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000050",
+    "complaint_id": "CMP-2025-000135",
+    "rating": 3,
+    "feedback_text": "The issue was resolved quickly.",
+    "submitted_at": "2025-02-24T08:34:38",
+    "nps_score": 5
+  },
+  {
+    "survey_id": "SRV-000051",
+    "complaint_id": "CMP-2025-000138",
+    "rating": 5,
+    "feedback_text": "The issue was resolved quickly.",
+    "submitted_at": "2025-03-12T03:19:04",
+    "nps_score": 10
+  },
+  {
+    "survey_id": "SRV-000052",
+    "complaint_id": "CMP-2025-000139",
+    "rating": 4,
+    "feedback_text": "The agent was helpful and professional.",
+    "submitted_at": "2024-03-18T11:06:03",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000053",
+    "complaint_id": "CMP-2025-000141",
+    "rating": 4,
+    "feedback_text": "Took too long but eventually resolved.",
+    "submitted_at": "2024-05-31T13:50:39",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000054",
+    "complaint_id": "CMP-2026-000144",
+    "rating": 4,
+    "feedback_text": "The agent was helpful and professional.",
+    "submitted_at": "2025-11-22T11:45:12",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000055",
+    "complaint_id": "CMP-2026-000149",
+    "rating": 4,
+    "feedback_text": "The agent was helpful and professional.",
+    "submitted_at": "2025-09-04T23:37:01",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000056",
+    "complaint_id": "CMP-2026-000154",
+    "rating": 1,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-06-22T17:03:57",
+    "nps_score": 2
+  },
+  {
+    "survey_id": "SRV-000057",
+    "complaint_id": "CMP-2025-000160",
+    "rating": 3,
+    "feedback_text": "Average experience, could be better.",
+    "submitted_at": "2026-02-03T03:08:59",
+    "nps_score": 5
+  },
+  {
+    "survey_id": "SRV-000058",
+    "complaint_id": "CMP-2026-000163",
+    "rating": 4,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2026-05-17T09:40:35",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000059",
+    "complaint_id": "CMP-2026-000170",
+    "rating": 4,
+    "feedback_text": "Excellent service, will shop again.",
+    "submitted_at": "2025-03-01T09:55:26",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000060",
+    "complaint_id": "CMP-2026-000171",
+    "rating": 4,
+    "feedback_text": "Average experience, could be better.",
+    "submitted_at": "2024-07-20T22:04:25",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000061",
+    "complaint_id": "CMP-2026-000178",
+    "rating": 3,
+    "feedback_text": "I had to follow up multiple times.",
+    "submitted_at": "2024-06-11T04:10:10",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000062",
+    "complaint_id": "CMP-2025-000180",
+    "rating": 5,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2026-04-24T20:58:28",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000063",
+    "complaint_id": "CMP-2026-000181",
+    "rating": 2,
+    "feedback_text": "Average experience, could be better.",
+    "submitted_at": "2024-02-15T17:19:49",
+    "nps_score": 3
+  },
+  {
+    "survey_id": "SRV-000064",
+    "complaint_id": "CMP-2025-000182",
+    "rating": 4,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2024-08-05T11:46:42",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000065",
+    "complaint_id": "CMP-2026-000183",
+    "rating": 5,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2024-12-08T15:07:16",
+    "nps_score": 10
+  },
+  {
+    "survey_id": "SRV-000066",
+    "complaint_id": "CMP-2025-000184",
+    "rating": 5,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2024-09-20T01:43:06",
+    "nps_score": 10
+  },
+  {
+    "survey_id": "SRV-000067",
+    "complaint_id": "CMP-2026-000186",
+    "rating": 3,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-05-23T12:48:14",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-000068",
+    "complaint_id": "CMP-2025-000187",
+    "rating": 5,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2024-10-28T13:20:15",
+    "nps_score": 10
+  },
+  {
+    "survey_id": "SRV-000069",
+    "complaint_id": "CMP-2026-000188",
+    "rating": 5,
+    "feedback_text": "I had to follow up multiple times.",
+    "submitted_at": "2025-12-27T00:47:39",
+    "nps_score": 9
+  },
+  {
+    "survey_id": "SRV-000070",
+    "complaint_id": "CMP-2025-000189",
+    "rating": 5,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-05-14T23:36:36",
+    "nps_score": 10
+  },
+  {
+    "survey_id": "SRV-000071",
+    "complaint_id": "CMP-2026-000190",
+    "rating": 4,
+    "feedback_text": "Very satisfied with the resolution.",
+    "submitted_at": "2025-08-11T11:00:49",
+    "nps_score": 7
+  },
+  {
+    "survey_id": "SRV-000072",
+    "complaint_id": "CMP-2025-000193",
+    "rating": 4,
+    "feedback_text": "I had to follow up multiple times.",
+    "submitted_at": "2025-12-13T17:49:06",
+    "nps_score": 8
+  },
+  {
+    "survey_id": "SRV-000073",
+    "complaint_id": "CMP-2026-000197",
+    "rating": 2,
+    "feedback_text": "The agent was helpful and professional.",
+    "submitted_at": "2024-08-16T13:40:20",
+    "nps_score": 4
+  },
+  {
+    "survey_id": "SRV-000074",
+    "complaint_id": "CMP-2025-000200",
+    "rating": 4,
+    "feedback_text": "Not happy with the outcome.",
+    "submitted_at": "2026-05-09T18:47:17",
+    "nps_score": 6
+  },
+  {
+    "survey_id": "SRV-EDGE-000005",
+    "complaint_id": "CMP-2026-000001",
+    "rating": 4,
+    "feedback_text": "EDGE: survey before closure",
+    "submitted_at": "2025-09-28T18:48:01",
+    "nps_score": 7
+  }
+]

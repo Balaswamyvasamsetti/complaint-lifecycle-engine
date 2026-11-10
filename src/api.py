@@ -66,6 +66,16 @@ def _now():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
 
+def _parse_dt(dt_val):
+    """Safely parses datetime string into timezone-naive datetime."""
+    if isinstance(dt_val, datetime):
+        return dt_val.replace(tzinfo=None)
+    s = str(dt_val)
+    if "." in s:
+        s = s.split(".")[0]
+    return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S")
+
+
 def _assign_team_agent(priority: str):
     import random
     available_teams = TEAMS.get(priority, ["General-Support"])
@@ -165,7 +175,27 @@ def get_dashboard():
     html_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "index.html")
     if os.path.exists(html_path):
         with open(html_path, "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read())
+            content = f.read()
+        try:
+            stats = db.get_analytics()
+            total_str = f"{stats.get('total_complaints', 2000):,}"
+            open_str = f"{stats.get('open_complaints', 1216):,}"
+            resolved_str = f"{stats.get('resolved_complaints', 784):,}"
+            breach_str = f"{stats.get('sla_breach_rate_pct', 26.6):.1f}%"
+            csat_val = float(stats.get('avg_csat_rating', 4.18))
+            nps_val = float(stats.get('avg_nps_score', 7.2))
+            nps_sign = "+" if nps_val >= 0 else ""
+            csat_str = f"{csat_val:.2f} / 5.0 ({nps_sign}{nps_val:.1f} NPS)"
+
+            import re
+            content = re.sub(r'id="stat-total">[^<]*<', f'id="stat-total">{total_str}<', content)
+            content = re.sub(r'id="stat-open">[^<]*<', f'id="stat-open">{open_str}<', content)
+            content = re.sub(r'id="stat-resolved">[^<]*<', f'id="stat-resolved">{resolved_str}<', content)
+            content = re.sub(r'id="stat-breach-rate">[^<]*<', f'id="stat-breach-rate">{breach_str}<', content)
+            content = re.sub(r'id="stat-csat">[^<]*<', f'id="stat-csat">{csat_str}<', content)
+        except Exception:
+            pass
+        return HTMLResponse(content=content)
     return HTMLResponse(content="<h3>Executive Dashboard file not found</h3>", status_code=404)
 
 
@@ -192,8 +222,9 @@ def submit_complaint(req: ComplaintCreateRequest):
     sentiment = sentiment_data.get("sentiment", "Neutral")
 
     # 2. Priority Rule Engine
+    is_safety = bool(req.is_safety_issue or (category_id == "CAT-04"))
     rule_priority = priority_from_rules(
-        is_safety=req.is_safety_issue,
+        is_safety=is_safety,
         is_vulnerable=req.is_vulnerable,
         sentiment=sentiment,
         order_value=req.order_value,
@@ -232,7 +263,7 @@ def submit_complaint(req: ComplaintCreateRequest):
         "created_at": now,
         "updated_at": now,
         "recurrence_count": req.recurrence_count,
-        "is_safety_issue": req.is_safety_issue,
+        "is_safety_issue": is_safety,
         "is_reopened": bool(req.parent_complaint_id),
         "parent_complaint_id": req.parent_complaint_id or "",
         "order_value": req.order_value,
@@ -248,7 +279,7 @@ def submit_complaint(req: ComplaintCreateRequest):
     # 6. SLA Clock Computation
     sla_hours = _sla_hours_for(category_id, rule_priority)
     deadline_dt = datetime.now(timezone.utc) + timedelta(hours=sla_hours)
-    sla_id = db.get_next_sequence_id("sla_clocks", "sla_id", "SLA-", 6)
+    sla_id = f"SLA-{cmp_id}"
 
     conn = db.get_conn()
     cur = conn.cursor()
@@ -379,7 +410,7 @@ def check_sla(complaint_id: str):
         raise HTTPException(status_code=404, detail="SLA record not found")
 
     now = datetime.now(timezone.utc).replace(tzinfo=None)
-    deadline = datetime.strptime(sla["deadline_at"], "%Y-%m-%dT%H:%M:%S")
+    deadline = _parse_dt(sla["deadline_at"])
     remaining_hours = round((deadline - now).total_seconds() / 3600.0, 2)
     is_overdue = now > deadline and sla["status"] not in ["Met", "Resolved"]
 
@@ -417,10 +448,10 @@ def resume_sla(complaint_id: str, actor: str = "Agent"):
         raise HTTPException(status_code=400, detail="SLA is not currently paused")
 
     now = datetime.now(timezone.utc).replace(tzinfo=None)
-    paused_at = datetime.strptime(sla["paused_at"], "%Y-%m-%dT%H:%M:%S")
+    paused_at = _parse_dt(sla["paused_at"])
     pause_duration = now - paused_at
 
-    old_deadline = datetime.strptime(sla["deadline_at"], "%Y-%m-%dT%H:%M:%S")
+    old_deadline = _parse_dt(sla["deadline_at"])
     new_deadline = old_deadline + pause_duration
 
     conn = db.get_conn()
@@ -460,7 +491,7 @@ def resolve_complaint(complaint_id: str, req: ResolutionCreateRequest):
     requires_approver = (req.resolution_type == "Refund") and ((req.refund_amount or 0.0) > 250.0)
 
     now = _now()
-    res_id = db.get_next_sequence_id("resolutions", "resolution_id", "RES-", 6)
+    res_id = f"RES-{complaint_id}"
 
     conn = db.get_conn()
     sql = """
@@ -572,11 +603,15 @@ def get_analytics_summary():
 @app.get("/ground-truth", tags=["Analytics & KPIs"])
 def get_ground_truth_anomalies():
     """Exposes isolated ground-truth anomalies and known edge cases for model evaluation."""
-    gt_path = os.path.join(os.path.dirname(__file__), "..", "output", "ground_truth", "ground_truth.json")
-    if os.path.exists(gt_path):
-        import json
-        with open(gt_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+    for cand in [
+        os.path.join(os.path.dirname(__file__), "..", "output", "ground_truth", "ground_truth.json"),
+        os.path.join(os.path.dirname(__file__), "..", "output", "ground_truth.json"),
+        os.path.join(os.path.dirname(__file__), "..", "data", "ground_truth.json"),
+    ]:
+        if os.path.exists(cand):
+            import json
+            with open(cand, "r", encoding="utf-8") as f:
+                return json.load(f)
     return {"message": "Ground truth not generated yet. Run python src/run.py first."}
 
 

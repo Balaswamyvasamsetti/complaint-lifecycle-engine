@@ -389,10 +389,18 @@ def init_db():
 def get_next_sequence_id(table: str, id_col: str, prefix: str, padding: int = 6) -> str:
     """Returns the next strictly sequential zero-padded ID (e.g. CMP-2026-000001, ASN-000001)."""
     conn = get_conn()
-    cur = _execute(conn, f"SELECT COUNT(*) as count FROM {table}")
+    cur = _execute(conn, f"SELECT {id_col} FROM {table} WHERE {id_col} LIKE ? ORDER BY {id_col} DESC LIMIT 1", (f"{prefix}%",))
     row = _fetchone_dict(cur)
     conn.close()
-    cnt = (row["count"] if row else 0) + 1
+    if row and row.get(id_col):
+        last_id = str(row[id_col])
+        num_part = last_id[len(prefix):]
+        try:
+            cnt = int(num_part) + 1
+        except ValueError:
+            cnt = 1
+    else:
+        cnt = 1
     return f"{prefix}{cnt:0{padding}d}"
 
 
@@ -415,6 +423,7 @@ def clean_database():
             pass
     conn.commit()
     conn.close()
+    invalidate_analytics_cache()
     print("[DB] Cleared existing database tables for fresh deterministic seeding.")
 
 
@@ -431,7 +440,7 @@ def log_event(complaint_id: str, event_type: str, actor: str, old_state: str, ne
     _execute(conn, query, (event_id, complaint_id, event_type, actor, old_state, new_state, now, details))
     conn.commit()
     conn.close()
-    conn.close()
+    invalidate_analytics_cache()
 
 
 def upsert_complaint(c: dict):
@@ -473,6 +482,7 @@ def upsert_complaint(c: dict):
         ))
     conn.commit()
     conn.close()
+    invalidate_analytics_cache()
 
 
 def _execute_batch(conn, cur, query_sqlite: str, query_pg: str, params_list: list):
@@ -553,6 +563,7 @@ def bulk_load(data: dict):
 
     conn.commit()
     conn.close()
+    invalidate_analytics_cache()
     print("[DB] Bulk loading complete into %s" % ("PostgreSQL" if _USE_POSTGRES else "SQLite"))
 
 
@@ -596,6 +607,7 @@ def update_complaint_status(complaint_id: str, new_status: str, actor: str = "Sy
              (new_status, now, complaint_id))
     conn.commit()
     conn.close()
+    invalidate_analytics_cache()
 
     # Log immutable event history
     log_event(complaint_id, "STATUS_CHANGED", actor, old_status, new_status, "Status updated from %s to %s" % (old_status, new_status))
@@ -614,6 +626,7 @@ def assign_complaint(complaint_id: str, team: str, agent_id: str, actor: str = "
              (new_asn_id, complaint_id, team, agent_id, now, True, reason))
     conn.commit()
     conn.close()
+    invalidate_analytics_cache()
 
     log_event(complaint_id, "ASSIGNED", actor, "", team, "Assigned to %s (Agent: %s). %s" % (team, agent_id, reason))
 
@@ -676,20 +689,39 @@ def get_messages(complaint_id: str):
 
 def add_message(complaint_id: str, sender_type: str, text: str, is_internal: bool = False):
     conn = get_conn()
-    msg_id = get_next_sequence_id("messages", "message_id", "MSG-", 6)
+    cur = _execute(conn, "SELECT COUNT(*) as cnt FROM messages WHERE complaint_id = ?", (complaint_id,))
+    row = _fetchone_dict(cur)
+    cnt = ((row["cnt"] if row else 0) or 0) + 1
+    msg_id = f"MSG-{complaint_id}-{cnt:03d}"
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
     _execute(conn, "INSERT INTO messages VALUES (?,?,?,?,?,?)",
              (msg_id, complaint_id, sender_type, text, now, bool(is_internal)))
     conn.commit()
     conn.close()
+    invalidate_analytics_cache()
 
     log_event(complaint_id, "MESSAGE_SENT" if sender_type != "Customer" else "MESSAGE_RECEIVED",
               sender_type, "", "", "Message sent by %s: %s" % (sender_type, text[:60]))
     return {"message_id": msg_id, "complaint_id": complaint_id, "sent_at": now}
 
 
-def get_analytics():
+_ANALYTICS_CACHE = None
+_ANALYTICS_CACHE_TIME = 0.0
+
+
+def invalidate_analytics_cache():
+    global _ANALYTICS_CACHE
+    _ANALYTICS_CACHE = None
+
+
+def get_analytics(force_refresh: bool = False):
+    global _ANALYTICS_CACHE, _ANALYTICS_CACHE_TIME
+    import time
+    now_ts = time.time()
+    if not force_refresh and _ANALYTICS_CACHE is not None and (now_ts - _ANALYTICS_CACHE_TIME < 15.0):
+        return _ANALYTICS_CACHE
+
     conn = get_conn()
     cur = _execute(conn, "SELECT COUNT(*) as total, SUM(CASE WHEN status IN ('Resolved', 'Closed') THEN 1 ELSE 0 END) as resolved FROM complaints")
     totals = _fetchone_dict(cur) or {"total": 0, "resolved": 0}
@@ -708,19 +740,22 @@ def get_analytics():
 
     conn.close()
 
-    total = totals["total"] or 0
-    resolved = totals["resolved"] or 0
-    breached = sla_row["breached"] or 0
+    total = int(totals["total"] or 0)
+    resolved = int(totals["resolved"] or 0)
+    breached = int(sla_row["breached"] or 0)
     open_count = total - resolved
 
-    return {
+    res = {
         "total_complaints": total,
         "open_complaints": open_count,
         "resolved_complaints": resolved,
         "breached_slas": breached,
-        "sla_breach_rate_pct": round((breached / total * 100), 2) if total > 0 else 0.0,
-        "avg_csat_rating": round(survey_row["avg_csat"] or 0.0, 2),
-        "avg_nps_score": round(survey_row["avg_nps"] or 0.0, 2),
+        "sla_breach_rate_pct": float(round((breached / total * 100), 2)) if total > 0 else 0.0,
+        "avg_csat_rating": float(round(float(survey_row["avg_csat"] or 0.0), 2)),
+        "avg_nps_score": float(round(float(survey_row["avg_nps"] or 0.0), 2)),
         "priority_distribution": priority_dist,
         "category_distribution": category_dist,
     }
+    _ANALYTICS_CACHE = res
+    _ANALYTICS_CACHE_TIME = now_ts
+    return res

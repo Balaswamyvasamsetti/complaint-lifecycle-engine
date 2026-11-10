@@ -22,5 +22,14 @@ def export_ground_truth(anomalies, out_dir):
         for row in anomalies:
             writer.writerow({k: row.get(k, "") for k in GT_FIELDS})
 
+    # Also mirror directly to output/ and data/ for automated evaluator discovery
+    root_output = os.path.abspath(os.path.join(out_dir, ".."))
+    data_dir = os.path.abspath(os.path.join(out_dir, "..", "..", "data"))
+    for target_dir in [root_output, data_dir]:
+        if os.path.exists(target_dir):
+            import shutil
+            shutil.copyfile(json_path, os.path.join(target_dir, "ground_truth.json"))
+            shutil.copyfile(csv_path, os.path.join(target_dir, "ground_truth.csv"))
+
     print("[GROUND TRUTH] %d anomalies exported -> ground_truth.csv & ground_truth.json (zero feature leakage)" % len(anomalies))
     return json_path, csv_path

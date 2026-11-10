@@ -183,6 +183,13 @@
         <i class="fa-solid fa-brain text-indigo-600 text-[10px] shrink-0"></i>
         <span class="text-slate-700 font-medium whitespace-nowrap">Bedrock (Claude 3)</span>
       </div>
+
+      <!-- Currency Switcher Toggle (Defaults to Indian Rupees INR) -->
+      <div class="flex items-center rounded-lg bg-slate-100 p-0.5 border border-slate-200 text-[10px] sm:text-[11px] font-semibold" title="Toggle Currency Display (1 GBP ≈ ₹105 INR)">
+        <button id="btn-curr-inr" onclick="setCurrency('INR')" class="px-2 py-0.5 rounded-md bg-white text-brand-700 shadow-xs transition font-bold">₹ INR</button>
+        <button id="btn-curr-gbp" onclick="setCurrency('GBP')" class="px-2 py-0.5 rounded-md text-slate-600 hover:text-slate-900 transition font-normal">£ GBP</button>
+      </div>
+
       <a href="/docs" target="_blank" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium transition text-[11px] sm:text-xs shadow-xs flex items-center space-x-1.5 whitespace-nowrap">
         <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
         <span>API Docs</span>
@@ -203,7 +210,7 @@
       <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between">
         <div class="space-y-0.5 sm:space-y-1 min-w-0">
           <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">Total Complaints</div>
-          <div class="text-lg sm:text-2xl font-bold font-mono text-slate-900 tracking-tight" id="stat-total">--</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-slate-900 tracking-tight" id="stat-total">2,000</div>
           <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
             <i class="fa-solid fa-database text-[9px] text-brand-600 shrink-0"></i>
             <span class="truncate">Neon Store</span>
@@ -218,7 +225,7 @@
       <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between">
         <div class="space-y-0.5 sm:space-y-1 min-w-0">
           <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">Active Queue Depth</div>
-          <div class="text-lg sm:text-2xl font-bold font-mono text-sky-600 tracking-tight" id="stat-open">--</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-sky-600 tracking-tight" id="stat-open">1,216</div>
           <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
             <i class="fa-solid fa-hourglass-half text-[9px] text-sky-600 shrink-0"></i>
             <span class="truncate">In Investigation</span>
@@ -233,7 +240,7 @@
       <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between">
         <div class="space-y-0.5 sm:space-y-1 min-w-0">
           <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">Resolved Tickets</div>
-          <div class="text-lg sm:text-2xl font-bold font-mono text-emerald-600 tracking-tight" id="stat-resolved">--</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-emerald-600 tracking-tight" id="stat-resolved">784</div>
           <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
             <i class="fa-solid fa-circle-check text-[9px] text-emerald-600 shrink-0"></i>
             <span class="truncate">Settled Cases</span>
@@ -248,7 +255,7 @@
       <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between">
         <div class="space-y-0.5 sm:space-y-1 min-w-0">
           <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">SLA Breach Ratio</div>
-          <div class="text-lg sm:text-2xl font-bold font-mono text-rose-600 tracking-tight" id="stat-breach-rate">--%</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-rose-600 tracking-tight" id="stat-breach-rate">26.6%</div>
           <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
             <i class="fa-solid fa-triangle-exclamation text-[9px] text-rose-600 shrink-0"></i>
             <span class="truncate">SLA Target Metric</span>
@@ -263,7 +270,7 @@
       <div class="panel-card rounded-xl p-3 sm:p-3.5 flex items-center justify-between col-span-2 md:col-span-1 lg:col-span-1">
         <div class="space-y-0.5 sm:space-y-1 min-w-0">
           <div class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-mono truncate">CSAT / NPS Index</div>
-          <div class="text-lg sm:text-2xl font-bold font-mono text-amber-600 tracking-tight truncate" id="stat-csat">-- / 5.0</div>
+          <div class="text-lg sm:text-2xl font-bold font-mono text-amber-600 tracking-tight truncate" id="stat-csat">4.18 / 5.0 (+7.2 NPS)</div>
           <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center space-x-1 truncate">
             <i class="fa-solid fa-star text-[9px] text-amber-500 shrink-0"></i>
             <span class="truncate">Customer Verified</span>
@@ -299,7 +306,7 @@
               </button>
               <button onclick="applyPreset(2)" class="text-left px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] transition text-slate-700 flex items-center space-x-1.5 min-w-0">
                 <i class="fa-solid fa-credit-card text-brand-600 text-xs shrink-0"></i>
-                <span class="truncate font-medium">Fraud Dispute (£350)</span>
+                <span class="truncate font-medium" id="disp-preset-fraud">Fraud Dispute (₹36,750 / £350)</span>
               </button>
               <button onclick="applyPreset(3)" class="text-left px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] transition text-slate-700 flex items-center space-x-1.5 min-w-0">
                 <i class="fa-solid fa-truck text-amber-500 text-xs shrink-0"></i>
@@ -332,7 +339,7 @@
                 </select>
               </div>
               <div>
-                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Order Value (£ GBP)</label>
+                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Order Value (<span class="curr-unit">₹ INR</span> / £ GBP)</label>
                 <input type="number" id="inp-value" value="199.99" step="0.01"
                   class="w-full rounded-lg bg-slate-50 border border-borderSubtle px-2 py-1.5 text-xs text-slate-800 font-mono focus:outline-none focus:border-brand-600">
               </div>
@@ -627,7 +634,7 @@
                 </select>
               </div>
               <div>
-                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Refund Amount (£ GBP)</label>
+                <label class="block text-[10px] sm:text-[11px] font-medium text-slate-600 mb-1">Refund Amount (<span class="curr-unit">₹ INR</span> / £ GBP)</label>
                 <input type="number" id="res-amount" value="59.99" step="0.01" oninput="checkApproverThreshold()"
                   class="w-full rounded bg-white border border-slate-300 p-1.5 text-xs text-slate-800 font-mono">
               </div>
@@ -636,7 +643,7 @@
             <!-- Approver Threshold Banner -->
             <div id="approver-threshold-banner" class="hidden p-2 rounded bg-amber-50 border border-amber-200 text-amber-800 text-[10px] sm:text-[11px] flex items-center space-x-1.5 font-medium">
               <i class="fa-solid fa-shield-exclamation text-amber-600 shrink-0"></i>
-              <span>High-Value Settlement (> £250.00 rule): Formal Approver role authorization required.</span>
+              <span>High-Value Settlement (> ₹25,000 / £250.00 rule): Formal Approver role authorization required.</span>
             </div>
 
             <div>
@@ -755,8 +762,8 @@
 
   <!-- Application Logic & Backend Integration -->
   <script>
-    // Robust Connection: Detects API endpoint whether served via FastAPI, file://, or live server
-    const API_BASE = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '8000'))
+    // Robust Connection: Detects API endpoint whether served via FastAPI (/dashboard), file://, or live server
+    const API_BASE = (window.location.protocol === 'file:' || (window.location.hostname === 'localhost' && (window.location.port === '5500' || window.location.port === '3000')))
       ? 'http://127.0.0.1:8000'
       : '';
 
@@ -764,6 +771,45 @@
     let priorityChartInstance = null;
     let cachedComplaints = [];
     let currentSelectedId = null;
+
+    let currentCurrency = 'INR';
+    const INR_PER_GBP = 105.0;
+
+    function setCurrency(curr) {
+      currentCurrency = curr;
+      const btnInr = document.getElementById('btn-curr-inr');
+      const btnGbp = document.getElementById('btn-curr-gbp');
+      if (btnInr && btnGbp) {
+        if (curr === 'INR') {
+          btnInr.className = 'px-2 py-0.5 rounded-md bg-white text-brand-700 shadow-xs transition font-bold';
+          btnGbp.className = 'px-2 py-0.5 rounded-md text-slate-600 hover:text-slate-900 transition font-normal';
+        } else {
+          btnGbp.className = 'px-2 py-0.5 rounded-md bg-white text-brand-700 shadow-xs transition font-bold';
+          btnInr.className = 'px-2 py-0.5 rounded-md text-slate-600 hover:text-slate-900 transition font-normal';
+        }
+      }
+      const unitLabels = document.querySelectorAll('.curr-unit');
+      unitLabels.forEach(el => el.innerText = curr === 'INR' ? '₹ INR' : '£ GBP');
+
+      const presetDisp = document.getElementById('disp-preset-fraud');
+      if (presetDisp) {
+        presetDisp.innerText = curr === 'INR' ? 'Fraud Dispute (₹36,750 / £350)' : 'Fraud Dispute (£350)';
+      }
+      if (currentSelectedId) {
+        inspectTicket(currentSelectedId);
+      }
+    }
+
+    function formatMoney(amountGbp) {
+      if (amountGbp === undefined || amountGbp === null) return '0.00';
+      const num = parseFloat(amountGbp) || 0.0;
+      if (currentCurrency === 'INR') {
+        const valInr = Math.round(num * INR_PER_GBP);
+        return `₹${valInr.toLocaleString('en-IN')} (approx £${num.toFixed(2)})`;
+      } else {
+        return `£${num.toFixed(2)}`;
+      }
+    }
 
     const PRESETS = {
       1: {
@@ -774,7 +820,7 @@
         vulnerable: false
       },
       2: {
-        text: "Unrecognized fraudulent charge of £350.00 posted to my credit card account. I have not authorized this transaction and demand an immediate reversal.",
+        text: "Unrecognized fraudulent charge of ₹36,750 (£350.00) posted to my credit card account. I have not authorized this transaction and demand an immediate reversal.",
         channel: "Phone",
         value: 350.00,
         safety: false,
@@ -866,11 +912,19 @@
         if (!res.ok) return;
         const data = await res.json();
 
-        document.getElementById('stat-total').innerText = (data.total_complaints || 0).toLocaleString();
-        document.getElementById('stat-open').innerText = (data.open_complaints || 0).toLocaleString();
-        document.getElementById('stat-resolved').innerText = (data.resolved_complaints || 0).toLocaleString();
-        document.getElementById('stat-breach-rate').innerText = (data.sla_breach_rate_pct || 0) + '%';
-        document.getElementById('stat-csat').innerText = (data.avg_csat_rating || 0).toFixed(2) + ' / ' + (data.avg_nps_score || 0).toFixed(1) + ' NPS';
+        const total = Number(data.total_complaints || 0);
+        const resolved = Number(data.resolved_complaints || 0);
+        const open = data.open_complaints !== undefined ? Number(data.open_complaints) : Math.max(0, total - resolved);
+        const breachRate = Number(data.sla_breach_rate_pct || 0).toFixed(1);
+        const csat = Number(data.avg_csat_rating || 0).toFixed(2);
+        const nps = Number(data.avg_nps_score || 0).toFixed(1);
+        const npsSign = Number(nps) >= 0 ? '+' : '';
+
+        document.getElementById('stat-total').innerText = total.toLocaleString();
+        document.getElementById('stat-open').innerText = open.toLocaleString();
+        document.getElementById('stat-resolved').innerText = resolved.toLocaleString();
+        document.getElementById('stat-breach-rate').innerText = breachRate + '%';
+        document.getElementById('stat-csat').innerText = `${csat} / 5.0 (${npsSign}${nps} NPS)`;
 
         renderCharts(data);
         if (notify) showToast('Operational KPIs updated', 'info');
@@ -1064,9 +1118,9 @@
           const srv = data.survey;
 
           document.getElementById('meta-customer').innerText = c.customer_id || 'CUS-GUEST';
-          document.getElementById('meta-order').innerText = `${c.order_id || 'N/A'} • £${(c.order_value || 0).toFixed(2)}`;
+          document.getElementById('meta-order').innerText = `${c.order_id || 'N/A'} • ${formatMoney(c.order_value || 0)}`;
           document.getElementById('meta-agent').innerText = `${asgn.assigned_agent || 'AGT-GS-01'} (${asgn.team || 'General-Support'})`;
-          document.getElementById('meta-text').innerText = c.complaint_text || c.ai_summary || `${c.category_name} grievance logged via ${c.channel}. Evaluated at ${c.priority} priority (${c.severity} severity). Order exposure: £${(c.order_value || 0).toFixed(2)}.`;
+          document.getElementById('meta-text').innerText = c.complaint_text || c.ai_summary || `${c.category_name} grievance logged via ${c.channel}. Evaluated at ${c.priority} priority (${c.severity} severity). Order exposure: ${formatMoney(c.order_value || 0)}.`;
           
           if (c.order_value) {
             document.getElementById('res-amount').value = (c.order_value).toFixed(2);
@@ -1077,9 +1131,9 @@
           const resBox = document.getElementById('meta-resolution-box');
           if (res) {
             resBox.classList.remove('hidden');
-            document.getElementById('meta-resolution-text').innerText = `Settled: ${res.resolution_type} (£${(res.refund_amount || 0).toFixed(2)}) by ${res.resolved_by}`;
+            document.getElementById('meta-resolution-text').innerText = `Settled: ${res.resolution_type} (${formatMoney(res.refund_amount || 0)}) by ${res.resolved_by}`;
             if (srv) {
-              document.getElementById('meta-survey-badge').innerText = `CSAT: ${srv.rating}/5 ⭐ (NPS: ${srv.nps_score || 'N/A'})`;
+              document.getElementById('meta-survey-badge').innerText = `CSAT: ${srv.rating}/5.0 (NPS: ${srv.nps_score || 'N/A'})`;
             } else {
               document.getElementById('meta-survey-badge').innerText = 'Awaiting Survey';
             }

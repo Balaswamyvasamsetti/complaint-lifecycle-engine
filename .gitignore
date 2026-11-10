@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Output data (regenerate with python src/run.py)
+output/csv/
+output/json/
+output/ground_truth/
+output/manifest.json
+output/validation_errors.json
+
+# OS
+.DS_Store
+Thumbs.db

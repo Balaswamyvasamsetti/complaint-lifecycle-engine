@@ -1,35 +1,31 @@
-"""
-Synthetic Data Generator — Complaint Management System
-Seed: 20261022 | Scale: 5000 customers, 8000 orders, 2000 complaints, 6000 messages
-"""
+# generator.py — Synthetic data generation for all entities
+# Seed: 20261022 | Full scale: 5000 customers, 8000 orders, 2000 complaints, 6000 messages
 
 import random
-import string
 from datetime import datetime, timedelta
 from schema import (
     CATEGORIES, PRIORITY_RULES, TEAMS, AGENTS,
-    CHANNELS, SENTIMENTS, COMPLAINT_STATUSES,
-    ORDER_STATUSES, RESOLUTION_TYPES, SURVEY_RATINGS, PRODUCTS
+    CHANNELS, SENTIMENTS, ORDER_STATUSES, RESOLUTION_TYPES, SURVEY_RATINGS, PRODUCTS
 )
 
-SEED = 20261022
-random.seed(SEED)
-
+SEED      = 20261022
 BASE_DATE = datetime(2024, 1, 1)
 END_DATE  = datetime(2026, 6, 30)
 
-# ── helpers ──────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-def rand_date(start=BASE_DATE, end=END_DATE):
+def _rand_date(start=BASE_DATE, end=END_DATE):
     delta = int((end - start).total_seconds())
     return start + timedelta(seconds=random.randint(0, delta))
 
-def rand_email(first, last, idx):
+def _rand_email(first, last, idx):
     domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "example.com"]
-    return f"{first.lower()}.{last.lower()}{idx}@{random.choice(domains)}"
+    return "%s.%s%d@%s" % (first.lower(), last.lower(), idx, random.choice(domains))
 
-def rand_phone():
-    return f"+44{''.join(random.choices(string.digits, k=10))}"
+def _rand_phone():
+    return "+44" + "".join(str(random.randint(0, 9)) for _ in range(10))
 
 def priority_from_rules(is_safety, is_vulnerable, sentiment, order_value, recurrence, is_fraud):
     if is_safety or is_vulnerable or is_fraud:
@@ -40,127 +36,170 @@ def priority_from_rules(is_safety, is_vulnerable, sentiment, order_value, recurr
         return "MEDIUM"
     return "LOW"
 
-def sla_hours_for(category_id, priority):
+def _sla_hours_for(category_id, priority):
     base = next(c["default_sla_hours"] for c in CATEGORIES if c["category_id"] == category_id)
-    mult = next(r["sla_multiplier"] for r in PRIORITY_RULES if r["priority"] == priority)
+    mult = next(r["sla_multiplier"]     for r in PRIORITY_RULES if r["priority"] == priority)
     return max(1.0, base * mult)
 
-def severity_from_priority(priority):
+def _severity_from_priority(priority):
     return {"CRITICAL": "Critical", "HIGH": "High", "MEDIUM": "Medium", "LOW": "Low"}[priority]
 
-# ── master tables ─────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Name pools
+# ---------------------------------------------------------------------------
 
-FIRST_NAMES = ["James","Oliver","Harry","Jack","George","Noah","Charlie","Jacob","Alfie","Freddie",
-               "Amelia","Olivia","Isla","Emily","Poppy","Ava","Isabella","Jessica","Lily","Sophie"]
-LAST_NAMES  = ["Smith","Jones","Williams","Taylor","Brown","Davies","Evans","Wilson","Thomas","Roberts",
-               "Johnson","White","Martin","Anderson","Thompson","Garcia","Martinez","Robinson","Clark","Lewis"]
+_FIRST_NAMES = [
+    "James", "Oliver", "Harry", "Jack",  "George", "Noah",  "Charlie", "Jacob", "Alfie",    "Freddie",
+    "Amelia","Olivia", "Isla",  "Emily", "Poppy",  "Ava",   "Isabella","Jessica","Lily",    "Sophie",
+]
+_LAST_NAMES = [
+    "Smith",  "Jones",    "Williams", "Taylor",   "Brown",    "Davies",   "Evans",    "Wilson",
+    "Thomas", "Roberts",  "Johnson",  "White",    "Martin",   "Anderson", "Thompson", "Garcia",
+    "Martinez","Robinson","Clark",    "Lewis",
+]
 
-def generate_customers(n=5000):
-    customers = []
+_CUSTOMER_MSGS = [
+    "I am very unhappy with my order.",
+    "This product stopped working after one day.",
+    "I have not received my refund yet.",
+    "The delivery was late and the item was damaged.",
+    "I want to escalate this issue immediately.",
+    "Please resolve this as soon as possible.",
+    "I have been waiting for over a week.",
+    "This is unacceptable service.",
+]
+_AGENT_MSGS = [
+    "Thank you for contacting us. We are looking into this.",
+    "We apologise for the inconvenience caused.",
+    "Your case has been escalated to our specialist team.",
+    "We have processed your refund. Please allow 3-5 business days.",
+    "Could you please provide your order number?",
+    "We have assigned your case to a senior agent.",
+    "Your complaint has been logged and we will respond within 24 hours.",
+]
+_SYSTEM_MSGS = [
+    "Complaint status updated to In Progress.",
+    "SLA deadline approaching in 2 hours.",
+    "Complaint escalated due to SLA breach.",
+    "Resolution submitted by agent.",
+    "Survey sent to customer.",
+    "Complaint reopened by customer.",
+]
+_FEEDBACK_TEXTS = [
+    "Very satisfied with the resolution.",
+    "The agent was helpful and professional.",
+    "Took too long but eventually resolved.",
+    "Not happy with the outcome.",
+    "Excellent service, will shop again.",
+    "Average experience, could be better.",
+    "The issue was resolved quickly.",
+    "I had to follow up multiple times.",
+]
+
+# ---------------------------------------------------------------------------
+# Master / reference tables
+# ---------------------------------------------------------------------------
+
+def generate_customers(n):
+    customers   = []
     used_emails = set()
     for i in range(1, n + 1):
-        first = random.choice(FIRST_NAMES)
-        last  = random.choice(LAST_NAMES)
-        email = rand_email(first, last, i)
+        first = random.choice(_FIRST_NAMES)
+        last  = random.choice(_LAST_NAMES)
+        email = _rand_email(first, last, i)
         while email in used_emails:
-            email = rand_email(first, last, i + random.randint(1000, 9999))
+            email = _rand_email(first, last, i + random.randint(1000, 9999))
         used_emails.add(email)
-        reg_date = rand_date(BASE_DATE, END_DATE - timedelta(days=30))
+        reg_date = _rand_date(BASE_DATE, END_DATE - timedelta(days=30))
         customers.append({
-            "customer_id":       f"CUS-{i:06d}",
+            "customer_id":       "CUS-%06d" % i,
             "first_name":        first,
             "last_name":         last,
             "email":             email,
-            "phone":             rand_phone(),
-            "segment":           random.choices(["Premium","Standard","Basic"], weights=[15,55,30])[0],
+            "phone":             _rand_phone(),
+            "segment":           random.choices(["Premium", "Standard", "Basic"], weights=[15, 55, 30])[0],
             "is_vulnerable":     random.random() < 0.05,
             "registration_date": reg_date.strftime("%Y-%m-%d"),
             "lifetime_value":    round(random.uniform(10, 5000), 2),
         })
     return customers
 
-def generate_orders(customers, n=8000):
-    orders = []
+
+def generate_orders(customers, n):
+    orders   = []
     cust_ids = [c["customer_id"] for c in customers]
     for i in range(1, n + 1):
-        cust_id  = random.choice(cust_ids)
-        product  = random.choice(PRODUCTS)
-        qty      = random.randint(1, 5)
-        o_date   = rand_date()
-        d_date   = o_date + timedelta(days=random.randint(1, 14)) if random.random() > 0.1 else None
-        status   = random.choices(ORDER_STATUSES, weights=[5,10,20,50,10,5])[0]
+        cust_id = random.choice(cust_ids)
+        product = random.choice(PRODUCTS)
+        qty     = random.randint(1, 5)
+        o_date  = _rand_date()
+        d_date  = o_date + timedelta(days=random.randint(1, 14)) if random.random() > 0.1 else None
         orders.append({
-            "order_id":      f"ORD-{o_date.year}-{i:06d}",
+            "order_id":      "ORD-%d-%06d" % (o_date.year, i),
             "customer_id":   cust_id,
             "product_id":    product["product_id"],
             "order_date":    o_date.strftime("%Y-%m-%dT%H:%M:%S"),
             "order_value":   round(product["price"] * qty, 2),
             "quantity":      qty,
-            "status":        status,
+            "status":        random.choices(ORDER_STATUSES, weights=[5, 10, 20, 50, 10, 5])[0],
             "delivery_date": d_date.strftime("%Y-%m-%dT%H:%M:%S") if d_date else "",
         })
     return orders
 
-# ── complaints ────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Complaints
+# ---------------------------------------------------------------------------
 
-def generate_complaints(customers, orders, n=2000):
-    complaints = []
-    cust_map   = {c["customer_id"]: c for c in customers}
-    prod_map   = {p["product_id"]: p for p in PRODUCTS}
-    cust_ids   = [c["customer_id"] for c in customers]
-    complaint_counter = {}   # customer_id -> count (for recurrence)
-
-    # track complaint_ids for reopened/parent links
-    existing_ids = []
+def generate_complaints(customers, orders, n):
+    complaints        = []
+    cust_map          = {c["customer_id"]: c for c in customers}
+    prod_map          = {p["product_id"]:  p for p in PRODUCTS}
+    cust_ids          = [c["customer_id"] for c in customers]
+    recurrence_counter = {}
+    existing_ids      = []
 
     for i in range(1, n + 1):
-        year = random.choice([2025, 2026])
-        cmp_id = f"CMP-{year}-{i:06d}"
+        year   = random.choice([2025, 2026])
+        cmp_id = "CMP-%d-%06d" % (year, i)
 
-        # pick customer (allow null for edge case injected later)
         cust_id = random.choice(cust_ids)
         cust    = cust_map[cust_id]
 
-        # pick order (may be None)
         cust_orders = [o for o in orders if o["customer_id"] == cust_id]
-        order = random.choice(cust_orders) if cust_orders else None
+        order       = random.choice(cust_orders) if cust_orders else None
 
         product_id  = order["product_id"] if order else random.choice(PRODUCTS)["product_id"]
         product     = prod_map[product_id]
         order_value = order["order_value"] if order else round(random.uniform(10, 1000), 2)
 
-        category    = random.choice(CATEGORIES)
-        channel     = random.choice(CHANNELS)
-        sentiment   = random.choices(SENTIMENTS, weights=[10, 30, 60])[0]
+        category  = random.choice(CATEGORIES)
+        channel   = random.choice(CHANNELS)
+        sentiment = random.choices(SENTIMENTS, weights=[10, 30, 60])[0]
 
-        # recurrence
-        complaint_counter[cust_id] = complaint_counter.get(cust_id, 0) + 1
-        recurrence = complaint_counter[cust_id]
+        recurrence_counter[cust_id] = recurrence_counter.get(cust_id, 0) + 1
+        recurrence = recurrence_counter[cust_id]
 
         is_safety    = product["safety_risk"] and random.random() < 0.6
         is_vulnerable = cust["is_vulnerable"]
         is_fraud     = category["category_id"] == "CAT-09"
 
-        # force safety category if safety issue
         if is_safety:
             category = next(c for c in CATEGORIES if c["category_id"] == "CAT-04")
 
-        priority = priority_from_rules(is_safety, is_vulnerable, sentiment, order_value, recurrence, is_fraud)
-        severity = severity_from_priority(priority)
-
-        created_at = rand_date()
+        priority   = priority_from_rules(is_safety, is_vulnerable, sentiment, order_value, recurrence, is_fraud)
+        severity   = _severity_from_priority(priority)
+        created_at = _rand_date()
         updated_at = created_at + timedelta(hours=random.randint(0, 72))
 
-        is_reopened     = random.random() < 0.08 and len(existing_ids) > 0
-        parent_cmp_id   = random.choice(existing_ids) if is_reopened else ""
+        is_reopened   = random.random() < 0.08 and len(existing_ids) > 0
+        parent_cmp_id = random.choice(existing_ids) if is_reopened else ""
 
-        # status lifecycle
         if is_reopened:
             status = "Reopened"
         else:
             status = random.choices(
-                ["Open","In Progress","Pending Customer","Escalated","Resolved","Closed"],
-                weights=[10, 20, 15, 10, 25, 20]
+                ["Open", "In Progress", "Pending Customer", "Escalated", "Resolved", "Closed"],
+                weights=[10, 20, 15, 10, 25, 20],
             )[0]
 
         complaints.append({
@@ -187,17 +226,21 @@ def generate_complaints(customers, orders, n=2000):
 
     return complaints
 
-# ── assignments ───────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Assignments
+# ---------------------------------------------------------------------------
 
 def generate_assignments(complaints):
     assignments = []
     for i, cmp in enumerate(complaints, 1):
-        priority = cmp["priority"]
-        team     = random.choice(TEAMS[priority])
-        agent    = random.choice(AGENTS[team])
-        assigned_at = datetime.strptime(cmp["created_at"], "%Y-%m-%dT%H:%M:%S") + timedelta(minutes=random.randint(5, 60))
+        team  = random.choice(TEAMS[cmp["priority"]])
+        agent = random.choice(AGENTS[team])
+        assigned_at = (
+            datetime.strptime(cmp["created_at"], "%Y-%m-%dT%H:%M:%S")
+            + timedelta(minutes=random.randint(5, 60))
+        )
         assignments.append({
-            "assignment_id": f"ASN-{i:06d}",
+            "assignment_id": "ASN-%06d" % i,
             "complaint_id":  cmp["complaint_id"],
             "team":          team,
             "agent_id":      agent,
@@ -207,28 +250,28 @@ def generate_assignments(complaints):
         })
     return assignments
 
-# ── SLA clocks ────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# SLA Clocks
+# ---------------------------------------------------------------------------
 
 def generate_sla_clocks(complaints):
     sla_records = []
     for cmp in complaints:
-        sla_h      = sla_hours_for(cmp["category_id"], cmp["priority"])
+        sla_h      = _sla_hours_for(cmp["category_id"], cmp["priority"])
         started_at = datetime.strptime(cmp["created_at"], "%Y-%m-%dT%H:%M:%S")
         deadline   = started_at + timedelta(hours=sla_h)
-
-        # determine if breached based on status and updated_at
         updated_at = datetime.strptime(cmp["updated_at"], "%Y-%m-%dT%H:%M:%S")
+
         is_breached = updated_at > deadline and cmp["status"] not in ["Resolved", "Closed"]
         breached_at = deadline.strftime("%Y-%m-%dT%H:%M:%S") if is_breached else ""
 
-        # optional pause (Pending Customer)
-        paused_at   = ""
-        resumed_at  = ""
+        paused_at    = ""
+        resumed_at   = ""
         pause_reason = ""
         if cmp["status"] == "Pending Customer" and random.random() < 0.5:
-            pause_offset = random.randint(1, int(sla_h / 2) or 1)
-            paused_at    = (started_at + timedelta(hours=pause_offset)).strftime("%Y-%m-%dT%H:%M:%S")
-            resumed_at   = (started_at + timedelta(hours=pause_offset + random.randint(1, 12))).strftime("%Y-%m-%dT%H:%M:%S")
+            offset     = random.randint(1, int(sla_h / 2) or 1)
+            paused_at  = (started_at + timedelta(hours=offset)).strftime("%Y-%m-%dT%H:%M:%S")
+            resumed_at = (started_at + timedelta(hours=offset + random.randint(1, 12))).strftime("%Y-%m-%dT%H:%M:%S")
             pause_reason = "Awaiting customer response"
 
         if is_breached:
@@ -241,7 +284,7 @@ def generate_sla_clocks(complaints):
             sla_status = "Active"
 
         sla_records.append({
-            "sla_id":        f"SLA-{cmp['complaint_id']}",
+            "sla_id":       "SLA-%s" % cmp["complaint_id"],
             "complaint_id":  cmp["complaint_id"],
             "sla_hours":     sla_h,
             "started_at":    started_at.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -255,116 +298,73 @@ def generate_sla_clocks(complaints):
         })
     return sla_records
 
-# ── messages ──────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Messages
+# ---------------------------------------------------------------------------
 
-CUSTOMER_MSGS = [
-    "I am very unhappy with my order.",
-    "This product stopped working after one day.",
-    "I have not received my refund yet.",
-    "The delivery was late and the item was damaged.",
-    "I want to escalate this issue immediately.",
-    "Please resolve this as soon as possible.",
-    "I have been waiting for over a week.",
-    "This is unacceptable service.",
-]
-AGENT_MSGS = [
-    "Thank you for contacting us. We are looking into this.",
-    "We apologise for the inconvenience caused.",
-    "Your case has been escalated to our specialist team.",
-    "We have processed your refund. Please allow 3-5 business days.",
-    "Could you please provide your order number?",
-    "We have assigned your case to a senior agent.",
-    "Your complaint has been logged and we will respond within 24 hours.",
-]
-SYSTEM_MSGS = [
-    "Complaint status updated to In Progress.",
-    "SLA deadline approaching in 2 hours.",
-    "Complaint escalated due to SLA breach.",
-    "Resolution submitted by agent.",
-    "Survey sent to customer.",
-    "Complaint reopened by customer.",
-]
+def generate_messages(complaints, total):
+    msg_counts = {c["complaint_id"]: 0 for c in complaints}
+    cmp_ids    = [c["complaint_id"] for c in complaints]
+    weights    = [
+        4 if c["status"] in ["Resolved", "Closed"] else
+        2 if c["status"] in ["In Progress", "Escalated"] else 1
+        for c in complaints
+    ]
+    for cmp_id in random.choices(cmp_ids, weights=weights, k=total):
+        msg_counts[cmp_id] += 1
 
-def generate_messages(complaints, total=6000):
+    cmp_map  = {c["complaint_id"]: c for c in complaints}
     messages = []
-    # distribute messages across complaints
-    msg_counts = {}
-    for cmp in complaints:
-        msg_counts[cmp["complaint_id"]] = 0
-
-    cmp_ids = [c["complaint_id"] for c in complaints]
-    # weighted: resolved/closed get more messages
-    weights = []
-    for c in complaints:
-        w = 4 if c["status"] in ["Resolved","Closed"] else 2 if c["status"] in ["In Progress","Escalated"] else 1
-        weights.append(w)
-
-    assigned = random.choices(cmp_ids, weights=weights, k=total)
-    for cmp_id in assigned:
-        msg_counts[cmp_id] = msg_counts.get(cmp_id, 0) + 1
-
-    cmp_map = {c["complaint_id"]: c for c in complaints}
-
     for cmp_id, count in msg_counts.items():
         if count == 0:
             continue
-        cmp = cmp_map[cmp_id]
-        base_time = datetime.strptime(cmp["created_at"], "%Y-%m-%dT%H:%M:%S")
+        base_time = datetime.strptime(cmp_map[cmp_id]["created_at"], "%Y-%m-%dT%H:%M:%S")
         for j in range(1, count + 1):
-            sender = random.choices(["Customer","Agent","System"], weights=[40,45,15])[0]
-            if sender == "Customer":
-                text = random.choice(CUSTOMER_MSGS)
-            elif sender == "Agent":
-                text = random.choice(AGENT_MSGS)
-            else:
-                text = random.choice(SYSTEM_MSGS)
-            sent_at = base_time + timedelta(hours=random.randint(0, 48))
+            sender = random.choices(["Customer", "Agent", "System"], weights=[40, 45, 15])[0]
+            text   = random.choice(
+                _CUSTOMER_MSGS if sender == "Customer" else
+                _AGENT_MSGS    if sender == "Agent"    else
+                _SYSTEM_MSGS
+            )
             messages.append({
-                "message_id":   f"MSG-{cmp_id}-{j:03d}",
+                "message_id":   "MSG-%s-%03d" % (cmp_id, j),
                 "complaint_id": cmp_id,
                 "sender_type":  sender,
                 "message_text": text,
-                "sent_at":      sent_at.strftime("%Y-%m-%dT%H:%M:%S"),
+                "sent_at":      (base_time + timedelta(hours=random.randint(0, 48))).strftime("%Y-%m-%dT%H:%M:%S"),
                 "is_internal":  sender == "Agent" and random.random() < 0.2,
             })
     return messages
 
-# ── resolutions ───────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Resolutions
+# ---------------------------------------------------------------------------
 
 def generate_resolutions(complaints, assignments):
+    asn_map     = {a["complaint_id"]: a for a in assignments}
     resolutions = []
-    asn_map = {a["complaint_id"]: a for a in assignments}
     for cmp in complaints:
         if cmp["status"] not in ["Resolved", "Closed"]:
             continue
         created_at  = datetime.strptime(cmp["created_at"], "%Y-%m-%dT%H:%M:%S")
         resolved_at = created_at + timedelta(hours=random.randint(1, 96))
-        agent_id    = asn_map[cmp["complaint_id"]]["agent_id"] if cmp["complaint_id"] in asn_map else "AGT-GS-01"
+        agent_id    = asn_map.get(cmp["complaint_id"], {}).get("agent_id", "AGT-GS-01")
         res_type    = random.choice(RESOLUTION_TYPES)
         refund_amt  = round(random.uniform(5, cmp["order_value"]), 2) if res_type == "Refund" else ""
         resolutions.append({
-            "resolution_id":   f"RES-{cmp['complaint_id']}",
+            "resolution_id":   "RES-%s" % cmp["complaint_id"],
             "complaint_id":    cmp["complaint_id"],
             "resolution_type": res_type,
             "resolved_by":     agent_id,
             "resolved_at":     resolved_at.strftime("%Y-%m-%dT%H:%M:%S"),
-            "notes":           f"Resolved via {res_type}.",
+            "notes":           "Resolved via %s." % res_type,
             "refund_amount":   refund_amt,
         })
     return resolutions
 
-# ── surveys ───────────────────────────────────────────────────────────────────
-
-FEEDBACK_TEXTS = [
-    "Very satisfied with the resolution.",
-    "The agent was helpful and professional.",
-    "Took too long but eventually resolved.",
-    "Not happy with the outcome.",
-    "Excellent service, will shop again.",
-    "Average experience, could be better.",
-    "The issue was resolved quickly.",
-    "I had to follow up multiple times.",
-]
+# ---------------------------------------------------------------------------
+# Surveys
+# ---------------------------------------------------------------------------
 
 def generate_surveys(resolutions):
     surveys = []
@@ -374,35 +374,40 @@ def generate_surveys(resolutions):
         rating       = random.choices(SURVEY_RATINGS, weights=[5, 10, 20, 35, 30])[0]
         nps          = min(10, max(0, (rating - 1) * 2 + random.randint(0, 2)))
         surveys.append({
-            "survey_id":     f"SRV-{i:06d}",
+            "survey_id":     "SRV-%06d" % i,
             "complaint_id":  res["complaint_id"],
             "rating":        rating,
-            "feedback_text": random.choice(FEEDBACK_TEXTS),
+            "feedback_text": random.choice(_FEEDBACK_TEXTS),
             "submitted_at":  submitted_at.strftime("%Y-%m-%dT%H:%M:%S"),
             "nps_score":     nps,
         })
     return surveys
 
-# ── edge case injection ───────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Edge case injection  (labelled anomalies — never leak into input features)
+# ---------------------------------------------------------------------------
 
 def inject_edge_cases(complaints, resolutions, sla_clocks, surveys, assignments):
     anomalies = []
 
-    # 1. Complaint without customer
+    # 1. Complaint with no customer_id
     ec1 = complaints[0].copy()
-    ec1["complaint_id"]  = "CMP-EDGE-000001"
-    ec1["customer_id"]   = ""
-    ec1["order_id"]      = ""
-    ec1["issue_type"]    = "missing_customer"
+    ec1["complaint_id"] = "CMP-EDGE-000001"
+    ec1["customer_id"]  = ""
+    ec1["order_id"]     = ""
+    ec1["issue_type"]   = "missing_customer"
     complaints.append(ec1)
-    anomalies.append({"complaint_id": "CMP-EDGE-000001", "issue_type": "missing_customer",
-                      "description": "Complaint with no customer_id"})
+    anomalies.append({
+        "complaint_id": "CMP-EDGE-000001",
+        "issue_type":   "missing_customer",
+        "description":  "Complaint with no customer_id",
+    })
 
-    # 2. Resolution before complaint created_at
-    base_cmp = next(c for c in complaints if c["status"] in ["Resolved","Closed"])
+    # 2. Resolution timestamp before complaint created_at
+    base_cmp = next(c for c in complaints if c["status"] in ["Resolved", "Closed"])
     created  = datetime.strptime(base_cmp["created_at"], "%Y-%m-%dT%H:%M:%S")
-    ec2_res  = {
-        "resolution_id":   f"RES-CMP-EDGE-000002",
+    resolutions.append({
+        "resolution_id":   "RES-CMP-EDGE-000002",
         "complaint_id":    base_cmp["complaint_id"],
         "resolution_type": "Refund",
         "resolved_by":     "AGT-GS-01",
@@ -410,83 +415,94 @@ def inject_edge_cases(complaints, resolutions, sla_clocks, surveys, assignments)
         "notes":           "EDGE: resolved before complaint created",
         "refund_amount":   50.0,
         "issue_type":      "resolution_before_complaint",
-    }
-    resolutions.append(ec2_res)
-    anomalies.append({"complaint_id": base_cmp["complaint_id"], "issue_type": "resolution_before_complaint",
-                      "description": "Resolution timestamp precedes complaint created_at"})
+    })
+    anomalies.append({
+        "complaint_id": base_cmp["complaint_id"],
+        "issue_type":   "resolution_before_complaint",
+        "description":  "Resolution timestamp precedes complaint created_at",
+    })
 
     # 3. SLA clock paused but never resumed
-    ec3_sla = sla_clocks[5].copy()
-    ec3_sla["sla_id"]      = "SLA-CMP-EDGE-000003"
-    ec3_sla["complaint_id"] = complaints[10]["complaint_id"]
-    ec3_sla["paused_at"]   = ec3_sla["started_at"]
-    ec3_sla["resumed_at"]  = ""
-    ec3_sla["status"]      = "Paused"
-    ec3_sla["issue_type"]  = "sla_pause_no_resume"
-    sla_clocks.append(ec3_sla)
-    anomalies.append({"complaint_id": complaints[10]["complaint_id"], "issue_type": "sla_pause_no_resume",
-                      "description": "SLA paused but resumed_at is missing"})
+    ec3 = sla_clocks[5].copy()
+    ec3["sla_id"]       = "SLA-CMP-EDGE-000003"
+    ec3["complaint_id"] = complaints[10]["complaint_id"]
+    ec3["paused_at"]    = ec3["started_at"]
+    ec3["resumed_at"]   = ""
+    ec3["status"]       = "Paused"
+    ec3["issue_type"]   = "sla_pause_no_resume"
+    sla_clocks.append(ec3)
+    anomalies.append({
+        "complaint_id": complaints[10]["complaint_id"],
+        "issue_type":   "sla_pause_no_resume",
+        "description":  "SLA paused but resumed_at is missing",
+    })
 
-    # 4. Critical safety issue assigned to LOW priority queue
-    ec4_cmp = complaints[20].copy()
-    ec4_cmp["complaint_id"]  = "CMP-EDGE-000004"
-    ec4_cmp["is_safety_issue"] = True
-    ec4_cmp["priority"]      = "LOW"
-    ec4_cmp["issue_type"]    = "safety_low_priority"
-    complaints.append(ec4_cmp)
-    ec4_asn = {
+    # 4. Critical safety issue assigned to low-priority queue
+    ec4 = complaints[20].copy()
+    ec4["complaint_id"]   = "CMP-EDGE-000004"
+    ec4["is_safety_issue"] = True
+    ec4["priority"]       = "LOW"
+    ec4["issue_type"]     = "safety_low_priority"
+    complaints.append(ec4)
+    assignments.append({
         "assignment_id": "ASN-EDGE-000004",
         "complaint_id":  "CMP-EDGE-000004",
         "team":          "General-Support",
         "agent_id":      "AGT-GS-01",
-        "assigned_at":   ec4_cmp["created_at"],
+        "assigned_at":   ec4["created_at"],
         "is_current":    True,
         "reason":        "EDGE: safety issue in low-priority queue",
         "issue_type":    "safety_low_priority",
-    }
-    assignments.append(ec4_asn)
-    anomalies.append({"complaint_id": "CMP-EDGE-000004", "issue_type": "safety_low_priority",
-                      "description": "Critical safety issue assigned to General-Support (low priority)"})
+    })
+    anomalies.append({
+        "complaint_id": "CMP-EDGE-000004",
+        "issue_type":   "safety_low_priority",
+        "description":  "Critical safety issue assigned to General-Support (low priority)",
+    })
 
     # 5. Survey submitted before resolution
-    if resolutions:
-        base_res    = resolutions[0]
-        resolved_at = datetime.strptime(base_res["resolved_at"], "%Y-%m-%dT%H:%M:%S")
-        ec5_survey  = {
-            "survey_id":     "SRV-EDGE-000005",
-            "complaint_id":  base_res["complaint_id"],
-            "rating":        4,
-            "feedback_text": "EDGE: survey before closure",
-            "submitted_at":  (resolved_at - timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S"),
-            "nps_score":     7,
-            "issue_type":    "survey_before_closure",
-        }
-        surveys.append(ec5_survey)
-        anomalies.append({"complaint_id": base_res["complaint_id"], "issue_type": "survey_before_closure",
-                          "description": "Survey submitted before resolution/closure"})
+    base_res    = resolutions[0]
+    resolved_at = datetime.strptime(base_res["resolved_at"], "%Y-%m-%dT%H:%M:%S")
+    surveys.append({
+        "survey_id":     "SRV-EDGE-000005",
+        "complaint_id":  base_res["complaint_id"],
+        "rating":        4,
+        "feedback_text": "EDGE: survey before closure",
+        "submitted_at":  (resolved_at - timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S"),
+        "nps_score":     7,
+        "issue_type":    "survey_before_closure",
+    })
+    anomalies.append({
+        "complaint_id": base_res["complaint_id"],
+        "issue_type":   "survey_before_closure",
+        "description":  "Survey submitted before resolution/closure",
+    })
 
-    # 6. Repeat issue not linked (recurrence_count > 1 but no parent_complaint_id)
+    # 6. Repeat complaint with no parent link
     repeat = next((c for c in complaints if c["recurrence_count"] >= 2 and not c["parent_complaint_id"]), None)
     if repeat:
-        anomalies.append({"complaint_id": repeat["complaint_id"], "issue_type": "repeat_not_linked",
-                          "description": "Repeat complaint (recurrence>=2) with no parent_complaint_id"})
+        anomalies.append({
+            "complaint_id": repeat["complaint_id"],
+            "issue_type":   "repeat_not_linked",
+            "description":  "Repeat complaint (recurrence>=2) with no parent_complaint_id",
+        })
 
     return anomalies
 
-
-# ── orchestrator ──────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Orchestrator
+# ---------------------------------------------------------------------------
 
 def generate_all(scale=1.0):
     random.seed(SEED)
-    n_cust  = int(5000 * scale)
-    n_ord   = int(8000 * scale)
-    n_cmp   = int(2000 * scale)
-    n_msg   = int(6000 * scale)
+    n_cust = int(5000 * scale)
+    n_ord  = int(8000 * scale)
+    n_cmp  = int(2000 * scale)
+    n_msg  = int(6000 * scale)
 
-    print(f"[GEN] Customers={n_cust}, Orders={n_ord}, Complaints={n_cmp}, Messages={n_msg}")
+    print("[GEN] Customers=%d, Orders=%d, Complaints=%d, Messages=%d" % (n_cust, n_ord, n_cmp, n_msg))
 
     customers   = generate_customers(n_cust)
-    products    = PRODUCTS
     orders      = generate_orders(customers, n_ord)
     complaints  = generate_complaints(customers, orders, n_cmp)
     assignments = generate_assignments(complaints)
@@ -494,20 +510,19 @@ def generate_all(scale=1.0):
     messages    = generate_messages(complaints, n_msg)
     resolutions = generate_resolutions(complaints, assignments)
     surveys     = generate_surveys(resolutions)
-
-    anomalies = inject_edge_cases(complaints, resolutions, sla_clocks, surveys, assignments)
+    anomalies   = inject_edge_cases(complaints, resolutions, sla_clocks, surveys, assignments)
 
     return {
-        "customers":   customers,
-        "products":    products,
-        "orders":      orders,
-        "categories":  CATEGORIES,
+        "customers":      customers,
+        "products":       PRODUCTS,
+        "orders":         orders,
+        "categories":     CATEGORIES,
         "priority_rules": PRIORITY_RULES,
-        "complaints":  complaints,
-        "assignments": assignments,
-        "sla_clocks":  sla_clocks,
-        "messages":    messages,
-        "resolutions": resolutions,
-        "surveys":     surveys,
-        "anomalies":   anomalies,
+        "complaints":     complaints,
+        "assignments":    assignments,
+        "sla_clocks":     sla_clocks,
+        "messages":       messages,
+        "resolutions":    resolutions,
+        "surveys":        surveys,
+        "anomalies":      anomalies,
     }
